@@ -1,51 +1,27 @@
-let web3;
-let accounts;
-let contractAddress;
-let tokenAddress;
-let contractABI;
-
-async function loadConfig() {
-  try {
-    const configResponse = await fetch('https://buyemon.github.io/wallets/config.json');
-    if (!configResponse.ok) {
-      throw new Error('Failed to fetch config.json');
-    }
-    const configData = await configResponse.json();
-    contractAddress = configData.contractAddress;
-    tokenAddress = configData.tokenAddress;
-
-    const abiResponse = await fetch('https://buyemon.github.io/wallets/abi.json');
-    if (!abiResponse.ok) {
-      throw new Error('Failed to fetch abi.json');
-    }
-    const abiData = await abiResponse.json();
-    contractABI = abiData;
-
-    console.log("Configuration loaded:", configData);
-    console.log("ABI loaded:", abiData);
-  } catch (error) {
-    console.error("Error loading config or ABI: ", error);
-    alert("Error loading configuration or ABI. Please try again later.");
-  }
-}
+// trustwallet.js
+// No need to declare web3, contractAddress, or contractABI here - just use the global variables from common.js
 
 async function connectTrustWallet() {
-  if (window.ethereum) {
-    web3 = new Web3(window.ethereum);
-    try {
-      accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      console.log("Connected accounts:", accounts);
-
-      document.getElementById('claimAirdropButton').disabled = false;
-      document.getElementById('connectTrustWalletButton').disabled = true;
-    } catch (error) {
-      alert('Trust Wallet connection failed');
-      console.error('Trust Wallet connection error:', error);
+    if (typeof window.ethereum === 'undefined') {
+        alert('TrustWallet is not installed!');
+        return;
     }
-  } else {
-    alert('Trust Wallet is not installed. Please install Trust Wallet to use this application.');
-  }
+
+    try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        web3 = new Web3(window.ethereum);
+        accounts = accounts;
+        alert('TrustWallet connected successfully');
+    } catch (error) {
+        alert('Failed to connect to TrustWallet');
+        console.error('TrustWallet connection error:', error);
+    }
 }
+
+// Add event listener to connect button
+window.addEventListener('DOMContentLoaded', (event) => {
+    document.getElementById('connectButton').addEventListener('click', connectTrustWallet);
+});
 
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('connectTrustWalletButton').addEventListener('click', connectTrustWallet);
