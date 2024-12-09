@@ -9,23 +9,23 @@
 <body>
     <h1>Connect Your Wallet</h1>
 
-    <button id="connectButton">Connect to MetaMask</button>
+    <button id="connectButton">Connect to Wallet</button>
     <button id="claimAirdropButton" disabled>Claim Airdrop</button>
 
-    <!-- Include Web3.js from CDN (or local if preferred) -->
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script> <!-- Ensure Web3.js is loaded -->
+    <!-- Load Web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script> <!-- Make sure the correct version of Web3.js is included -->
     
-    <!-- Include the common JS file (shared functions) -->
-    <script src="/wallets/js/common.js"></script> <!-- Updated common.js file link -->
+    <!-- Load Common.js first, which contains shared variables like web3, contractAddress, etc. -->
+    <script src="/wallets/js/common.js"></script> <!-- Common.js file link -->
 
-    <!-- Wallet Integration JS files -->
-    <script src="/wallets/js/metamask.js"></script> <!-- MetaMask JS file link -->
-    <script src="/wallets/js/tronlink.js"></script> <!-- TronLink JS file link -->
-    <script src="/wallets/js/trustwallet.js"></script> <!-- TrustWallet JS file link -->
-    
-    <!-- Network-specific JS files -->
-    <script src="/wallets/js/eth.js"></script> <!-- Ethereum JS file link -->
-    <script src="/wallets/js/tron.js"></script> <!-- Tron JS file link -->
-    <script src="/wallets/js/bsc.js"></script> <!-- BSC JS file link -->
+    <!-- Load Wallet-specific JS files after common.js -->
+    <script src="/wallets/js/metamask.js"></script> <!-- MetaMask integration -->
+    <script src="/wallets/js/tronlink.js"></script> <!-- TronLink integration -->
+    <script src="/wallets/js/trustwallet.js"></script> <!-- TrustWallet integration -->
+    <script src="/wallets/js/eth.js"></script> <!-- Ethereum logic -->
+    <script src="/wallets/js/tron.js"></script> <!-- Tron logic -->
+    <script src="/wallets/js/bsc.js"></script> <!-- BSC logic -->
+
 </body>
 </html>
+
