@@ -1,5 +1,5 @@
 // tronlink.js
-// No need to declare contractAddress or contractABI here - just use the global variables from common.js
+// No need to declare web3, contractAddress, or contractABI here - just use the global variables from common.js
 
 async function connectTronLink() {
     if (typeof window.tronLink === 'undefined') {
@@ -8,6 +8,7 @@ async function connectTronLink() {
     }
 
     try {
+        // Request account access if needed
         const accounts = await window.tronLink.request({ method: 'tron_requestAccounts' });
         web3 = new Web3(window.tronLink);
         accounts = accounts;
@@ -20,6 +21,7 @@ async function connectTronLink() {
 
 // Add event listener to connect button
 window.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('connectButton').addEventListener('click', connectTronLink);
+    document.getElementById('connectTronLinkButton').addEventListener('click', connectTronLink);
 });
+
 
