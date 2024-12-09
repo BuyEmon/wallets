@@ -10,8 +10,8 @@ async function connectMetaMask() {
     try {
         // Request account access if needed
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        web3 = new Web3(window.ethereum);
-        accounts = accounts;
+        web3 = new Web3(window.ethereum); // Initialize Web3 with the current provider
+        console.log('MetaMask connected:', accounts);
         alert('MetaMask connected successfully');
     } catch (error) {
         alert('Failed to connect to MetaMask');
