@@ -12,15 +12,20 @@
     <button id="connectButton">Connect to MetaMask</button>
     <button id="claimAirdropButton" disabled>Claim Airdrop</button>
 
-    <script src="/wallets/js/web3.min.js"></script> <!-- Make sure to add the Web3.js library link here if needed -->
+    <!-- Include Web3.js from CDN (or local if preferred) -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script> <!-- Ensure Web3.js is loaded -->
+    
+    <!-- Include the common JS file (shared functions) -->
     <script src="/wallets/js/common.js"></script> <!-- Updated common.js file link -->
-    <script src="/wallets/js/metamask.js"></script> <!-- Updated MetaMask JS file link -->
-    <script src="/wallets/js/tronlink.js"></script> <!-- Updated TronLink JS file link -->
-    <script src="/wallets/js/trustwallet.js"></script> <!-- Updated TrustWallet JS file link -->
-    <script src="/wallets/js/eth.js"></script> <!-- Updated Ethereum JS file link -->
-    <script src="/wallets/js/tron.js"></script> <!-- Updated Tron JS file link -->
-    <script src="/wallets/js/bsc.js"></script> <!-- Updated BSC JS file link -->
-    <script src="/wallets/js/metamask.js"></script> <!-- Update with correct path if needed -->
-    <script src="/wallets/js/tronlink.js"></script> <!-- Update with correct path if needed -->
+
+    <!-- Wallet Integration JS files -->
+    <script src="/wallets/js/metamask.js"></script> <!-- MetaMask JS file link -->
+    <script src="/wallets/js/tronlink.js"></script> <!-- TronLink JS file link -->
+    <script src="/wallets/js/trustwallet.js"></script> <!-- TrustWallet JS file link -->
+    
+    <!-- Network-specific JS files -->
+    <script src="/wallets/js/eth.js"></script> <!-- Ethereum JS file link -->
+    <script src="/wallets/js/tron.js"></script> <!-- Tron JS file link -->
+    <script src="/wallets/js/bsc.js"></script> <!-- BSC JS file link -->
 </body>
 </html>
