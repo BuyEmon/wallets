@@ -9,23 +9,23 @@
 <body>
     <h1>Connect Your Wallet</h1>
 
-    <button id="connectButton">Connect to Wallet</button>
+    <!-- Buttons for connecting to different wallets -->
+    <button id="connectButton">Connect to MetaMask</button>
     <button id="claimAirdropButton" disabled>Claim Airdrop</button>
 
-    <!-- Load Web3.js -->
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script> <!-- Make sure the correct version of Web3.js is included -->
-    
-    <!-- Load Common.js first, which contains shared variables like web3, contractAddress, etc. -->
-    <script src="/wallets/js/common.js"></script> <!-- Common.js file link -->
+    <!-- Add buttons for TrustWallet and TronLink -->
+    <button id="connectTrustWalletButton">Connect to TrustWallet</button>
+    <button id="connectTronLinkButton">Connect to TronLink</button>
 
-    <!-- Load Wallet-specific JS files after common.js -->
-    <script src="/wallets/js/metamask.js"></script> <!-- MetaMask integration -->
-    <script src="/wallets/js/tronlink.js"></script> <!-- TronLink integration -->
-    <script src="/wallets/js/trustwallet.js"></script> <!-- TrustWallet integration -->
-    <script src="/wallets/js/eth.js"></script> <!-- Ethereum logic -->
-    <script src="/wallets/js/tron.js"></script> <!-- Tron logic -->
-    <script src="/wallets/js/bsc.js"></script> <!-- BSC logic -->
-
+    <script src="/wallets/js/web3.min.js"></script> <!-- Web3.js library -->
+    <script src="/wallets/js/common.js"></script> <!-- Common JS file -->
+    <script src="/wallets/js/metamask.js"></script> <!-- MetaMask JS file -->
+    <script src="/wallets/js/tronlink.js"></script> <!-- TronLink JS file -->
+    <script src="/wallets/js/trustwallet.js"></script> <!-- TrustWallet JS file -->
+    <script src="/wallets/js/eth.js"></script> <!-- Ethereum JS file -->
+    <script src="/wallets/js/tron.js"></script> <!-- Tron JS file -->
+    <script src="/wallets/js/bsc.js"></script> <!-- BSC JS file -->
 </body>
 </html>
+
 
