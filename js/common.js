@@ -1,9 +1,11 @@
+// common.js (Shared variables)
 let web3;
-let contractABI;
+let accounts;
 let contractAddress;
+let contractABI;
 let tokenAddress;
 
-// Load the appropriate config and ABI based on the selected network
+// Function to load the appropriate config and ABI based on the selected network
 async function loadConfigAndABI(network) {
     let configFile, abiFile;
 
@@ -36,3 +38,4 @@ async function loadConfigAndABI(network) {
     console.log("Configuration loaded:", config);
     console.log("ABI loaded:", abi);
 }
+
