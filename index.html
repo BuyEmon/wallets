@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet Connection</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallet Connection</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="container">
     <h1>Connect Your Wallet</h1>
     
-    <div id="walletSelection">
-        <button id="connectMetaMask" onclick="connectMetaMask()">Connect to MetaMask</button>
-        <button id="connectTrustWallet" onclick="connectTrustWallet()">Connect to Trust Wallet</button>
-        <button id="connectTronLink" onclick="connectTronLink()">Connect to TronLink</button>
-    </div>
+    <!-- Buttons to connect to different wallets -->
+    <button id="connectMetaMaskButton">Connect MetaMask</button>
+    <button id="connectTronLinkButton">Connect TronLink</button>
+    <button id="connectTrustWalletButton">Connect Trust Wallet</button>
 
-    <div id="claimAirdropSection" style="display: none;">
-        <button id="claimAirdropButton">Claim Airdrop</button>
-    </div>
+    <!-- Claim Airdrop Button -->
+    <button id="claimAirdropButton" disabled>Claim Airdrop</button>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script>
-    <script src="script.js"></script>
+  <!-- Include the necessary JS files -->
+  <script src="metamask.js"></script>
+  <script src="tronlink.js"></script>
+  <script src="trustwallet.js"></script>
+  <script src="eth.js"></script> <!-- Ethereum integration -->
+  <script src="index.js"></script> <!-- General logic -->
 </body>
 </html>
