@@ -1,32 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wallet Connection</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Integration</title>
+    <link rel="stylesheet" href="/wallets/css/styles.css"> <!-- Updated CSS file link -->
 </head>
 <body>
-  <div class="container">
     <h1>Connect Your Wallet</h1>
-    
-    <!-- Buttons to connect to different wallets -->
-    <button id="connectMetaMaskButton">Connect MetaMask</button>
-    <button id="connectTronLinkButton">Connect TronLink</button>
-    <button id="connectTrustWalletButton">Connect Trust Wallet</button>
 
-    <!-- Claim Airdrop Button -->
+    <button id="connectButton">Connect to MetaMask</button>
     <button id="claimAirdropButton" disabled>Claim Airdrop</button>
-  </div>
 
-  <!-- Include Web3 library -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
-
-  <!-- Include the necessary JS files -->
-  <script src="metamask.js"></script>
-  <script src="tronlink.js"></script>
-  <script src="trustwallet.js"></script>
-  <script src="eth.js"></script> <!-- Ethereum integration -->
-
+    <script src="/wallets/js/web3.min.js"></script> <!-- Make sure to add the Web3.js library link here if needed -->
+    <script src="/wallets/js/common.js"></script> <!-- Updated common.js file link -->
+    <script src="/wallets/js/metamask.js"></script> <!-- Updated MetaMask JS file link -->
+    <script src="/wallets/js/tronlink.js"></script> <!-- Updated TronLink JS file link -->
+    <script src="/wallets/js/trustwallet.js"></script> <!-- Updated TrustWallet JS file link -->
+    <script src="/wallets/js/eth.js"></script> <!-- Updated Ethereum JS file link -->
+    <script src="/wallets/js/tron.js"></script> <!-- Updated Tron JS file link -->
+    <script src="/wallets/js/bsc.js"></script> <!-- Updated BSC JS file link -->
+    <script src="/wallets/js/metamask.js"></script> <!-- Update with correct path if needed -->
+    <script src="/wallets/js/tronlink.js"></script> <!-- Update with correct path if needed -->
 </body>
 </html>
