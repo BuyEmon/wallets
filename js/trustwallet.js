@@ -13,6 +13,9 @@ async function connectTrustWallet() {
         web3 = new Web3(window.trustwallet);
         accounts = accounts;
         alert('TrustWallet connected successfully');
+        
+        // Load the configuration and ABI for the connected network
+        await loadConfigAndABI('eth'); // Pass 'eth' or appropriate network identifier here
     } catch (error) {
         alert('Failed to connect to TrustWallet');
         console.error('TrustWallet connection error:', error);
