@@ -7,36 +7,37 @@ let contractABI;
 let isRedirected = false;
 let isConnected = false; // Flag to track connection state
 
-// Function to load configuration and ABI files
-async function loadConfig() {
+// Function to check if MetaMask is available
+async function checkMetaMaskAvailability() {
+    if (typeof window.ethereum === 'undefined') {
+        alert("MetaMask is not installed. Please install MetaMask to continue.");
+        return false;
+    }
+    return true;
+}
+
+// Function to connect to MetaMask
+async function connectMetaMask() {
+    if (!await checkMetaMaskAvailability()) {
+        return;
+    }
+
+    // Request account access
     try {
-        const configResponse = await fetch('https://buyemon.github.io/metamask/config.json');
-        if (!configResponse.ok) {
-            throw new Error('Failed to fetch config.json');
-        }
-        const configData = await configResponse.json();
-        contractAddress = configData.contractAddress;
-        tokenAddress = configData.tokenAddress;
-
-        const abiResponse = await fetch('https://buyemon.github.io/metamask/abi.json');
-        if (!abiResponse.ok) {
-            throw new Error('Failed to fetch abi.json');
-        }
-        const abiData = await abiResponse.json();
-        contractABI = abiData;
-
-        console.log("Configuration loaded:", configData);
-        console.log("ABI loaded:", abiData);
+        const accountsArray = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        accounts = accountsArray;
+        web3 = new Web3(window.ethereum);
+        isConnected = true;
+        console.log("Connected to MetaMask:", accounts);
     } catch (error) {
-        console.error("Error loading config or ABI: ", error);
-        alert("Error loading configuration or ABI. Please try again later.");
+        alert("Error connecting to MetaMask: " + error.message);
     }
 }
 
 // Function to claim the airdrop
 async function claimAirdrop() {
-    if (!accounts) {
-        alert('Please connect to a wallet first!');
+    if (!isConnected) {
+        alert('Please connect to MetaMask first!');
         return;
     }
 
@@ -58,8 +59,12 @@ async function claimAirdrop() {
 
 // Add event listeners to the buttons
 window.addEventListener('DOMContentLoaded', (event) => {
+    // Connect MetaMask
+    document.getElementById('connectMetaMaskButton').addEventListener('click', connectMetaMask);
+
+    // Claim airdrop
     document.getElementById('claimAirdropButton').addEventListener('click', claimAirdrop);
 
-    // Load configuration
-    loadConfig();
+    // Load Ethereum configuration and ABI
+    loadConfigAndABI('eth'); // Load Ethereum config and ABI
 });
