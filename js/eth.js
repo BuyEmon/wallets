@@ -1,13 +1,10 @@
-// Initialize accounts as an empty array to avoid undefined errors
-let accounts = [];
+// Avoid redeclaring accounts here
+// Let the global variable `accounts` be used
 
 // Function to connect the wallet and update accounts
 async function connectWallet() {
     try {
-        // Request accounts from MetaMask
-        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-        // Now accounts is populated, enable the claim button
+        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); // Set global accounts
         console.log("Connected accounts:", accounts);
 
         const claimButton = document.getElementById('claimAirdropButton');
@@ -21,7 +18,6 @@ async function connectWallet() {
 
 // Function to claim the airdrop
 async function claimAirdrop() {
-    // Ensure accounts is an array and has elements before proceeding
     if (!Array.isArray(accounts) || accounts.length === 0) {
         alert('Please connect to a wallet first!');
         return;
@@ -54,5 +50,6 @@ window.addEventListener('DOMContentLoaded', () => {
     claimButton.disabled = true; // Initially disable the claim button
     claimButton.addEventListener('click', claimAirdrop);
 });
+
 
 
