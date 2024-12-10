@@ -12,6 +12,14 @@ async function connectMetaMask() {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         web3 = new Web3(window.ethereum); // Initialize Web3 with the current provider
         console.log('MetaMask connected:', accounts);
+
+        // Enable the claim airdrop button after connecting
+        const claimButton = document.getElementById('claimAirdropButton');
+        if (claimButton) {
+            claimButton.disabled = false; // Enable the button
+            console.log('Claim Airdrop button enabled');
+        }
+
         alert('MetaMask connected successfully');
     } catch (error) {
         alert('Failed to connect to MetaMask');
