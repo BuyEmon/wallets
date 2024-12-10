@@ -21,8 +21,8 @@ async function connectWallet() {
 
 // Function to claim the airdrop
 async function claimAirdrop() {
-    // Check if accounts is properly initialized
-    if (accounts.length === 0) {
+    // Ensure accounts is an array and has elements before proceeding
+    if (!Array.isArray(accounts) || accounts.length === 0) {
         alert('Please connect to a wallet first!');
         return;
     }
