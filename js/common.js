@@ -1,6 +1,6 @@
 // common.js (Shared variables)
 let web3;
-let accounts; // Declare accounts here once globally
+let accounts = []; // Declare accounts here once globally, initialized as an empty array
 let contractAddress;
 let contractABI;
 let tokenAddress;
@@ -54,3 +54,4 @@ async function fetchAccounts() {
 
 // Call fetchAccounts on page load
 window.addEventListener('DOMContentLoaded', fetchAccounts);
+
