@@ -1,6 +1,6 @@
 // common.js (Shared variables)
 let web3;
-let accounts;
+let accounts; // Declare accounts here once globally
 let contractAddress;
 let contractABI;
 let tokenAddress;
@@ -39,42 +39,18 @@ async function loadConfigAndABI(network) {
     console.log("ABI loaded:", abi);
 }
 
-// Function to claim the airdrop
-async function claimAirdrop() {
-    if (!web3) {
-        alert('Please connect to a wallet first.');
-        return;
-    }
-
-    if (!contractAddress || !contractABI) {
-        alert('Smart contract details are not loaded. Please refresh the page.');
-        return;
-    }
-
-    try {
-        const accounts = await web3.eth.getAccounts(); // Fetch current account
-        const contract = new web3.eth.Contract(contractABI, contractAddress); // Load the contract
-
-        // Call the claim function from the smart contract
-        const receipt = await contract.methods.claimAirdrop().send({
-            from: accounts[0], // Use the first account connected
-        });
-
-        console.log('Airdrop claimed successfully:', receipt);
-        alert('Airdrop claimed successfully!');
-    } catch (error) {
-        console.error('Error while claiming airdrop:', error);
-        alert('Failed to claim airdrop. Check the console for more details.');
+// Fetch accounts and set them globally
+async function fetchAccounts() {
+    if (web3 && window.ethereum) {
+        try {
+            accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); // Set accounts globally
+            console.log('Accounts:', accounts);
+            document.getElementById('claimAirdropButton').disabled = false; // Enable the button
+        } catch (error) {
+            console.error('Failed to get accounts:', error);
+        }
     }
 }
 
-// Attach the event listener for the claim button
-window.addEventListener('DOMContentLoaded', () => {
-    const claimButton = document.getElementById('claimAirdropButton');
-    if (claimButton) {
-        claimButton.disabled = false; // Enable the button when DOM is loaded
-        claimButton.addEventListener('click', claimAirdrop);
-    } else {
-        console.error("Claim button with ID 'claimAirdropButton' not found.");
-    }
-});
+// Call fetchAccounts on page load
+window.addEventListener('DOMContentLoaded', fetchAccounts);
