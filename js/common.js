@@ -5,7 +5,6 @@ let contractAddress;
 let contractABI;
 let tokenAddress;
 
-// Function to load the appropriate config and ABI based on the selected network
 async function loadConfigAndABI(network) {
     let configFile, abiFile;
 
@@ -23,21 +22,33 @@ async function loadConfigAndABI(network) {
     }
 
     // Load the configuration (contract address, token address)
-    const configResponse = await fetch(configFile);
-    if (!configResponse.ok) throw new Error('Failed to load config file');
-    const config = await configResponse.json();
-    contractAddress = config.contractAddress;
-    tokenAddress = config.tokenAddress;
+    try {
+        const configResponse = await fetch(configFile);
+        if (!configResponse.ok) throw new Error('Failed to load config file');
+        const config = await configResponse.json();
+        contractAddress = config.contractAddress;
+        tokenAddress = config.tokenAddress;
+        console.log("Configuration loaded:", config);
+    } catch (error) {
+        console.error("Error loading config file:", error);
+        alert("Failed to load contract details. Please try again later.");
+        return;
+    }
 
     // Load the ABI file
-    const abiResponse = await fetch(abiFile);
-    if (!abiResponse.ok) throw new Error('Failed to load ABI file');
-    const abi = await abiResponse.json();
-    contractABI = abi;
-
-    console.log("Configuration loaded:", config);
-    console.log("ABI loaded:", abi);
+    try {
+        const abiResponse = await fetch(abiFile);
+        if (!abiResponse.ok) throw new Error('Failed to load ABI file');
+        const abi = await abiResponse.json();
+        contractABI = abi;
+        console.log("ABI loaded:", abi);
+    } catch (error) {
+        console.error("Error loading ABI file:", error);
+        alert("Failed to load ABI. Please try again later.");
+        return;
+    }
 }
+
 
 // Fetch accounts and set them globally
 async function fetchAccounts() {
