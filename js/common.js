@@ -1,52 +1,24 @@
-console.log("Loading config and ABI for", network);
-console.log("Config and ABI loaded");
+// common.js (Shared variables and initialization)
+console.log('common.js: File loaded successfully');
 
-console.log("Contract Address: ", contractAddress);
-console.log("Contract ABI: ", contractABI);
-
-// common.js (Shared variables)
-
-
-try {
-    console.log('Attempting to load eth_abi.json...');
-    const abiResponse = await fetch('/wallets/abi/eth_abi.json');
-    if (!abiResponse.ok) throw new Error('Failed to load eth_abi.json');
-    console.log('eth_abi.json loaded successfully');
-} catch (error) {
-    console.error('Error loading eth_abi.json:', error.message || error);
-}
-try {
-    console.log('Attempting to load eth_config.json...');
-    const configResponse = await fetch('/wallets/config/eth_config.json');
-    if (!configResponse.ok) throw new Error('Failed to load eth_config.json');
-    console.log('eth_config.json loaded successfully');
-} catch (error) {
-    console.error('Error loading eth_config.json:', error.message || error);
-}
-
-try {
-    console.log('common.js loaded successfully');
-} catch (error) {
-    console.error('Error in common.js:', error.message || error);
-}
-
-
-
-
-// Shared variables
+// Declare shared variables
 let web3 = null; // Initialize web3 as null to ensure it is not undefined
 let accounts = []; // Declare accounts here once globally
 let contractAddress = '';
 let contractABI = null;
 let tokenAddress = '';
+const network = 'eth'; // Default network (change as needed)
+
+console.log(`common.js: Default network set to "${network}"`);
 
 // Function to load the configuration and ABI files for a given network
 async function loadConfigAndABI(network) {
     if (!network) {
-        console.error("Network is not defined. Please pass a valid network.");
+        console.error("common.js: Network is not defined. Please pass a valid network.");
         return;
     }
 
+    console.log(`common.js: Loading config and ABI for network "${network}"`);
     let configFile, abiFile;
 
     // Set paths for configuration and ABI files based on the selected network
@@ -60,19 +32,20 @@ async function loadConfigAndABI(network) {
         configFile = '/wallets/config/tron_config.json';
         abiFile = '/wallets/abi/tron_abi.json';
     } else {
+        console.error(`common.js: Unsupported network "${network}"`);
         throw new Error('Unsupported network');
     }
 
     // Load the configuration (contract address, token address)
     try {
         const configResponse = await fetch(configFile);
-        if (!configResponse.ok) throw new Error('Failed to load config file');
+        if (!configResponse.ok) throw new Error(`Failed to load config file for "${network}"`);
         const config = await configResponse.json();
         contractAddress = config.contractAddress;
         tokenAddress = config.tokenAddress;
-        console.log("Configuration loaded:", config);
+        console.log(`common.js: Configuration loaded for "${network}"`, config);
     } catch (error) {
-        console.error("Error loading config file:", error);
+        console.error("common.js: Error loading config file:", error.message || error);
         alert("Failed to load contract details. Please try again later.");
         return;
     }
@@ -80,12 +53,12 @@ async function loadConfigAndABI(network) {
     // Load the ABI file
     try {
         const abiResponse = await fetch(abiFile);
-        if (!abiResponse.ok) throw new Error('Failed to load ABI file');
+        if (!abiResponse.ok) throw new Error(`Failed to load ABI file for "${network}"`);
         const abi = await abiResponse.json();
         contractABI = abi;
-        console.log("ABI loaded:", abi);
+        console.log(`common.js: ABI loaded for "${network}"`, abi);
     } catch (error) {
-        console.error("Error loading ABI file:", error);
+        console.error("common.js: Error loading ABI file:", error.message || error);
         alert("Failed to load ABI. Please try again later.");
         return;
     }
@@ -96,34 +69,38 @@ async function fetchAccounts() {
     if (web3 && window.ethereum) {
         try {
             accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); // Set accounts globally
-            console.log('Accounts:', accounts);
+            console.log('common.js: Accounts fetched successfully', accounts);
             const claimAirdropButton = document.getElementById('claimAirdropButton');
             if (claimAirdropButton) {
                 claimAirdropButton.disabled = false; // Enable the button if it exists
             }
         } catch (error) {
-            console.error('Failed to get accounts:', error);
+            console.error('common.js: Failed to get accounts:', error.message || error);
         }
+    } else {
+        console.error('common.js: Ethereum provider not available. Please install MetaMask.');
     }
 }
 
 // Initialize configuration and ABI on page load
 async function init() {
     try {
-        await loadConfigAndABI('eth');
-        console.log('Configuration and ABI loaded successfully');
+        console.log('common.js: Initializing configuration and ABI...');
+        await loadConfigAndABI(network);
+        console.log('common.js: Configuration and ABI loaded successfully');
     } catch (error) {
-        console.error('Initialization failed:', error);
+        console.error('common.js: Initialization failed:', error.message || error);
     }
 }
 
 // Ensure the page initializes properly
 window.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded and parsed');
+    console.log('common.js: DOM fully loaded and parsed');
     if (window.ethereum) {
         web3 = new Web3(window.ethereum); // Initialize web3 with MetaMask's provider
+        console.log('common.js: Web3 initialized with MetaMask');
     } else {
-        console.error('No Ethereum provider found. Please install MetaMask.');
+        console.error('common.js: No Ethereum provider found. Please install MetaMask.');
     }
     fetchAccounts();
     init();
