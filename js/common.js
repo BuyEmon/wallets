@@ -2,6 +2,13 @@ console.log("Loading config and ABI for", network);
 await loadConfigAndABI(network);
 console.log("Config and ABI loaded");
 
+console.log("Contract Address: ", contractAddress);
+console.log("Contract ABI: ", contractABI);
+
+
+
+
+
 
 
 
