@@ -1,5 +1,4 @@
 console.log("Loading config and ABI for", network);
-await loadConfigAndABI(network);
 console.log("Config and ABI loaded");
 
 console.log("Contract Address: ", contractAddress);
@@ -9,6 +8,11 @@ console.log("Contract ABI: ", contractABI);
 console.log("common.js loaded");
 
 
+async function init() {
+    await loadConfigAndABI('eth');
+    console.log('Configuration and ABI loaded');
+}
+init();
 
 
 
