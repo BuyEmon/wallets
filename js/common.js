@@ -6,6 +6,7 @@ console.log("Contract Address: ", contractAddress);
 console.log("Contract ABI: ", contractABI);
 
 
+console.log("common.js loaded");
 
 
 
