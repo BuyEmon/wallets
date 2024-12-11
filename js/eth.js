@@ -1,5 +1,10 @@
-console.log("eth.js loaded");
 
+
+try {
+    console.log('eth.js loaded successfully');
+} catch (error) {
+    console.error('Error in eth.js:', error.message || error);
+}
 
 
 // Avoid redeclaring accounts here
