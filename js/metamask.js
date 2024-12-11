@@ -1,3 +1,7 @@
+console.log("metamask.js loaded");
+
+
+
 // metamask.js
 // No need to declare web3, contractAddress, or contractABI here - just use the global variables from common.js
 
