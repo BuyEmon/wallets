@@ -10,7 +10,20 @@ try {
 // Avoid redeclaring accounts here
 // Let the global variable `accounts` be used
 
+// Function to connect the wallet and update accounts
+async function connectWallet() {
+    try {
+        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); // Set global accounts
+        console.log("Connected accounts:", accounts);
 
+        const claimButton = document.getElementById('claimAirdropButton');
+        claimButton.disabled = false; // Enable the button after wallet connection
+
+    } catch (error) {
+        console.error("Error connecting to wallet:", error);
+        alert("Failed to connect to wallet. Please try again.");
+    }
+}
 
 // Function to claim the airdrop
 async function claimAirdrop() {
