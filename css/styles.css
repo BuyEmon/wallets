@@ -5,7 +5,6 @@
   box-sizing: border-box;
 }
 
-/* Body and Container Styling */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f9;
@@ -17,27 +16,21 @@ body {
   text-align: center;
 }
 
+/* Container styling */
 .container {
   padding: 20px;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 450px; /* Slightly wider container */
-  transition: transform 0.3s ease-in-out;
-}
-
-.container:hover {
-  transform: scale(1.02); /* Subtle hover effect */
+  max-width: 400px;
 }
 
 /* Header */
 h1 {
-  font-size: 28px; /* Larger font for a bolder heading */
+  font-size: 24px;
   color: #333;
-  margin-bottom: 30px;
-  font-weight: 600; /* Slightly bolder heading */
-  letter-spacing: 1px;
+  margin-bottom: 20px;
 }
 
 /* Button Styling */
@@ -45,31 +38,22 @@ button {
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 14px 28px; /* Larger padding */
-  font-size: 18px; /* Larger font */
-  border-radius: 8px; /* More rounded buttons */
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.3s;
   width: 100%;
-  margin-bottom: 15px; /* More space between buttons */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  margin-bottom: 10px;
 }
 
 button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
 button:hover:enabled {
-  background-color: #0056b3; /* Darker shade for hover */
-  transform: scale(1.05); /* Slight scale effect on hover */
-}
-
-/* Button Focus Style for Accessibility */
-button:focus {
-  outline: 3px solid #0056b3;
-  outline-offset: 2px;
+  background-color: #0056b3;
 }
 
 /* MetaMask Deep Link Styling */
@@ -78,32 +62,9 @@ a {
   margin-top: 20px;
   color: #007bff;
   text-decoration: none;
-  font-size: 16px; /* Larger font for links */
-  font-weight: 500; /* Slightly bolder font */
+  font-size: 14px;
 }
 
 a:hover {
   text-decoration: underline;
 }
-
-/* Media Queries for Responsiveness */
-@media screen and (max-width: 600px) {
-  h1 {
-    font-size: 22px;
-  }
-
-  .container {
-    width: 90%; /* More responsive on smaller screens */
-    padding: 15px;
-  }
-
-  button {
-    font-size: 16px; /* Smaller font on mobile */
-    padding: 12px 24px;
-  }
-
-  a {
-    font-size: 14px;
-  }
-}
-
