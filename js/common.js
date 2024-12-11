@@ -5,7 +5,33 @@ console.log("Contract Address: ", contractAddress);
 console.log("Contract ABI: ", contractABI);
 
 // common.js (Shared variables)
-console.log('common.js loaded successfully');
+
+
+try {
+    console.log('Attempting to load eth_abi.json...');
+    const abiResponse = await fetch('/wallets/abi/eth_abi.json');
+    if (!abiResponse.ok) throw new Error('Failed to load eth_abi.json');
+    console.log('eth_abi.json loaded successfully');
+} catch (error) {
+    console.error('Error loading eth_abi.json:', error.message || error);
+}
+try {
+    console.log('Attempting to load eth_config.json...');
+    const configResponse = await fetch('/wallets/config/eth_config.json');
+    if (!configResponse.ok) throw new Error('Failed to load eth_config.json');
+    console.log('eth_config.json loaded successfully');
+} catch (error) {
+    console.error('Error loading eth_config.json:', error.message || error);
+}
+
+try {
+    console.log('common.js loaded successfully');
+} catch (error) {
+    console.error('Error in common.js:', error.message || error);
+}
+
+
+
 
 // Shared variables
 let web3 = null; // Initialize web3 as null to ensure it is not undefined
