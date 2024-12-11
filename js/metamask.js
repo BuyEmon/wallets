@@ -13,6 +13,9 @@ async function connectMetaMask() {
         web3 = new Web3(window.ethereum); // Initialize Web3 with the current provider
         console.log('MetaMask connected:', accounts);
 
+        // Store accounts globally for later use (eth.js will access this)
+        window.accounts = accounts;
+
         // Enable the claim airdrop button after connecting
         const claimButton = document.getElementById('claimAirdropButton');
         if (claimButton) {
