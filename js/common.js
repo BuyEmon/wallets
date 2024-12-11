@@ -1,4 +1,3 @@
-// common.js (Shared variables and initialization)
 console.log('common.js: File loaded successfully');
 
 // Declare shared variables
@@ -93,12 +92,6 @@ async function init() {
     }
 }
 
-// Add an event listener for the "Connect to MetaMask" button
-document.getElementById('connectButton').addEventListener('click', () => {
-    console.log('common.js: Connecting to MetaMask...');
-    fetchAccounts();
-});
-
 // Ensure the page initializes properly
 window.addEventListener('DOMContentLoaded', () => {
     console.log('common.js: DOM fully loaded and parsed');
@@ -110,3 +103,4 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     init(); // Initialize configuration and ABI
 });
+
