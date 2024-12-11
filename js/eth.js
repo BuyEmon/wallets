@@ -23,6 +23,7 @@ async function claimAirdrop() {
         return;
     }
 
+    // Ensure contract details are loaded before proceeding
     if (!contractABI || !contractAddress) {
         alert('Contract details not loaded. Please try again later.');
         return;
