@@ -1,5 +1,3 @@
-
-
 try {
     console.log('eth.js loaded successfully');
 } catch (error) {
@@ -8,7 +6,7 @@ try {
 
 
 // Avoid redeclaring accounts here
-// Let the global variable `accounts` be used
+// Let the global variable accounts be used
 
 // Function to connect the wallet and update accounts
 async function connectWallet() {
