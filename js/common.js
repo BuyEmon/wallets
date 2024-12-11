@@ -5,6 +5,7 @@ let contractAddress;
 let contractABI;
 let tokenAddress;
 
+// Function to load config and ABI based on network type
 async function loadConfigAndABI(network) {
     let configFile, abiFile;
 
@@ -69,4 +70,5 @@ async function fetchAccounts() {
 
 // Call fetchAccounts on page load
 window.addEventListener('DOMContentLoaded', fetchAccounts);
+
 
