@@ -1,5 +1,3 @@
-// eth.js (Ethereum-specific logic)
-
 // Function to connect to the Ethereum network
 async function connectEthereum() {
     if (window.ethereum) {
@@ -47,3 +45,4 @@ async function claimEthereumAirdrop() {
         console.error('Claim error:', error);
     }
 }
+
