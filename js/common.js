@@ -93,6 +93,12 @@ async function init() {
     }
 }
 
+// Add an event listener for the "Connect to MetaMask" button
+document.getElementById('connectButton').addEventListener('click', () => {
+    console.log('common.js: Connecting to MetaMask...');
+    fetchAccounts();
+});
+
 // Ensure the page initializes properly
 window.addEventListener('DOMContentLoaded', () => {
     console.log('common.js: DOM fully loaded and parsed');
@@ -102,6 +108,5 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
         console.error('common.js: No Ethereum provider found. Please install MetaMask.');
     }
-    fetchAccounts();
-    init();
+    init(); // Initialize configuration and ABI
 });
