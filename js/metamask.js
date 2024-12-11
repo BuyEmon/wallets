@@ -1,5 +1,3 @@
-// metamask.js (MetaMask-specific connection handling)
-
 let isRedirected = false; // Prevent multiple redirections
 let isConnected = false; // Prevent reconnection if already connected
 
@@ -29,7 +27,7 @@ function initializeMetaMask(configUrl, abiUrl, deepLinkURL) {
         console.log("Initializing MetaMask...");
 
         // Load configuration and ABI files
-        await loadConfig(configUrl, abiUrl);
+        await loadConfigAndABI(configUrl);
 
         // Handle MetaMask connection or redirection
         handleMetaMaskConnection(deepLinkURL);
@@ -46,4 +44,9 @@ function initializeMetaMask(configUrl, abiUrl, deepLinkURL) {
             claimAirdropButton.addEventListener('click', claimEthereumAirdrop);
         }
     });
+}
+
+// Helper function to detect if the user is on a mobile device
+function isMobileDevice() {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 }
