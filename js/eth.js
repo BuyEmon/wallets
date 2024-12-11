@@ -1,27 +1,4 @@
-try {
-    console.log('eth.js loaded successfully');
-} catch (error) {
-    console.error('Error in eth.js:', error.message || error);
-}
-
-
-// Avoid redeclaring accounts here
-// Let the global variable accounts be used
-
-// Function to connect the wallet and update accounts
-async function connectWallet() {
-    try {
-        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); // Set global accounts
-        console.log("Connected accounts:", accounts);
-
-        const claimButton = document.getElementById('claimAirdropButton');
-        claimButton.disabled = false; // Enable the button after wallet connection
-
-    } catch (error) {
-        console.error("Error connecting to wallet:", error);
-        alert("Failed to connect to wallet. Please try again.");
-    }
-}
+console.log('eth.js loaded successfully');
 
 // Function to claim the airdrop
 async function claimAirdrop() {
@@ -53,10 +30,12 @@ async function claimAirdrop() {
     }
 }
 
-// Attach event listeners after DOM is loaded
+// Attach event listener for claiming airdrop
 window.addEventListener('DOMContentLoaded', () => {
-    const connectButton = document.getElementById('connectButton'); // Replace with your connect button ID
-    connectButton.addEventListener('click', connectWallet);
+    const claimButton = document.getElementById('claimAirdropButton');
+    claimButton.disabled = true; // Initially disable the claim button
+    claimButton.addEventListener('click', claimAirdrop);
+});
 
     const claimButton = document.getElementById('claimAirdropButton'); // Replace with your claim button ID
     claimButton.disabled = true; // Initially disable the claim button
