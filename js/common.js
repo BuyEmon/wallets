@@ -4,19 +4,23 @@ console.log("Config and ABI loaded");
 console.log("Contract Address: ", contractAddress);
 console.log("Contract ABI: ", contractABI);
 
-
-
 // common.js (Shared variables)
 console.log('common.js loaded successfully');
 
-let web3;
-let accounts = []; // Declare accounts here once globally, initialized as an empty array
-let contractAddress;
-let contractABI;
-let tokenAddress;
+// Shared variables
+let web3 = null; // Initialize web3 as null to ensure it is not undefined
+let accounts = []; // Declare accounts here once globally
+let contractAddress = '';
+let contractABI = null;
+let tokenAddress = '';
 
 // Function to load the configuration and ABI files for a given network
 async function loadConfigAndABI(network) {
+    if (!network) {
+        console.error("Network is not defined. Please pass a valid network.");
+        return;
+    }
+
     let configFile, abiFile;
 
     // Set paths for configuration and ABI files based on the selected network
@@ -63,8 +67,7 @@ async function loadConfigAndABI(network) {
 
 // Fetch accounts and set them globally
 async function fetchAccounts() {
-    if (window.ethereum) {
-        web3 = new Web3(window.ethereum); // Initialize web3 with MetaMask's provider
+    if (web3 && window.ethereum) {
         try {
             accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); // Set accounts globally
             console.log('Accounts:', accounts);
@@ -75,9 +78,6 @@ async function fetchAccounts() {
         } catch (error) {
             console.error('Failed to get accounts:', error);
         }
-    } else {
-        console.error('Ethereum provider not found. Install MetaMask.');
-        alert('Ethereum provider not found. Please install MetaMask to proceed.');
     }
 }
 
@@ -94,6 +94,11 @@ async function init() {
 // Ensure the page initializes properly
 window.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded and parsed');
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum); // Initialize web3 with MetaMask's provider
+    } else {
+        console.error('No Ethereum provider found. Please install MetaMask.');
+    }
     fetchAccounts();
     init();
 });
