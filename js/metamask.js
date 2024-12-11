@@ -1,52 +1,33 @@
-let isRedirected = false; // Prevent multiple redirections
-let isConnected = false; // Prevent reconnection if already connected
+// metamask.js
+// No need to declare web3, contractAddress, or contractABI here - just use the global variables from common.js
 
-// Function to handle MetaMask redirection or connection
-async function handleMetaMaskConnection(deepLinkURL) {
-    if (isRedirected || isConnected) return;
+async function connectMetaMask() {
+    if (typeof window.ethereum === 'undefined') {
+        alert('MetaMask is not installed!');
+        return;
+    }
 
-    if (isMobileDevice()) {
-        console.log("Mobile device detected. Redirecting to MetaMask if not already in MetaMask browser...");
+    try {
+        // Request account access if needed
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        web3 = new Web3(window.ethereum); // Initialize Web3 with the current provider
+        console.log('MetaMask connected:', accounts);
 
-        // Check if already in MetaMask browser
-        if (!navigator.userAgent.includes("MetaMask")) {
-            redirectToMetaMask(deepLinkURL);
-            return;
+        // Enable the claim airdrop button after connecting
+        const claimButton = document.getElementById('claimAirdropButton');
+        if (claimButton) {
+            claimButton.disabled = false; // Enable the button
+            console.log('Claim Airdrop button enabled');
         }
 
-        console.log("Already in MetaMask browser. Proceeding without redirection.");
-    } else {
-        console.log("Non-mobile device detected. Attempting connection...");
-        await connectEthereum();
+        alert('MetaMask connected successfully');
+    } catch (error) {
+        alert('Failed to connect to MetaMask');
+        console.error('MetaMask connection error:', error);
     }
 }
 
-// Function to initialize MetaMask on page load
-function initializeMetaMask(configUrl, abiUrl, deepLinkURL) {
-    window.addEventListener('DOMContentLoaded', async () => {
-        console.log("Initializing MetaMask...");
-
-        // Load configuration and ABI files
-        await loadConfigAndABI(configUrl);
-
-        // Handle MetaMask connection or redirection
-        handleMetaMaskConnection(deepLinkURL);
-
-        // Attach event listeners to buttons
-        const connectButton = document.getElementById('connectButton');
-        const claimAirdropButton = document.getElementById('claimAirdropButton');
-
-        if (connectButton) {
-            connectButton.addEventListener('click', connectEthereum);
-        }
-
-        if (claimAirdropButton) {
-            claimAirdropButton.addEventListener('click', claimEthereumAirdrop);
-        }
-    });
-}
-
-// Helper function to detect if the user is on a mobile device
-function isMobileDevice() {
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-}
+// Add event listener to connect button
+window.addEventListener('DOMContentLoaded', (event) => {
+    document.getElementById('connectButton').addEventListener('click', connectMetaMask);
+});
