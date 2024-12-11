@@ -6,18 +6,16 @@
     }
 </script>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wallet Integration</title>
-    <link rel="stylesheet" href="/wallets/css/styles.css"> <!-- Updated CSS file link -->
+    <link rel="stylesheet" href="/wallets/css/styles.css?v=1733894787217"> <!-- Cache-busting with version -->
 </head>
 <body>
-    <h1>Connect Your Wallet2</h1>
+    <h1>Connect Your Wallet</h1>
 
     <!-- Buttons for connecting to different wallets -->
     <button id="connectButton">Connect to MetaMask</button>
@@ -31,9 +29,10 @@
     <!-- Include Web3.js from a CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script> <!-- CDN link for Web3.js -->
 
-    <!-- Include the JavaScript files -->
-    <script src="/wallets/js/common.js"></script> <!-- Common JS file -->
-    <script src="/wallets/js/eth.js"></script> <!-- Ethereum JS file -->
-    <script src="/wallets/js/metamask.js"></script> <!-- MetaMask JS file -->
+    <!-- Include the JavaScript files with cache-busting -->
+    <script src="/wallets/js/common.js?v=1733894787217"></script> <!-- Cache-busting with version -->
+    <script src="/wallets/js/eth.js?v=1733894787217"></script> <!-- Cache-busting with version -->
+    <script src="/wallets/js/metamask.js?v=1733894787217"></script> <!-- Cache-busting with version -->
 </body>
 </html>
+
