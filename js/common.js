@@ -1,3 +1,10 @@
+console.log("Loading config and ABI for", network);
+await loadConfigAndABI(network);
+console.log("Config and ABI loaded");
+
+
+
+
 // common.js (Shared variables)
 let web3;
 let accounts = []; // Declare accounts here once globally, initialized as an empty array
