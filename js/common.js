@@ -19,9 +19,11 @@ let contractAddress;
 let contractABI;
 let tokenAddress;
 
+// Function to load the configuration and ABI files for a given network
 async function loadConfigAndABI(network) {
     let configFile, abiFile;
 
+    // Set paths for configuration and ABI files based on the selected network
     if (network === 'eth') {
         configFile = '/wallets/config/eth_config.json';
         abiFile = '/wallets/abi/eth_abi.json';
@@ -63,7 +65,6 @@ async function loadConfigAndABI(network) {
     }
 }
 
-
 // Fetch accounts and set them globally
 async function fetchAccounts() {
     if (web3 && window.ethereum) {
@@ -79,4 +80,3 @@ async function fetchAccounts() {
 
 // Call fetchAccounts on page load
 window.addEventListener('DOMContentLoaded', fetchAccounts);
-
