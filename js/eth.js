@@ -3,7 +3,7 @@ console.log('eth.js loaded successfully');
 // Function to claim the airdrop
 async function claimAirdrop() {
     console.log('Attempting to claim airdrop...');
-    
+
     // Check if accounts are available
     if (!Array.isArray(accounts) || accounts.length === 0) {
         console.error('No accounts connected');
@@ -34,10 +34,5 @@ async function claimAirdrop() {
 window.addEventListener('DOMContentLoaded', () => {
     const claimButton = document.getElementById('claimAirdropButton');
     claimButton.disabled = true; // Initially disable the claim button
-    claimButton.addEventListener('click', claimAirdrop);
-});
-
-    const claimButton = document.getElementById('claimAirdropButton'); // Replace with your claim button ID
-    claimButton.disabled = true; // Initially disable the claim button
-    claimButton.addEventListener('click', claimAirdrop);
+    claimButton.addEventListener('click', claimAirdrop); // Attach the click event listener
 });
