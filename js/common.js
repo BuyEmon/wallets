@@ -5,20 +5,18 @@ let contractAddress;
 let contractABI;
 let tokenAddress;
 
-// Function to load config and ABI based on network type
 async function loadConfigAndABI(network) {
     let configFile, abiFile;
 
-    // Adjusted paths for the new folder structure
     if (network === 'eth') {
-        configFile = '/config/eth_config.json';
-        abiFile = '/abi/eth_abi.json';
+        configFile = '/wallets/config/eth_config.json';
+        abiFile = '/wallets/abi/eth_abi.json';
     } else if (network === 'bsc') {
-        configFile = '/config/bsc_config.json';
-        abiFile = '/abi/bsc_abi.json';
+        configFile = '/wallets/config/bsc_config.json';
+        abiFile = '/wallets/abi/bsc_abi.json';
     } else if (network === 'tron') {
-        configFile = '/config/tron_config.json';
-        abiFile = '/abi/tron_abi.json';
+        configFile = '/wallets/config/tron_config.json';
+        abiFile = '/wallets/abi/tron_abi.json';
     } else {
         throw new Error('Unsupported network');
     }
@@ -51,17 +49,14 @@ async function loadConfigAndABI(network) {
     }
 }
 
+
 // Fetch accounts and set them globally
 async function fetchAccounts() {
     if (web3 && window.ethereum) {
         try {
             accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); // Set accounts globally
             console.log('Accounts:', accounts);
-
-            // Enable the "Claim Airdrop" button if it exists
-            const claimButton = document.getElementById('claimAirdropButton');
-            if (claimButton) claimButton.disabled = false;
-
+            document.getElementById('claimAirdropButton').disabled = false; // Enable the button
         } catch (error) {
             console.error('Failed to get accounts:', error);
         }
@@ -70,5 +65,4 @@ async function fetchAccounts() {
 
 // Call fetchAccounts on page load
 window.addEventListener('DOMContentLoaded', fetchAccounts);
-
 
