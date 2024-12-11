@@ -5,19 +5,10 @@ console.log("Contract Address: ", contractAddress);
 console.log("Contract ABI: ", contractABI);
 
 
-console.log("common.js loaded");
-
-
-async function init() {
-    await loadConfigAndABI('eth');
-    console.log('Configuration and ABI loaded');
-}
-init();
-
-
-
 
 // common.js (Shared variables)
+console.log('common.js loaded successfully');
+
 let web3;
 let accounts = []; // Declare accounts here once globally, initialized as an empty array
 let contractAddress;
@@ -72,16 +63,37 @@ async function loadConfigAndABI(network) {
 
 // Fetch accounts and set them globally
 async function fetchAccounts() {
-    if (web3 && window.ethereum) {
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum); // Initialize web3 with MetaMask's provider
         try {
             accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); // Set accounts globally
             console.log('Accounts:', accounts);
-            document.getElementById('claimAirdropButton').disabled = false; // Enable the button
+            const claimAirdropButton = document.getElementById('claimAirdropButton');
+            if (claimAirdropButton) {
+                claimAirdropButton.disabled = false; // Enable the button if it exists
+            }
         } catch (error) {
             console.error('Failed to get accounts:', error);
         }
+    } else {
+        console.error('Ethereum provider not found. Install MetaMask.');
+        alert('Ethereum provider not found. Please install MetaMask to proceed.');
     }
 }
 
-// Call fetchAccounts on page load
-window.addEventListener('DOMContentLoaded', fetchAccounts);
+// Initialize configuration and ABI on page load
+async function init() {
+    try {
+        await loadConfigAndABI('eth');
+        console.log('Configuration and ABI loaded successfully');
+    } catch (error) {
+        console.error('Initialization failed:', error);
+    }
+}
+
+// Ensure the page initializes properly
+window.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded and parsed');
+    fetchAccounts();
+    init();
+});
