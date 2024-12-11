@@ -1,4 +1,9 @@
-console.log("metamask.js loaded");
+try {
+    console.log('metamask.js loaded successfully');
+} catch (error) {
+    console.error('Error in metamask.js:', error.message || error);
+}
+
 
 
 
