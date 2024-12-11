@@ -1,3 +1,7 @@
+console.log("eth.js loaded");
+
+
+
 // Avoid redeclaring accounts here
 // Let the global variable `accounts` be used
 
