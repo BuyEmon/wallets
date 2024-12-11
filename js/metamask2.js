@@ -1,3 +1,12 @@
+try {
+    console.log('metamask.js loaded successfully');
+} catch (error) {
+    console.error('Error in metamask.js:', error.message || error);
+}
+
+
+
+
 // metamask.js
 // No need to declare web3, contractAddress, or contractABI here - just use the global variables from common.js
 
@@ -31,4 +40,3 @@ async function connectMetaMask() {
 window.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('connectButton').addEventListener('click', connectMetaMask);
 });
-
