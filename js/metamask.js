@@ -1,15 +1,6 @@
-try {
-    console.log('metamask.js loaded successfully');
-} catch (error) {
-    console.error('Error in metamask.js:', error.message || error);
-}
+console.log('metamask.js loaded successfully');
 
-
-
-
-// metamask.js
-// No need to declare web3, contractAddress, or contractABI here - just use the global variables from common.js
-
+// Function to connect MetaMask
 async function connectMetaMask() {
     if (typeof window.ethereum === 'undefined') {
         alert('MetaMask is not installed!');
@@ -36,7 +27,9 @@ async function connectMetaMask() {
     }
 }
 
-// Add event listener to connect button
-window.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('connectButton').addEventListener('click', connectMetaMask);
+// Attach event listener for MetaMask connection
+window.addEventListener('DOMContentLoaded', () => {
+    const connectButton = document.getElementById('connectButton');
+    connectButton.addEventListener('click', connectMetaMask);
 });
+
