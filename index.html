@@ -6,14 +6,15 @@
     }
 </script>
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wallet Integration</title>
-    <!-- Cache-busting for styles.css -->
-    <link rel="stylesheet" id="styles" href="/wallets/css/styles.css">
+    <link rel="stylesheet" href="/wallets/css/styles.css"> <!-- Updated CSS file link -->
 </head>
 <body>
     <h1>Connect Your Wallet</h1>
@@ -31,29 +32,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script> <!-- CDN link for Web3.js -->
 
     <!-- Include the JavaScript files -->
-    <script>
-        // Function to add a timestamp to prevent caching
-        function addCacheBusting(file) {
-            const timestamp = new Date().getTime(); // Get current timestamp
-            file.href = file.href + '?v=' + timestamp;
-        }
-        
-        // Apply cache-busting to the styles.css link
-        const styleLink = document.getElementById('styles');
-        addCacheBusting(styleLink);
-
-        // Apply cache-busting to JavaScript files
-        const scripts = [
-            '/wallets/js/common.js',
-            '/wallets/js/eth.js',
-            '/wallets/js/metamask.js'
-        ];
-        
-        scripts.forEach(function(scriptSrc) {
-            const script = document.createElement('script');
-            script.src = scriptSrc + '?v=' + new Date().getTime();
-            document.body.appendChild(script);
-        });
-    </script>
+    <script src="/wallets/js/common.js"></script> <!-- Common JS file -->
+    <script src="/wallets/js/eth.js"></script> <!-- Ethereum JS file -->
+    <script src="/wallets/js/metamask.js"></script> <!-- MetaMask JS file -->
 </body>
 </html>
