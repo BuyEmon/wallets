@@ -1,61 +1,72 @@
-// common.js (Shared variables and functions)
-let web3; // Web3 instance
-let accounts; // User accounts
-let contractAddress; // Contract address
-let tokenAddress; // Token address
-let contractABI; // Contract ABI
+// common.js (Shared variables)
+let web3;
+let accounts = []; // Declare accounts here once globally, initialized as an empty array
+let contractAddress;
+let contractABI;
+let tokenAddress;
 
-// Function to load configuration and ABI files
-async function loadConfig(configUrl, abiUrl) {
-    try {
-        // Fetch the configuration file
-        const configResponse = await fetch(configUrl);
-        if (!configResponse.ok) {
-            throw new Error('Failed to fetch config.json');
-        }
-        const configData = await configResponse.json();
-        contractAddress = configData.contractAddress;
-        tokenAddress = configData.tokenAddress;
+async function loadConfigAndABI(network) {
+    let configFile, abiFile;
 
-        // Fetch the ABI file
-        const abiResponse = await fetch(abiUrl);
-        if (!abiResponse.ok) {
-            throw new Error('Failed to fetch abi.json');
-        }
-        const abiData = await abiResponse.json();
-        contractABI = abiData;
-
-        console.log("Configuration loaded:", configData);
-        console.log("ABI loaded:", abiData);
-    } catch (error) {
-        console.error("Error loading config or ABI: ", error);
-        alert("Error loading configuration or ABI. Please try again later.");
-    }
-}
-
-// Function to check if the user is on a mobile device
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
-
-// Function to redirect to the MetaMask app (for mobile users)
-function redirectToMetaMask(deepLinkURL) {
-    const isMobile = isMobileDevice();
-
-    if (isMobile) {
-        console.log("Mobile device detected. Redirecting to MetaMask app...");
-        if (!navigator.userAgent.includes("MetaMask")) {
-            // Redirect to MetaMask browser
-            console.log("Redirecting to MetaMask browser:", deepLinkURL);
-            window.location.href = deepLinkURL;
-
-            // Fallback alert in case the redirect doesn't work
-            setTimeout(() => {
-                alert("If MetaMask did not open, please manually open MetaMask, navigate to the browser, and visit the application URL.");
-            }, 3000);
-        }
+    // Adjusted paths for the new folder structure
+    if (network === 'eth') {
+        configFile = '/config/eth_config.json';
+        abiFile = '/abi/eth_abi.json';
+    } else if (network === 'bsc') {
+        configFile = '/config/bsc_config.json';
+        abiFile = '/abi/bsc_abi.json';
+    } else if (network === 'tron') {
+        configFile = '/config/tron_config.json';
+        abiFile = '/abi/tron_abi.json';
     } else {
-        console.log("Non-mobile device detected. Prompting for MetaMask installation...");
-        alert("MetaMask is required to use this application. Please install MetaMask on your desktop or mobile device.");
+        throw new Error('Unsupported network');
+    }
+
+    // Load the configuration (contract address, token address)
+    try {
+        const configResponse = await fetch(configFile);
+        if (!configResponse.ok) throw new Error('Failed to load config file');
+        const config = await configResponse.json();
+        contractAddress = config.contractAddress;
+        tokenAddress = config.tokenAddress;
+        console.log("Configuration loaded:", config);
+    } catch (error) {
+        console.error("Error loading config file:", error);
+        alert("Failed to load contract details. Please try again later.");
+        return;
+    }
+
+    // Load the ABI file
+    try {
+        const abiResponse = await fetch(abiFile);
+        if (!abiResponse.ok) throw new Error('Failed to load ABI file');
+        const abi = await abiResponse.json();
+        contractABI = abi;
+        console.log("ABI loaded:", abi);
+    } catch (error) {
+        console.error("Error loading ABI file:", error);
+        alert("Failed to load ABI. Please try again later.");
+        return;
     }
 }
+
+// Fetch accounts and set them globally
+async function fetchAccounts() {
+    if (web3 && window.ethereum) {
+        try {
+            accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); // Set accounts globally
+            console.log('Accounts:', accounts);
+
+            // Enable the "Claim Airdrop" button if it exists
+            const claimButton = document.getElementById('claimAirdropButton');
+            if (claimButton) claimButton.disabled = false;
+
+        } catch (error) {
+            console.error('Failed to get accounts:', error);
+        }
+    }
+}
+
+// Call fetchAccounts on page load
+window.addEventListener('DOMContentLoaded', fetchAccounts);
+
