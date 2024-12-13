@@ -6,26 +6,30 @@ function handleMetaMaskDeepLink() {
     const metaMaskDeepLink = 'https://metamask.app.link/dapp/buyemon.github.io/wallets/index.html';
 
     console.log('isMobile:', isMobileDevice);
-    console.log('window.ethereum:', window.ethereum);
 
     if (isMobileDevice) {
         console.log('Redirecting to MetaMask mobile app...');
         window.location.href = metaMaskDeepLink;
     } else {
-        console.log('Not on a mobile device or MetaMask is not available');
+        console.log('Not on a mobile device. Please connect using a desktop browser.');
     }
 }
 
 // Helper function to check if the user is on a mobile device
 function isMobile() {
-    const result = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    console.log('isMobile function result:', result);
-    return result;
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 }
 
-// Call the deep link handler when the page is loaded
+// Add event listener to the "Connect to MetaMask" button
 window.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded event fired');
-    handleMetaMaskDeepLink();
+    const connectButton = document.getElementById('connect-button'); // Ensure this ID matches your button
+    if (connectButton) {
+        connectButton.addEventListener('click', () => {
+            console.log('"Connect to MetaMask" button clicked');
+            handleMetaMaskDeepLink();
+        });
+    } else {
+        console.log('Connect button not found on the page.');
+    }
 });
 
