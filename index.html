@@ -4,33 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wallet Integration</title>
-    <link rel="stylesheet" href="/wallets/css/styles.css"> <!-- Removed versioning -->
- <script src="/wallets/js/walletconnections.js" defer></script> <!-- Include the new JS file -->
+    <link rel="stylesheet" href="styles/styles.css">
+    <script src="js/loader.js" defer></script> <!-- Centralized script loader -->
 </head>
 <body>
-    <h1>Connect Your Wallet</h1>
+    <div id="app">
+        <!-- Wallet Selector -->
+        <select id="walletSelector">
+            <option value="">Select Wallet</option>
+            <option value="metamask">MetaMask</option>
+            <option value="trustwallet">Trust Wallet</option>
+            <option value="tronlink">TronLink</option>
+        </select>
 
-    <!-- Buttons for connecting to different wallets -->
-    <button id="metamaskButton" onclick="loadMetaMaskScripts()">Connect MetaMask</button>
-    <button id="trustWalletButton" onclick="loadTrustWalletScripts()">Connect Trust Wallet</button>
-    <button id="connectTronLinkButton">Connect to TronLink</button>
-
-    <button id="claimAirdropButton" disabled>Claim Airdrop</button>
-
-    <!-- Status message for TronLink connection -->
-    <p id="statusMessage"></p> <!-- Display connection status here -->
-
-    <!-- Include Web3.js from a CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script> <!-- CDN link for Web3.js -->
-
-    <!-- Include the JavaScript files without cache-busting -->
-    <script src="/wallets/js/common.js"></script> <!-- Removed versioning -->
-    <script src="/wallets/js/eth.js"></script> <!-- Removed versioning -->
-
-    <script src="/wallets/js/metamask.js"></script> <!-- Removed versioning -->
-    <script src="/wallets/js/tronlink.js"></script> <!-- Include the TronLink connection logic -->
-    <script src="/wallets/js/trustwallet.js"></script> <!-- Include the TrustWallet connection logic -->
-
+        <!-- Dynamic Script Loading Status -->
+        <div id="status"></div>
+    </div>
 </body>
 </html>
 
