@@ -1,28 +1,32 @@
 console.log('tronlink.js loaded successfully');
 
 // Function to check if TronLink is available
-function isTronLink() {
+function isTronLinkAvailable() {
     return window.tronLink && window.tronLink.tronWeb;
 }
 
 // Function to connect to TronLink
-async function connectTronLink() {
+async function connectToTronLink() {
     console.log('Attempting to connect to TronLink...');
 
-    // Ensure TronLink is available and initialized
-    if (isTronLink()) {
+    // Check if TronLink is available and initialized
+    if (isTronLinkAvailable()) {
         const tronWeb = window.tronLink.tronWeb;
 
-        // Check if TronLink is ready
+        // Check if TronLink is fully initialized
         if (tronWeb && tronWeb.ready) {
             console.log('TronLink is connected');
-            const account = tronWeb.defaultAddress.base58;
+            const account = tronWeb.defaultAddress.base58; // Get the connected account
             console.log('Connected account:', account);
-            // Enable claiming airdrop after connection
+
+            // Enable the "Claim Airdrop" button and other actions
             document.getElementById('claimAirdropButton').disabled = false;
+
+            // Optionally, store the account for further use
+            window.tronAccount = account;
         } else {
-            console.log('TronLink is not ready yet. Retrying...');
-            setTimeout(connectTronLink, 1000);  // Retry every second
+            console.log('TronLink is not ready. Retrying...');
+            setTimeout(connectToTronLink, 1000); // Retry connection after 1 second
         }
     } else {
         console.log('TronLink is not installed');
@@ -31,12 +35,12 @@ async function connectTronLink() {
 }
 
 // Event listener for the "Connect to TronLink" button
-document.getElementById('connectTronLinkButton').addEventListener('click', connectTronLink);
+document.getElementById('connectTronLinkButton').addEventListener('click', connectToTronLink);
 
-// Ensure TronLink is available once the page is fully loaded
+// Check for TronLink availability when the page is loaded
 window.addEventListener('DOMContentLoaded', () => {
-    if (isTronLink()) {
-        console.log('TronLink is detected!');
+    if (isTronLinkAvailable()) {
+        console.log('TronLink is available');
     } else {
         console.log('TronLink is not installed');
     }
