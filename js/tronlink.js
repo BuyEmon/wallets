@@ -1,26 +1,49 @@
 console.log('tronlink.js loaded successfully');
 
-// Function to connect to TronLink
+// Function to connect TronLink
 async function connectTronLink() {
-    console.log('Attempting to connect to TronLink...');
+    // Check if TronLink is installed
+    if (typeof window.tronLink === 'undefined') {
+        alert('TronLink is not installed!');
+        return;
+    }
 
-    // Ensure TronLink is available and initialized
-    const tronWeb = window.tronLink && window.tronLink.tronWeb;
+    try {
+        // Request account access if needed
+        const tronWeb = window.tronLink.tronWeb;
+        if (tronWeb && tronWeb.defaultAddress.base58) {
+            const address = tronWeb.defaultAddress.base58;
+            console.log('TronLink connected:', address);
 
-    if (tronWeb && tronWeb.ready) {
-        console.log('TronLink is connected');
-        const account = tronWeb.defaultAddress.base58;
-        console.log('Connected account:', account);
-        // Enable claiming airdrop after connection
-        document.getElementById('claimAirdropButton').disabled = false;
-    } else {
-        console.log('TronLink is not ready yet. Retrying...');
-        setTimeout(connectTronLink, 1000);  // Retry every second
+            // Store the Tron address globally for later use (tron.js will access this)
+            window.tronAddress = address;
+
+            // Enable the claim airdrop button after connecting
+            const claimButton = document.getElementById('claimAirdropButton');
+            if (claimButton) {
+                claimButton.disabled = false; // Enable the button
+                console.log('Claim Airdrop button enabled');
+            }
+
+            alert('TronLink connected successfully');
+        } else {
+            alert('Failed to get TronLink account');
+        }
+    } catch (error) {
+        alert('Failed to connect to TronLink');
+        console.error('TronLink connection error:', error);
     }
 }
 
-// Event listener for the "Connect to TronLink" button
-document.getElementById('connectTronLinkButton').addEventListener('click', connectTronLink);
+// Attach event listener for the TronLink button click
+window.addEventListener('DOMContentLoaded', () => {
+    const connectButton = document.getElementById('connectTronLinkButton'); // Use the correct ID from the HTML
+    if (connectButton) {
+        connectButton.addEventListener('click', connectTronLink);
+    } else {
+        console.error('TronLink button not found in the DOM');
+    }
+});
 
 
 
