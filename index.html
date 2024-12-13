@@ -4,22 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wallet Integration</title>
-    <link rel="stylesheet" href="styles/styles.css">
-    <script src="js/loader.js" defer></script> <!-- Centralized script loader -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="app">
-        <!-- Wallet Selector -->
-        <select id="walletSelector">
-            <option value="">Select Wallet</option>
-            <option value="metamask">MetaMask</option>
-            <option value="trustwallet">Trust Wallet</option>
-            <option value="tronlink">TronLink</option>
-        </select>
-
-        <!-- Dynamic Script Loading Status -->
-        <div id="status"></div>
+        <h1>Wallet Integration</h1>
+        <button id="metamask-connect">Connect MetaMask</button>
+        <button id="tronlink-connect">Connect TronLink</button>
+        <button id="trustwallet-connect">Connect Trust Wallet</button>
+        <p id="status"></p>
     </div>
+
+    <!-- Script Loader -->
+    <script src="js/scriptLoader.js"></script>
+    <script>
+        document.getElementById("metamask-connect").addEventListener("click", () => {
+            loadWalletScripts("metamask");
+        });
+
+        document.getElementById("tronlink-connect").addEventListener("click", () => {
+            loadWalletScripts("tronlink");
+        });
+
+        document.getElementById("trustwallet-connect").addEventListener("click", () => {
+            loadWalletScripts("trustwallet");
+        });
+    </script>
 </body>
 </html>
 
