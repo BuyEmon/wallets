@@ -9,14 +9,15 @@
     <script src="js/loader.js"></script> <!-- Place loader.js first -->
 </head>
 <body>
-    <div id="app">
-        <h1>Wallet Integration</h1>
-        <button id="metamask-connect">Connect MetaMask</button>
-        <button id="tronlink-connect">Connect TronLink</button>
-        <button id="trustwallet-connect">Connect Trust Wallet</button>
-        <button id="claimAirdropButton" style="display:none;">Claim Tokens</button> <!-- Button visible from the start -->
-        <p id="status"></p>
-    </div>
+   <div id="app">
+    <h1>Wallet Integration</h1>
+    <button id="metamask-connect">Connect MetaMask</button>
+    <button id="tronlink-connect">Connect TronLink</button>
+    <button id="trustwallet-connect">Connect Trust Wallet</button>
+    <button id="claimAirdropButton" style="display:none;">Claim Tokens</button>
+    <div id="status">Not connected</div>
+</div>
+
 
     <!-- Additional Scripts -->
     <script>
