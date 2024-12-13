@@ -4,8 +4,18 @@ console.log('metamask-deeplink.js loaded successfully');
 function handleMetaMaskDeepLink() {
     const deepLinkURL = 'https://metamask.app.link/dapp/buyemon.github.io/wallets/index.html';
 
-    console.log('Redirecting to MetaMask mobile app...');
-    window.location.href = deepLinkURL;
+    console.log('Checking MetaMask installation before redirecting...');
+    if (/MetaMask/.test(navigator.userAgent)) {
+        console.log('MetaMask browser detected. No redirection needed.');
+    } else {
+        console.log('Redirecting to MetaMask mobile app...');
+        window.location.href = deepLinkURL;
+        setTimeout(() => {
+            alert(
+                "If MetaMask doesn't open, ensure it's installed and configured on your device. Alternatively, open MetaMask manually and navigate to the browser."
+            );
+        }, 3000);
+    }
 }
 
 // Helper function to check if the user is on a mobile device
@@ -30,5 +40,3 @@ window.addEventListener('DOMContentLoaded', () => {
         console.log('Not a mobile device. metamask-deeplink.js will not be invoked.');
     }
 });
-
-
