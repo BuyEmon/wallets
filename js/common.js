@@ -5,6 +5,9 @@ console.log("common.js: ABI loaded for", network, abi);
 console.log("common.js: Configuration loaded:", config);
 console.log("common.js: ABI loaded:", abi);
 
+console.log("Initializing network...");
+const network = 'eth';  // Assuming 'eth' is the initialization value
+console.log("Network initialized:", network);
 
 
 
