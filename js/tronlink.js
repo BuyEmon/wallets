@@ -1,57 +1,80 @@
-if (typeof TronWeb !== "undefined") {
-    console.log("TronWeb is loaded and ready.");
-} else {
-    console.error("TronWeb is not available. Ensure TronLink is installed and active.");
+// tronlink.js: Script to handle TronLink wallet integration with debugging logs
+
+let tronLink;
+
+function checkTronLink() {
+    console.log("Checking if TronLink is available...");
+    if (typeof window.tronLink !== "undefined") {
+        tronLink = window.tronLink;
+        console.log("TronLink found!");
+        return true;
+    } else {
+        console.error("TronLink not found! Please install the TronLink extension.");
+        return false;
+    }
 }
 
-// tronlink.js
-
-// Function to connect to TronLink
 async function connectTronLink() {
     try {
-        // Check if TronWeb is injected and ready
-        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            const address = window.tronWeb.defaultAddress.base58;
-            console.log("Connected to TronLink:", address);
+        console.log("Attempting to connect to TronLink...");
+        if (checkTronLink()) {
+            console.log("TronLink is available, requesting access...");
+            const accounts = await tronLink.request({ method: "tron_requestAccounts" });
+            console.log("TronLink connected! Accounts:", accounts);
 
-            // Display connection status
-            const statusMessage = document.getElementById("statusMessage");
-            if (statusMessage) {
-                statusMessage.innerText = `Connected to TronLink: ${address}`;
-                statusMessage.style.color = "green";
+            if (accounts && accounts.length > 0) {
+                const account = accounts[0];
+                console.log("Connected to TronLink account:", account);
+                return account;
+            } else {
+                console.error("No accounts found in TronLink.");
+                return null;
             }
-
-            // Enable claim button if needed
-            const claimButton = document.getElementById("claimAirdropButton");
-            if (claimButton) {
-                claimButton.disabled = false;
-            }
-        } else if (window.tronWeb) {
-            alert("TronLink detected but not logged in. Please log in to TronLink.");
-            console.error("TronLink is installed but not ready.");
         } else {
-            alert("TronLink is not installed. Please install TronLink and refresh the page.");
-            console.error("TronLink is not installed.");
+            console.error("TronLink not available or not connected.");
+            return null;
         }
     } catch (error) {
-        console.error("An error occurred while connecting to TronLink:", error);
+        console.error("Error connecting to TronLink:", error);
+        return null;
     }
 }
 
-// Add event listener for the TronLink connect button
-document.addEventListener("DOMContentLoaded", () => {
-    const tronLinkButton = document.getElementById("connectTronLinkButton");
-    if (tronLinkButton) {
-        tronLinkButton.addEventListener("click", connectTronLink);
-    }
-
-    // Log TronWeb status for debugging
-    if (window.tronWeb) {
-        console.log("TronWeb detected:", window.tronWeb);
+function getTronLinkNetwork() {
+    if (tronLink && tronLink.tronWeb) {
+        console.log("Fetching TronLink network details...");
+        const network = tronLink.tronWeb.defaultAddress.base58;
+        console.log("TronLink network address:", network);
+        return network;
     } else {
-        console.log("TronWeb not detected. Make sure TronLink is installed and active.");
+        console.error("TronLink is not properly initialized or TronWeb is missing.");
+        return null;
+    }
+}
+
+// Function to handle TronLink connection and network setup
+async function handleTronLinkConnection() {
+    console.log("Handling TronLink connection...");
+    const account = await connectTronLink();
+
+    if (account) {
+        console.log("TronLink account connected:", account);
+        const network = getTronLinkNetwork();
+        console.log("TronLink connected to network:", network);
+        // Do something with the network and account (e.g., interact with the blockchain)
+    } else {
+        console.error("Failed to connect to TronLink.");
+    }
+}
+
+// Initialize the connection when the page loads
+window.addEventListener("load", () => {
+    console.log("Window loaded. Checking TronLink...");
+    if (checkTronLink()) {
+        handleTronLinkConnection();
     }
 });
+
 
 
 
