@@ -1,11 +1,3 @@
-<script>
-    try {
-        console.log('index.html loaded successfully');
-    } catch (error) {
-        console.error('Error in index.html:', error.message || error);
-    }
-</script>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,8 +11,6 @@
 
     <!-- Buttons for connecting to different wallets -->
     <button id="connectButton">Connect to MetaMask</button>
-   
-    <!-- Add buttons for TrustWallet and TronLink -->
     <button id="connectTrustWalletButton">Connect to TrustWallet</button>
     <button id="connectTronLinkButton">Connect to TronLink</button>
 
@@ -38,5 +28,25 @@
     <script src="/wallets/js/metamask.js?v=1733894787217"></script> <!-- Cache-busting with version -->
     <script src="/wallets/js/metamask-deeplink.js"></script>
     <script src="/wallets/js/tronlink.js"></script> <!-- Include the TronLink connection logic -->
+
+    <script>
+        // Event listener for connecting to MetaMask
+        document.getElementById("connectButton").addEventListener("click", function() {
+            // Ensure only MetaMask is triggered
+            connectMetaMask(); // Assuming connectMetaMask() is defined in metamask.js
+        });
+
+        // Event listener for connecting to TrustWallet
+        document.getElementById("connectTrustWalletButton").addEventListener("click", function() {
+            // Ensure only TrustWallet is triggered
+            connectTrustWallet(); // Assuming connectTrustWallet() is defined in tronlink.js
+        });
+
+        // Event listener for connecting to TronLink
+        document.getElementById("connectTronLinkButton").addEventListener("click", function() {
+            connectTronLink(); // Assuming connectTronLink() is defined in tronlink.js
+        });
+    </script>
 </body>
 </html>
+
