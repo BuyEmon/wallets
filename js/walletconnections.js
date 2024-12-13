@@ -16,16 +16,17 @@ async function connectWallet() {
         } 
         else {
             console.log('Ethereum-compatible wallet detected');
-            alert('Please install MetaMask or TrustWallet to proceed.');
+            // Remove the alert and handle any additional logic for unsupported Ethereum wallets
         }
     } else {
         console.log('No supported wallet detected');
-        alert('Please install MetaMask or TrustWallet to proceed.');
+        // No alert here either, just log the message if needed
     }
 }
 
 // Attach event listeners for wallet connection buttons
 document.getElementById('connectMetaMaskButton').addEventListener('click', connectWallet);
 document.getElementById('connectTrustWalletButton').addEventListener('click', connectWallet);
+
 
 
