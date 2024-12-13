@@ -1,3 +1,13 @@
+console.log("common.js: Configuration loaded for", network);
+console.log("common.js: ABI loaded for", network, abi);
+
+// After loading the configuration
+console.log("common.js: Configuration loaded:", config);
+console.log("common.js: ABI loaded:", abi);
+
+
+
+
 console.log('common.js: File loaded successfully');
 
 // Declare shared variables
