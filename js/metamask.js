@@ -32,7 +32,11 @@ async function connectMetaMask() {
 
 // Attach event listener for MetaMask connection
 window.addEventListener('DOMContentLoaded', () => {
-    const connectButton = document.getElementById('connectButton');
-    connectButton.addEventListener('click', connectMetaMask);
+    const connectButton = document.getElementById('connectMetaMaskButton'); // Use the correct ID from the HTML
+    if (connectButton) {
+        connectButton.addEventListener('click', connectMetaMask);
+    } else {
+        console.error('MetaMask button not found in the DOM');
+    }
 });
 
