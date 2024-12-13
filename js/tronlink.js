@@ -1,6 +1,3 @@
-// tronlink.js
-console.log("tronlink.js loaded successfully");
-
 async function connectTronLink() {
     // Check if TronLink is installed
     if (typeof window.tronLink === 'undefined') {
@@ -10,13 +7,11 @@ async function connectTronLink() {
     }
 
     try {
-        // Ensure TronLink is connected
-        if (!window.tronWeb || !window.tronWeb.defaultAddress.base58) {
-            await window.tronLink.request({ method: 'tron_requestAccounts' });
-        }
+        // Wait for TronLink to be available
+        await window.tronLink.request({ method: 'tron_requestAccounts' });
 
         // Access the connected account
-        const account = window.tronWeb.defaultAddress.base58;
+        const account = window.tronLink.defaultAddress.base58;
         console.log("Connected to TronLink account:", account);
 
         alert('TronLink connected successfully to address: ' + account);
@@ -29,16 +24,5 @@ async function connectTronLink() {
         console.error('TronLink connection error:', error);
     }
 }
-
-// Add event listener to connect button
-window.addEventListener('DOMContentLoaded', () => {
-    const connectButton = document.getElementById('connectTronLinkButton');
-    if (connectButton) {
-        connectButton.addEventListener('click', connectTronLink);
-        console.log('"Connect to TronLink" button is ready.');
-    } else {
-        console.error('Connect button not found on the page.');
-    }
-});
 
 
