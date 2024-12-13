@@ -1,5 +1,9 @@
 console.log("metamask.js loaded");
 
+console.log("Attempting to connect to MetaMask...");
+// MetaMask connection logic
+
+
 // Check if MetaMask is installed and available
 if (typeof window.ethereum !== 'undefined') {
     console.log("MetaMask is installed and available!");
