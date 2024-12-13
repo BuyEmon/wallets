@@ -27,7 +27,7 @@ function isMobile() {
 window.addEventListener('DOMContentLoaded', () => {
     if (isMobile()) {
         console.log('Mobile device detected. Setting up MetaMask deep link.');
-        const connectButton = document.getElementById('connectButton');
+         const connectButton = document.getElementById('connectMetaMaskButton'); // Correct ID
         if (connectButton) {
             connectButton.addEventListener('click', () => {
                 console.log('"Connect to MetaMask" button clicked');
