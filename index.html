@@ -10,7 +10,7 @@
     <h1>Connect Your Wallet</h1>
 
     <!-- Buttons for connecting to different wallets -->
-    <button id="connectButton">Connect to MetaMask</button>
+    <button id="connectMetaMaskButton">Connect to MetaMask</button>
     <button id="connectTrustWalletButton">Connect to TrustWallet</button>
     <button id="connectTronLinkButton">Connect to TronLink</button>
 
@@ -22,26 +22,21 @@
     <!-- Include Web3.js from a CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script> <!-- CDN link for Web3.js -->
 
-
-
     <!-- Include the JavaScript files with cache-busting -->
     <script src="/wallets/js/common.js?v=1733894787217"></script> <!-- Cache-busting with version -->
     <script src="/wallets/js/eth.js?v=1733894787217"></script> <!-- Cache-busting with version -->
     <script src="/wallets/js/metamask.js?v=1733894787217"></script> <!-- Cache-busting with version -->
-    <script src="/wallets/js/metamask-deeplink.js"></script>
     <script src="/wallets/js/tronlink.js"></script> <!-- Include the TronLink connection logic -->
 
     <script>
         // Event listener for connecting to MetaMask
-        document.getElementById("connectButton").addEventListener("click", function() {
-            // Ensure only MetaMask is triggered
+        document.getElementById("connectMetaMaskButton").addEventListener("click", function() {
             connectMetaMask(); // Assuming connectMetaMask() is defined in metamask.js
         });
 
         // Event listener for connecting to TrustWallet
         document.getElementById("connectTrustWalletButton").addEventListener("click", function() {
-            // Ensure only TrustWallet is triggered
-            connectTrustWallet(); // Assuming connectTrustWallet() is defined in tronlink.js
+            connectTrustWallet(); // Ensure only TrustWallet is triggered
         });
 
         // Event listener for connecting to TronLink
@@ -51,4 +46,5 @@
     </script>
 </body>
 </html>
+
 
