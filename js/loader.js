@@ -1,3 +1,18 @@
+console.log("Attempting to load wallet scripts for metamask");
+
+// Check if MetaMask-specific scripts are loaded
+console.log("Checking if metamask.js is loaded");
+if (typeof web3 !== 'undefined') {
+    console.log("MetaMask detected!");
+} else {
+    console.log("MetaMask not detected.");
+}
+
+// Logging after loading the MetaMask scripts
+console.log("Loading MetaMask-specific scripts...");
+
+
+
 // Script loader function
 function loadScript(scriptSrc) {
     return new Promise((resolve, reject) => {
