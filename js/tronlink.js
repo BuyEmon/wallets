@@ -1,27 +1,44 @@
 // tronlink.js
-// No need to declare web3, contractAddress, or contractABI here - just use the global variables from common.js
+console.log("tronlink.js loaded successfully");
 
 async function connectTronLink() {
+    // Check if TronLink is installed
     if (typeof window.tronLink === 'undefined') {
-        alert('TronLink is not installed!');
+        alert('TronLink is not installed! Please install TronLink to proceed.');
+        console.error('TronLink not detected.');
         return;
     }
 
     try {
-        // Request account access if needed
-        const accounts = await window.tronLink.request({ method: 'tron_requestAccounts' });
-        web3 = new Web3(window.tronLink);
-        accounts = accounts;
-        alert('TronLink connected successfully');
+        // Ensure TronLink is connected
+        if (!window.tronWeb || !window.tronWeb.defaultAddress.base58) {
+            await window.tronLink.request({ method: 'tron_requestAccounts' });
+        }
+
+        // Access the connected account
+        const account = window.tronWeb.defaultAddress.base58;
+        console.log("Connected to TronLink account:", account);
+
+        alert('TronLink connected successfully to address: ' + account);
+
+        // Enable any additional functionality for the user now that they're connected
+        document.getElementById('statusMessage').textContent = 'Connected to TronLink: ' + account;
+
     } catch (error) {
-        alert('Failed to connect to TronLink');
+        alert('Failed to connect to TronLink.');
         console.error('TronLink connection error:', error);
     }
 }
 
 // Add event listener to connect button
-window.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('connectTronLinkButton').addEventListener('click', connectTronLink);
+window.addEventListener('DOMContentLoaded', () => {
+    const connectButton = document.getElementById('connectTronLinkButton');
+    if (connectButton) {
+        connectButton.addEventListener('click', connectTronLink);
+        console.log('"Connect to TronLink" button is ready.');
+    } else {
+        console.error('Connect button not found on the page.');
+    }
 });
 
 
