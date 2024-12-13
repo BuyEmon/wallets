@@ -1,49 +1,61 @@
 console.log('metamask-deeplink.js loaded successfully');
 
-// Function to handle deep linking for MetaMask mobile users
+let isRedirected = false; // Prevent multiple redirects
+let isConnected = false; // Track connection state
+
+// Function to handle MetaMask deep linking for mobile users
 function handleMetaMaskDeepLink() {
+    if (isRedirected || isConnected) return; // Prevent duplicate actions
     const isMobileDevice = isMobile();
     const metaMaskDeepLink = 'https://metamask.app.link/dapp/buyemon.github.io/wallets/index.html';
 
     console.log('isMobile:', isMobileDevice);
 
     if (isMobileDevice) {
+        console.log('Mobile device detected. Checking if in MetaMask browser...');
+        
+        // Check if already in MetaMask browser
+        if (navigator.userAgent.includes("MetaMask")) {
+            console.log("Already in MetaMask browser. No redirection needed.");
+            return;
+        }
+
+        // Redirect to MetaMask browser
         console.log('Redirecting to MetaMask mobile app...');
-        // Redirect to MetaMask deep link
+        isRedirected = true;
         window.location.href = metaMaskDeepLink;
 
-        // Set a small delay to prevent page from refreshing immediately after the redirect
+        // Fallback alert in case the redirect fails
         setTimeout(() => {
-            if (typeof window.ethereum !== 'undefined') {
-                connectToMetaMask();
-            }
-        }, 2000);
+            alert("If MetaMask did not open, please manually open MetaMask, navigate to the browser, and visit the page again.");
+        }, 3000);
     } else {
-        console.log('Not on a mobile device. Please connect using a desktop browser.');
+        console.log('Non-mobile device detected. Please connect using a desktop browser.');
     }
 }
 
-// Function to check if the user is on a mobile device
+// Helper function to check if the user is on a mobile device
 function isMobile() {
     return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 }
 
-// Function to handle MetaMask connection
-async function connectToMetaMask() {
-    if (typeof window.ethereum !== 'undefined') {
+// Function to connect to MetaMask (for desktop and mobile users)
+async function connectMetaMask() {
+    if (isConnected) return; // Prevent reconnection if already connected
+
+    if (window.ethereum) {
         try {
             console.log('Requesting MetaMask connection...');
-            // Request connection
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            console.log('MetaMask connected', accounts);
-            // Handle the connection state here (e.g., update UI, show user address)
-            // Example: update UI with account info
-            document.getElementById('account').innerText = accounts[0];
+            console.log('Connected accounts:', accounts);
+            isConnected = true;
+            alert('Connected to MetaMask successfully!');
         } catch (error) {
-            console.error('Error connecting to MetaMask:', error);
+            console.error('MetaMask connection error:', error);
+            alert('MetaMask connection failed. Please try again.');
         }
     } else {
-        console.error('MetaMask is not available.');
+        alert('MetaMask is not installed. Please ensure you are using the MetaMask browser.');
     }
 }
 
@@ -54,9 +66,11 @@ window.addEventListener('DOMContentLoaded', () => {
         connectButton.addEventListener('click', () => {
             console.log('"Connect to MetaMask" button clicked');
             handleMetaMaskDeepLink();
+            connectMetaMask(); // Attempt connection after redirection
         });
     } else {
         console.log('Connect button not found on the page.');
     }
 });
+
 
