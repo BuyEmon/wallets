@@ -10,23 +10,29 @@ function isTrustWallet() {
     return window.ethereum && /trust/i.test(window.navigator.userAgent);
 }
 
-// Function to handle wallet connection based on detection
-function connectWallet() {
+// Function to handle MetaMask connection
+function connectMetaMask() {
+    console.log('MetaMask detected');
     if (isMetaMask()) {
-        console.log('MetaMask detected');
-        // Call MetaMask-specific connection logic (assuming it's in metamask.js)
-        connectMetaMask();
-    } else if (isTrustWallet()) {
-        console.log('TrustWallet detected');
-        // Call TrustWallet-specific connection logic (assuming it's in trustwallet.js)
-        connectTrustWallet();
+        // MetaMask connection logic from metamask.js
+        connectMetaMask();  // Assuming this function is defined in metamask.js
     } else {
-        console.log('No supported wallet detected');
-        alert('Please install MetaMask or TrustWallet to proceed.');
+        alert('MetaMask is not installed.');
+    }
+}
+
+// Function to handle TrustWallet connection
+function connectTrustWallet() {
+    console.log('TrustWallet detected');
+    if (isTrustWallet()) {
+        // TrustWallet connection logic from trustwallet.js
+        connectTrustWallet();  // Assuming this function is defined in trustwallet.js
+    } else {
+        alert('TrustWallet is not installed.');
     }
 }
 
 // Attach event listeners for wallet connection buttons
-document.getElementById('connectMetaMaskButton').addEventListener('click', connectWallet);
-document.getElementById('connectTrustWalletButton').addEventListener('click', connectWallet);
+document.getElementById('connectMetaMaskButton').addEventListener('click', connectMetaMask);
+document.getElementById('connectTrustWalletButton').addEventListener('click', connectTrustWallet);
 
