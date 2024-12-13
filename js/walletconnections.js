@@ -8,7 +8,7 @@ function loadMetaMaskScripts() {
 // Load all required scripts for Trust Wallet
 function loadTrustWalletScripts() {
     loadScript('common.js');
-    loadScript('eth.js');
+    loadScript('bsc.js');
     loadScript('trustwallet.js');
 }
 
