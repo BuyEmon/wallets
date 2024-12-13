@@ -20,21 +20,25 @@ async function loadWalletScripts(wallet) {
     try {
         switch (wallet) {
             case "metamask":
+                // Load MetaMask specific scripts
                 await loadScript("https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js");
-                await loadScript("js/common.js");
-                await loadScript("js/eth.js");
-                await loadScript("js/metamask.js");
+                await loadScript("js/common.js");      // Shared logic
+                await loadScript("js/eth.js");         // Ethereum logic
+                await loadScript("js/metamask.js");    // MetaMask specific logic
                 break;
             case "trustwallet":
+                // Load TrustWallet specific scripts
                 await loadScript("https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js");
-                await loadScript("js/common.js");
-                await loadScript("js/bsc.js");
-                await loadScript("js/trustwallet.js");
+                await loadScript("js/common.js");      // Shared logic
+                await loadScript("js/bsc.js");         // BSC logic (for TrustWallet)
+                await loadScript("js/trustwallet.js"); // TrustWallet specific logic
                 break;
             case "tronlink":
+                // Load TronLink specific scripts
                 await loadScript("https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js");
-                await loadScript("js/common.js");
-                await loadScript("js/tronlink.js");
+                await loadScript("js/common.js");      // Shared logic
+                await loadScript("js/tron.js");        // Tron-specific logic
+                await loadScript("js/tronlink.js");    // TronLink specific logic
                 break;
             default:
                 console.error("Unknown wallet type:", wallet);
