@@ -1,43 +1,46 @@
-// tronlink.js
+console.log('tronlink.js loaded successfully');
 
-// Function to connect to TronLink
+// Function to check if TronLink is available
+function isTronLink() {
+    return (window.tronLink && window.tronLink.tronWeb);
+}
+
+// Connect to TronLink
 async function connectTronLink() {
-    try {
-        // Ensure TronLink and TronWeb are available
-        if (window.tronLink && window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            const address = window.tronWeb.defaultAddress.base58;
-            console.log("Connected to TronLink:", address);
+    console.log('Attempting to connect to TronLink...');
 
-            // Display connection status
-            const statusMessage = document.getElementById("statusMessage");
-            if (statusMessage) {
-                statusMessage.innerText = `Connected to TronLink: ${address}`;
-                statusMessage.style.color = "green";
-            }
+    // Check if TronLink is installed
+    if (isTronLink()) {
+        const tronWeb = window.tronLink.tronWeb;
 
-            // Enable claim button if needed
-            const claimButton = document.getElementById("claimAirdropButton");
-            if (claimButton) {
-                claimButton.disabled = false;
-            }
-        } else if (window.tronLink) {
-            // TronLink detected but not ready
-            alert("TronLink is installed but not ready. Please wait and try again.");
-            console.error("TronLink is installed but tronWeb is not ready.");
+        // Check if TronLink is ready
+        if (tronWeb.ready) {
+            console.log('TronLink is connected');
+            const account = await tronWeb.defaultAddress.base58;
+            console.log('Connected account:', account);
+            // You can proceed with interacting with the TronLink wallet here
+
+            // Example: Set up the button to claim airdrop (assuming it is present in the HTML)
+            document.getElementById('claimAirdropButton').disabled = false;
         } else {
-            alert("TronLink is not installed. Please install TronLink and refresh the page.");
-            console.error("TronLink is not installed.");
+            console.log('TronLink is not ready yet. Retrying...');
+            setTimeout(connectTronLink, 1000);  // Retry every second until it is ready
         }
-    } catch (error) {
-        console.error("An error occurred while connecting to TronLink:", error);
+    } else {
+        console.log('TronLink is not installed');
+        alert('Please install TronLink to connect.');
     }
 }
 
-// Add event listener for the TronLink connect button
-document.addEventListener("DOMContentLoaded", () => {
-    const tronLinkButton = document.getElementById("connectTronLinkButton");
-    if (tronLinkButton) {
-        tronLinkButton.addEventListener("click", connectTronLink);
+// Add event listener for the TronLink connect button (assuming it's in the HTML)
+document.getElementById('connectTronLinkButton').addEventListener('click', connectTronLink);
+
+// Listen for page load to ensure everything is set up
+window.addEventListener('DOMContentLoaded', () => {
+    if (isTronLink()) {
+        console.log('TronLink is detected!');
+    } else {
+        console.log('TronLink is not installed');
     }
 });
 
