@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wallet Integration</title>
-    <link rel="stylesheet" href="/wallets/css/styles.css?v=1733894787217"> <!-- Cache-busting with version -->
+    <link rel="stylesheet" href="/wallets/css/styles.css"> <!-- Removed versioning -->
 </head>
 <body>
     <h1>Connect Your Wallet</h1>
@@ -22,14 +22,13 @@
     <!-- Include Web3.js from a CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script> <!-- CDN link for Web3.js -->
 
-    <!-- Include the JavaScript files with cache-busting -->
-    <script src="/wallets/js/common.js?v=1733894787217"></script> <!-- Cache-busting with version -->
-    <script src="/wallets/js/eth.js?v=1733894787217"></script> <!-- Cache-busting with version -->
-    <script src="/wallets/js/metamask.js?v=1733894787217"></script> <!-- Cache-busting with version -->
+    <!-- Include the JavaScript files without cache-busting -->
+    <script src="/wallets/js/common.js"></script> <!-- Removed versioning -->
+    <script src="/wallets/js/eth.js"></script> <!-- Removed versioning -->
+    <script src="/wallets/js/metamask.js"></script> <!-- Removed versioning -->
     <script src="/wallets/js/tronlink.js"></script> <!-- Include the TronLink connection logic -->
-    <script src="/wallets/js/trustwallet.js?v=1733894787217"></script> <!-- Include the TrustWallet connection logic -->
+    <script src="/wallets/js/trustwallet.js"></script> <!-- Include the TrustWallet connection logic -->
 
-   
 </body>
 </html>
 
