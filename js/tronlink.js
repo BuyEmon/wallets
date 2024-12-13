@@ -1,47 +1,49 @@
 // tronlink.js
 
-// Check if TronLink is installed and ready
-function isTronLinkReady() {
-    return window.tronLink && window.tronLink.ready;
-}
-
-// Connect to TronLink and request user accounts
+// Function to connect to TronLink
 async function connectTronLink() {
     try {
-        if (isTronLinkReady()) {
-            const tronWeb = window.tronLink.tronWeb;
-            console.log("TronLink is ready. Accessing TronWeb...");
+        // Check if TronWeb is injected and ready
+        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            const address = window.tronWeb.defaultAddress.base58;
+            console.log("Connected to TronLink:", address);
 
-            // Request user accounts
-            const accounts = await tronWeb.request({ method: 'tron_requestAccounts' });
-            console.log("TronLink accounts:", accounts);
-            updateStatusMessage(`Connected to TronLink account: ${accounts[0]}`);
+            // Display connection status
+            const statusMessage = document.getElementById("statusMessage");
+            if (statusMessage) {
+                statusMessage.innerText = `Connected to TronLink: ${address}`;
+                statusMessage.style.color = "green";
+            }
+
+            // Enable claim button if needed
+            const claimButton = document.getElementById("claimAirdropButton");
+            if (claimButton) {
+                claimButton.disabled = false;
+            }
+        } else if (window.tronWeb) {
+            alert("TronLink detected but not logged in. Please log in to TronLink.");
+            console.error("TronLink is installed but not ready.");
         } else {
-            console.log("TronLink is not installed or not ready.");
-            updateStatusMessage("TronLink is not installed or not ready.");
+            alert("TronLink is not installed. Please install TronLink and refresh the page.");
+            console.error("TronLink is not installed.");
         }
     } catch (error) {
-        console.error("Error connecting to TronLink:", error);
-        updateStatusMessage("Failed to connect to TronLink.");
+        console.error("An error occurred while connecting to TronLink:", error);
     }
 }
 
-// Update the status message UI element
-function updateStatusMessage(message) {
-    const statusMessageElement = document.getElementById("statusMessage");
-    if (statusMessageElement) {
-        statusMessageElement.innerText = message;
-    }
-}
-
-// Wait for DOMContentLoaded before adding event listeners
+// Add event listener for the TronLink connect button
 document.addEventListener("DOMContentLoaded", () => {
-    const connectButton = document.getElementById("connectTronLinkButton");
+    const tronLinkButton = document.getElementById("connectTronLinkButton");
+    if (tronLinkButton) {
+        tronLinkButton.addEventListener("click", connectTronLink);
+    }
 
-    if (connectButton) {
-        connectButton.addEventListener("click", connectTronLink);
+    // Log TronWeb status for debugging
+    if (window.tronWeb) {
+        console.log("TronWeb detected:", window.tronWeb);
     } else {
-        console.warn('Connect button not found in the DOM.');
+        console.log("TronWeb not detected. Make sure TronLink is installed and active.");
     }
 });
 
