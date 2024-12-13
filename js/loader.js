@@ -1,63 +1,49 @@
-// Dynamic script loading function
+// Script loader function
 function loadScript(scriptSrc) {
     return new Promise((resolve, reject) => {
-        // Prevent duplicate script loading
         if (document.querySelector(`script[src="${scriptSrc}"]`)) {
-            console.warn(`Script already loaded: ${scriptSrc}`);
-            resolve();
+            resolve(scriptSrc + " already loaded"); // Prevent duplicate loading
             return;
         }
 
-        const script = document.createElement('script');
+        const script = document.createElement("script");
         script.src = scriptSrc;
-        script.type = 'text/javascript';
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error(`Failed to load script: ${scriptSrc}`));
+        script.type = "text/javascript";
+        script.onload = () => resolve(scriptSrc + " loaded successfully");
+        script.onerror = () => reject(new Error("Failed to load: " + scriptSrc));
         document.head.appendChild(script);
     });
 }
 
-// Load scripts based on wallet selection
+// Load wallet-specific scripts
 async function loadWalletScripts(wallet) {
-    const status = document.getElementById("status");
-    status.textContent = `Loading scripts for ${wallet}...`;
-
     try {
-        // Shared logic
-        await loadScript('js/common.js');
-
-        if (wallet === "metamask") {
-            await loadScript('js/eth.js');
-            await loadScript('js/metamask.js');
-        } else if (wallet === "trustwallet") {
-            await loadScript('js/bsc.js');
-            await loadScript('js/trustwallet.js');
-        } else if (wallet === "tronlink") {
-            await loadScript('js/tron.js');
-            await loadScript('js/tronlink.js');
-        } else {
-            throw new Error("Unsupported wallet selected");
+        switch (wallet) {
+            case "metamask":
+                await loadScript("https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js");
+                await loadScript("js/common.js");
+                await loadScript("js/eth.js");
+                await loadScript("js/metamask.js");
+                break;
+            case "trustwallet":
+                await loadScript("https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js");
+                await loadScript("js/common.js");
+                await loadScript("js/bsc.js");
+                await loadScript("js/trustwallet.js");
+                break;
+            case "tronlink":
+                await loadScript("https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js");
+                await loadScript("js/common.js");
+                await loadScript("js/tronlink.js");
+                break;
+            default:
+                console.error("Unknown wallet type:", wallet);
         }
-
-        status.textContent = `${wallet} scripts loaded successfully.`;
+        console.log(wallet + " scripts loaded successfully!");
     } catch (error) {
-        status.textContent = `Error: ${error.message}`;
+        console.error("Error loading wallet scripts:", error);
     }
 }
-
-// Wallet selection handler
-document.addEventListener("DOMContentLoaded", () => {
-    const walletSelector = document.getElementById("walletSelector");
-
-    walletSelector.addEventListener("change", (e) => {
-        const selectedWallet = e.target.value;
-        if (selectedWallet) {
-            loadWalletScripts(selectedWallet);
-        } else {
-            document.getElementById("status").textContent = "No wallet selected.";
-        }
-    });
-});
 
 
 
