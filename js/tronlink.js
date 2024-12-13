@@ -23,6 +23,7 @@ async function connectTronLink() {
                 claimButton.disabled = false;
             }
         } else if (window.tronWeb) {
+            // If TronLink is installed but not ready
             alert("TronLink detected but not logged in. Please log in to TronLink.");
             console.error("TronLink is installed but not ready.");
         } else {
@@ -44,6 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Log TronWeb status for debugging
     if (window.tronWeb) {
         console.log("TronWeb detected:", window.tronWeb);
+        if (!window.tronWeb.defaultAddress.base58) {
+            console.log("Waiting for TronLink to initialize...");
+            // Add additional checks or a retry mechanism here
+        }
     } else {
         console.log("TronWeb not detected. Make sure TronLink is installed and active.");
     }
