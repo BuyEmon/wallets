@@ -1,3 +1,29 @@
+async function claimAirdrop() {
+    try {
+        console.log('Checking wallet connection...');
+        
+        // Check if wallet is connected and the correct one is selected
+        if (window.ethereum) {
+            console.log('Connected wallet:', window.ethereum.selectedAddress);
+        } else {
+            console.log('No wallet connected');
+            return;
+        }
+        
+        console.log('Sending transaction to claim airdrop...');
+        
+        // Call the smart contract function to claim the airdrop
+        const contract = new web3.eth.Contract(abi, contractAddress);
+        const response = await contract.methods.claimAirdrop().send({ from: window.ethereum.selectedAddress });
+        
+        console.log('Airdrop claimed successfully:', response);
+    } catch (error) {
+        console.error('Airdrop claim failed:', error);
+    }
+}
+
+
+
 // trustwallet.js
 async function connectTrustWallet() {
     console.log("Attempting to connect to Trust Wallet...");
