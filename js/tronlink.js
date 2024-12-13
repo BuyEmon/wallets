@@ -1,3 +1,9 @@
+if (typeof TronWeb !== "undefined") {
+    console.log("TronWeb is loaded and ready.");
+} else {
+    console.error("TronWeb is not available. Ensure TronLink is installed and active.");
+}
+
 // tronlink.js
 
 // Function to connect to TronLink
