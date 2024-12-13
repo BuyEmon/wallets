@@ -1,3 +1,33 @@
+// metamask.js
+async function connectMetaMask() {
+    console.log("Attempting to connect to MetaMask...");
+    if (window.ethereum) {
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            console.log("MetaMask response:", accounts);
+            if (accounts.length > 0) {
+                console.log("MetaMask connected:", accounts[0]);
+                document.getElementById("status").textContent = "MetaMask connected!";
+            } else {
+                console.log("MetaMask connection failed: No accounts found");
+                document.getElementById("status").textContent = "MetaMask connection failed!";
+            }
+        } catch (error) {
+            console.error("MetaMask connection error:", error);
+            document.getElementById("status").textContent = "MetaMask connection failed!";
+        }
+    } else {
+        console.log("MetaMask is not installed");
+        document.getElementById("status").textContent = "MetaMask is not installed!";
+    }
+}
+
+// Make sure this function is invoked when the user clicks the MetaMask connect button
+document.getElementById("metamask-connect").addEventListener("click", connectMetaMask);
+
+
+
+
 console.log('metamask.js loaded successfully');
 
 // Function to connect MetaMask
