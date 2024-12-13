@@ -1,3 +1,19 @@
+console.log('loader.js initialized');
+console.log('Loading MetaMask-specific scripts...');
+console.log('Loading script: js/metamask.js');
+
+// Check if it's loaded successfully
+script.onload = () => {
+    console.log('MetaMask script loaded successfully');
+};
+
+// Or log errors if loading fails
+script.onerror = (err) => {
+    console.error('Failed to load MetaMask script', err);
+};
+
+
+
 console.log("Attempting to load wallet scripts for metamask");
 
 // Check if MetaMask-specific scripts are loaded
