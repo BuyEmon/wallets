@@ -5,11 +5,10 @@ if (window.sunWeb) {
     sunWeb = window.sunWeb; // Use SunWeb if available
 } else {
     console.error("SunWeb SDK is not available. Please install it.");
-    return;
 }
 
 function connectTronLink() {
-    if (window.sunWeb && window.sunWeb.ready) {
+    if (sunWeb && sunWeb.ready) {
         sunWeb.request({ method: 'sun_requestAccounts' })
             .then(accounts => {
                 if (accounts && Array.isArray(accounts) && accounts.length > 0) {
