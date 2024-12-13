@@ -1,3 +1,22 @@
+console.log("metamask.js loaded");
+
+// Check if MetaMask is installed and available
+if (typeof window.ethereum !== 'undefined') {
+    console.log("MetaMask is installed and available!");
+} else {
+    console.log("MetaMask is not installed or available.");
+}
+
+// Check if Web3 is available
+if (typeof Web3 !== 'undefined') {
+    console.log("Web3 is available.");
+} else {
+    console.log("Web3 is not available.");
+}
+
+
+
+
 async function claimAirdrop() {
     try {
         console.log('Checking wallet connection...');
