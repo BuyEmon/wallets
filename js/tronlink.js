@@ -1,5 +1,7 @@
 // tronlink.js
 
+console.log('tronlink.js loaded successfully');
+
 // Function to connect to TronLink
 async function connectTronLink() {
     try {
