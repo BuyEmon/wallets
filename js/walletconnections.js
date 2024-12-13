@@ -1,15 +1,13 @@
-// walletConnection.js
-
 console.log('walletConnection.js loaded successfully');
 
 // Function to check if MetaMask is available
 function isMetaMask() {
-    return (window.ethereum && /metamask/i.test(window.navigator.userAgent));
+    return window.ethereum && /metamask/i.test(window.navigator.userAgent);
 }
 
 // Function to check if TrustWallet is available
 function isTrustWallet() {
-    return (window.ethereum && /trust/i.test(window.navigator.userAgent));
+    return window.ethereum && /trust/i.test(window.navigator.userAgent);
 }
 
 // Function to handle wallet connection based on detection
@@ -31,3 +29,4 @@ function connectWallet() {
 // Attach event listeners for wallet connection buttons
 document.getElementById('connectMetaMaskButton').addEventListener('click', connectWallet);
 document.getElementById('connectTrustWalletButton').addEventListener('click', connectWallet);
+
