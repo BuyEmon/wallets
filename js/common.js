@@ -119,6 +119,48 @@ async function init() {
     }
 }
 
+// Function to claim rewards
+async function claimRewards() {
+    if (!accounts.length) {
+        console.error("common.js: No accounts available. Please connect your wallet.");
+        return;
+    }
+
+    console.log('common.js: Claiming rewards...');
+
+    try {
+        // Ethereum and BSC (MetaMask/Injected Web3)
+        if (network === 'eth' || network === 'bsc') {
+            const contract = new web3.eth.Contract(contractABI, contractAddress);
+            const senderAddress = accounts[0]; // Using the first account
+            const claimFunction = contract.methods.claim(); // Assuming the claim function is called `claim`
+
+            const tx = {
+                from: senderAddress,
+                to: contractAddress,
+                data: claimFunction.encodeABI(),
+            };
+
+            await web3.eth.sendTransaction(tx);
+            console.log('common.js: Reward claimed successfully on', network);
+        }
+
+        // Tron (TronLink)
+        else if (network === 'tron') {
+            const contract = await window.tronWeb.contract(contractABI, contractAddress);
+            const senderAddress = accounts; // Using Tron base58 address
+            const claimFunction = contract.claim(); // Assuming the claim function is called `claim`
+
+            await claimFunction.send();
+            console.log('common.js: Reward claimed successfully on Tron');
+        }
+
+    } catch (error) {
+        console.error('common.js: Error claiming rewards:', error.message || error);
+        alert('Failed to claim rewards. Please try again later.');
+    }
+}
+
 // Ensure the page initializes properly
 window.addEventListener('DOMContentLoaded', () => {
     console.log('common.js: DOM fully loaded and parsed');
@@ -134,4 +176,10 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     init(); // Initialize configuration and ABI
+
+    // Add event listener to claim button
+    const claimButton = document.getElementById('claimAirdropButton');
+    if (claimButton) {
+        claimButton.addEventListener('click', claimRewards); // Add claim functionality on button click
+    }
 });
