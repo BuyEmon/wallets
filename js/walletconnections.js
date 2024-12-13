@@ -1,15 +1,15 @@
 // Load all required scripts for MetaMask
 function loadMetaMaskScripts() {
-    loadScript('common.js');
-    loadScript('eth.js');
-    loadScript('metamask.js');
+    loadScript('wallets/js/common.js');
+    loadScript('wallets/js/eth.js');
+    loadScript('wallets/js/metamask.js');
 }
 
 // Load all required scripts for Trust Wallet
 function loadTrustWalletScripts() {
-    loadScript('common.js');
-    loadScript('bsc.js');
-    loadScript('trustwallet.js');
+    loadScript('wallets/js/common.js');
+    loadScript('wallets/js/bsc.js');
+    loadScript('wallets/js/trustwallet.js');
 }
 
 // Dynamic script loading function
