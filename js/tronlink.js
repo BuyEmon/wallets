@@ -1,44 +1,60 @@
-console.log("tronlink.js loaded successfully");
+console.log('tronlink.js loaded successfully');
 
-async function connectTronLink() {
-    // Check if TronLink is installed
-    if (typeof window.tronLink === 'undefined') {
-        alert('TronLink is not installed! Please install TronLink to proceed.');
-        console.error('TronLink not detected.');
+// Function to claim the airdrop (TronLink)
+async function claimTronAirdrop() {
+    console.log('Attempting to claim airdrop on TronLink...');
+
+    // Ensure TronLink is available
+    if (!window.tronLink) {
+        console.error('TronLink is not installed');
+        alert('Please install TronLink!');
         return;
     }
 
     try {
-        // Request the accounts and wait for the response
-        await window.tronLink.request({ method: 'tron_requestAccounts' });
-
-        // Access the connected account
-        const account = window.tronLink.defaultAddress.base58;
-        
-        if (account) {
-            console.log("Connected to TronLink account:", account);
-            alert('TronLink connected successfully to address: ' + account);
-            document.getElementById('statusMessage').textContent = 'Connected to TronLink: ' + account;
-        } else {
-            alert('TronLink connection failed. No account found.');
-            console.error('TronLink account not found.');
+        // Request accounts from TronLink
+        const accounts = await window.tronLink.request({ method: "tron_requestAccounts" });
+        if (accounts.length === 0) {
+            console.error('No Tron accounts connected');
+            alert('Please connect to TronLink first!');
+            return;
         }
 
+        // Assuming your contract interaction goes here
+        // Example: TronWeb contract interaction (when ABI and contract address are available)
+        // const contract = await window.tronLink.contract().at(contractAddress);
+        // await contract.someMethod().send();
+        
+        alert('Airdrop claimed successfully on TronLink!');
     } catch (error) {
-        alert('Failed to connect to TronLink.');
-        console.error('TronLink connection error:', error);
+        console.error('Error claiming Tron airdrop:', error);
+        alert('Error claiming airdrop on TronLink');
     }
 }
 
-// Add event listener to connect button
-window.addEventListener('DOMContentLoaded', () => {
-    const connectButton = document.getElementById('connectTronLinkButton');
-    if (connectButton) {
-        connectButton.addEventListener('click', connectTronLink);
-        console.log('"Connect to TronLink" button is ready.');
+// Connect to TronLink
+async function connectTronLink() {
+    if (window.tronLink) {
+        try {
+            // Request TronLink accounts
+            const accounts = await window.tronLink.request({ method: "tron_requestAccounts" });
+            if (accounts.length > 0) {
+                document.getElementById("walletStatus").innerText = "Connected to TronLink: " + accounts[0];
+            } else {
+                document.getElementById("walletStatus").innerText = "No accounts available in TronLink.";
+            }
+        } catch (error) {
+            console.error('TronLink connection error:', error);
+            document.getElementById("walletStatus").innerText = "Error connecting to TronLink.";
+        }
     } else {
-        console.error('Connect button not found on the page.');
+        alert('Please install TronLink!');
+        document.getElementById("walletStatus").innerText = "TronLink is not installed.";
     }
-});
+}
+
+// Add event listeners for the buttons
+document.getElementById('connectTronLinkButton').addEventListener('click', connectTronLink);
+document.getElementById('claimAirdropButton').addEventListener('click', claimTronAirdrop);
 
 
