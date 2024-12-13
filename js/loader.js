@@ -93,11 +93,22 @@ async function loadWalletScripts(wallet) {
         // Debug: Log that the scripts have been successfully loaded
         console.log(`${wallet} scripts loaded successfully!`);
         
+        // Debug: Check if the claim button is enabled
+        const claimButton = document.getElementById('claimAirdropButton');
+        if (claimButton && !claimButton.disabled) {
+            console.log("Claim Airdrop button is enabled");
+        } else {
+            console.log("Claim Airdrop button is either not found or still disabled");
+        }
+
     } catch (error) {
         // Debug: Catch and log any errors during script loading
         console.error("Error loading wallet scripts:", error);
     }
 }
+
+// Example wallet type for testing
+loadWalletScripts('metamask');  // You can change to 'trustwallet' or 'tronlink' for testing
 
 
 
