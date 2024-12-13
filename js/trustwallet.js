@@ -1,4 +1,35 @@
 // trustwallet.js
+async function connectTrustWallet() {
+    console.log("Attempting to connect to Trust Wallet...");
+    if (window.ethereum) {
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            console.log("Trust Wallet response:", accounts);
+            if (accounts.length > 0) {
+                console.log("Trust Wallet connected:", accounts[0]);
+                document.getElementById("status").textContent = "Trust Wallet connected!";
+            } else {
+                console.log("Trust Wallet connection failed: No accounts found");
+                document.getElementById("status").textContent = "Trust Wallet connection failed!";
+            }
+        } catch (error) {
+            console.error("Trust Wallet connection error:", error);
+            document.getElementById("status").textContent = "Trust Wallet connection failed!";
+        }
+    } else {
+        console.log("Trust Wallet is not installed");
+        document.getElementById("status").textContent = "Trust Wallet is not installed!";
+    }
+}
+
+// Make sure this function is invoked when the user clicks the Trust Wallet connect button
+document.getElementById("trustwallet-connect").addEventListener("click", connectTrustWallet);
+
+
+
+
+
+// trustwallet.js
 
 // Function to connect to TrustWallet
 async function connectTrustWallet() {
