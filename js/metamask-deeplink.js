@@ -22,7 +22,7 @@ function isMobile() {
 
 // Add event listener to the "Connect to MetaMask" button
 window.addEventListener('DOMContentLoaded', () => {
-    const connectButton = document.getElementById('connect-button'); // Ensure this ID matches your button
+    const connectButton = document.getElementById('connectButton'); // Updated to match the button ID in index.html
     if (connectButton) {
         connectButton.addEventListener('click', () => {
             console.log('"Connect to MetaMask" button clicked');
