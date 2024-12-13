@@ -1,12 +1,10 @@
 // tronlink.js
 
-console.log('tronlink.js loaded successfully');
-
 // Function to connect to TronLink
 async function connectTronLink() {
     try {
-        // Check if TronWeb is injected and ready
-        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+        // Ensure TronLink and TronWeb are available
+        if (window.tronLink && window.tronWeb && window.tronWeb.defaultAddress.base58) {
             const address = window.tronWeb.defaultAddress.base58;
             console.log("Connected to TronLink:", address);
 
@@ -22,10 +20,10 @@ async function connectTronLink() {
             if (claimButton) {
                 claimButton.disabled = false;
             }
-        } else if (window.tronWeb) {
-            // If TronLink is installed but not ready
-            alert("TronLink detected but not logged in. Please log in to TronLink.");
-            console.error("TronLink is installed but not ready.");
+        } else if (window.tronLink) {
+            // TronLink detected but not ready
+            alert("TronLink is installed but not ready. Please wait and try again.");
+            console.error("TronLink is installed but tronWeb is not ready.");
         } else {
             alert("TronLink is not installed. Please install TronLink and refresh the page.");
             console.error("TronLink is not installed.");
@@ -40,17 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const tronLinkButton = document.getElementById("connectTronLinkButton");
     if (tronLinkButton) {
         tronLinkButton.addEventListener("click", connectTronLink);
-    }
-
-    // Log TronWeb status for debugging
-    if (window.tronWeb) {
-        console.log("TronWeb detected:", window.tronWeb);
-        if (!window.tronWeb.defaultAddress.base58) {
-            console.log("Waiting for TronLink to initialize...");
-            // Add additional checks or a retry mechanism here
-        }
-    } else {
-        console.log("TronWeb not detected. Make sure TronLink is installed and active.");
     }
 });
 
