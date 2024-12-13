@@ -8,8 +8,8 @@ function connectTronLink() {
             // Request accounts from TronLink
             tronLink.request({ method: 'tron_requestAccounts' })
                 .then(accounts => {
-                    // Check if there are accounts returned
-                    if (accounts && accounts.length > 0) {
+                    // Check if accounts is returned and is an array
+                    if (Array.isArray(accounts) && accounts.length > 0) {
                         const base58 = accounts[0]; // Get the first account address
                         console.log("Connected to TronLink with account:", base58);
                         // Update the UI or handle the connected state here
@@ -45,3 +45,4 @@ document.addEventListener('DOMContentLoaded', function () {
         connectButton.addEventListener('click', connectTronLink);
     }
 });
+
