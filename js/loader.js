@@ -1,30 +1,34 @@
 window.addEventListener('DOMContentLoaded', async () => {
-    const network = await detectNetwork(); // Detect network based on available wallet
-    console.log('Detected Network:', network); // Add log to see detected network
-    if (network !== 'undefined') {
-        await loadConfig(network); // Load the config for the detected network
-    } else {
-        alert("No supported wallet detected. Please install MetaMask, TronLink, or TrustWallet.");
-    }
+    let network = await detectNetwork(); // Detect network on load
+    await loadConfig(network); // Load config based on the detected network
 
     // Add button event listeners
-    document.getElementById('connectButton').addEventListener('click', () => connectMetaMask(network));
+    document.getElementById('connectButton').addEventListener('click', connectMetaMask);
     document.getElementById('claimAirdropButton').addEventListener('click', claimAirdrop);
     redirectToMetaMask(); // Handle deep linking for mobile
 });
 
-// Detect available wallet and network
 async function detectNetwork() {
-    // Check for MetaMask (Ethereum) first
     if (window.ethereum) {
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        console.log("MetaMask chainId:", chainId); // Log the chainId to verify
-        if (chainId === '0x1') return 'eth'; // Ethereum Mainnet
-        if (chainId === '0x38') return 'bsc'; // Binance Smart Chain
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
+        console.log("MetaMask chainId:", chainId);
+
+        // Network Detection based on chainId
+        if (chainId === '0x1') { // Ethereum Mainnet
+            return 'eth';
+        } else if (chainId === '0x38') { // Binance Smart Chain
+            return 'bsc';
+        } else if (chainId === '0x41') { // Tron Test Network or other Tron chain
+            return 'tron';
+        } else {
+            console.error("Unsupported network detected");
+            alert("Unsupported network detected");
+            return undefined;
+        }
+    } else {
+        console.error("No Ethereum wallet detected");
+        alert("Please install MetaMask");
+        return undefined;
     }
-    // Check for TronLink (Tron)
-    if (window.tronLink) {
-        return 'tron'; // Tron
-    }
-    return 'undefined'; // Return undefined if no recognized wallet is found
 }
+
