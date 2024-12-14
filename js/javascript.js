@@ -12,7 +12,7 @@ import './tron.js';
 
 
 // Optionally, for deep linking
-import '../deeplinks/metamask-deep.js';
+import '../deeplinks/meta-deep.js';
 import '../deeplinks/tron-deep.js';
 import '../deeplinks/trust-deep.js';
 
