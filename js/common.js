@@ -5,30 +5,48 @@ let tokenAddress;
 let contractABI;
 let isConnected = false;
 
-// Detects the network based on MetaMask or TronLink connection
+// Function to detect network type
 async function detectNetwork() {
     if (window.ethereum) {
         try {
             const chainId = await ethereum.request({ method: 'eth_chainId' });
 
-            // Check if it's a supported network (Ethereum or BSC)
-            if (chainId === '0x1') {  // Ethereum Mainnet
+            // Ethereum Mainnet
+            if (chainId === '0x1') {
+                console.log('Ethereum Mainnet detected');
                 return 'eth';
-            } else if (chainId === '0x38') {  // Binance Smart Chain (BSC)
+            }
+            // Sepolia Testnet
+            else if (chainId === '0xaa36a7') {
+                console.log('Sepolia Testnet detected');
+                return 'eth-sepolia';
+            }
+            // Binance Smart Chain (BSC)
+            else if (chainId === '0x38') {
+                console.log('Binance Smart Chain detected');
                 return 'bsc';
             } else {
-                console.error('Unsupported Ethereum network detected.');
+                console.error('Unsupported Ethereum network detected:', chainId);
                 return null;
             }
         } catch (error) {
-            console.error('Error detecting network:', error);
+            console.error('Error detecting Ethereum network:', error);
             return null;
         }
     } else if (window.tronLink) {
-        // Assuming TronLink is available for Tron network detection
+        // If TronLink is detected, check Tron network
         try {
-            const chainId = await window.tronLink.tronWeb.defaultAddress.base58;  // Adjust based on TronLink API
-            return 'tron';
+            const tronNetwork = await tronLink.request({ method: 'tron_getNetwork' });
+            if (tronNetwork === 'mainnet') {
+                console.log('Tron Mainnet detected');
+                return 'tron';
+            } else if (tronNetwork === 'shasta') {
+                console.log('Tron Shasta Testnet detected');
+                return 'tron-shasta';
+            } else {
+                console.error('Unsupported Tron network detected:', tronNetwork);
+                return null;
+            }
         } catch (error) {
             console.error('Error detecting Tron network:', error);
             return null;
@@ -39,82 +57,120 @@ async function detectNetwork() {
     }
 }
 
-// Loads the correct configuration and ABI based on the detected network
+// Function to load configuration and ABI for the detected network
 async function loadConfig() {
-    const network = await detectNetwork();  // Detect network
+    const network = await detectNetwork();
 
     if (!network) {
-        console.error('Unsupported or no network detected');
+        console.error('Network detection failed or unsupported network');
         return;
     }
 
-    // Determine which config file to load based on the detected network
-    let configFile = '';
-    let abiFile = '';
+    // Determine the config and ABI file based on the network
+    const configFile = `config/${network}_config.json`;
+    const abiFile = `abi/${network}_abi.json`;
 
-    if (network === 'eth') {
-        configFile = 'eth_config.json';
-        abiFile = 'eth_abi.json';
-    } else if (network === 'bsc') {
-        configFile = 'bsc_config.json';
-        abiFile = 'bsc_abi.json';
-    } else if (network === 'tron') {
-        configFile = 'tron_config.json';
-        abiFile = 'tron_abi.json';
-    } else {
-        console.error('Network is unsupported or not recognized.');
-        return;
-    }
-
-    // Load the config and ABI files from the correct folders
     try {
-        const configResponse = await fetch(`/wallets/config/${configFile}`);
-        const configData = await configResponse.json();
+        const [configResponse, abiResponse] = await Promise.all([
+            fetch(configFile),
+            fetch(abiFile)
+        ]);
 
-        const abiResponse = await fetch(`/wallets/abi/${abiFile}`);
-        const abiData = await abiResponse.json();
+        if (!configResponse.ok || !abiResponse.ok) {
+            throw new Error('Failed to fetch config/ABI');
+        }
 
-        // Set the global variables
-        contractAddress = configData.contractAddress;
-        tokenAddress = configData.tokenAddress;
-        contractABI = abiData;
+        const config = await configResponse.json();
+        const abi = await abiResponse.json();
 
-        console.log('Loaded config:', configData);
-        console.log('Loaded ABI:', abiData);
+        contractAddress = config.contractAddress;
+        tokenAddress = config.tokenAddress;
+        contractABI = abi;
 
-        // You can then use this data to interact with the smart contract
+        console.log('Configuration and ABI loaded successfully');
     } catch (error) {
-        console.error('Error loading config or ABI:', error);
+        console.error('Error loading config/ABI:', error);
     }
 }
 
-// Connect to MetaMask
+// Function to check if MetaMask is connected
+async function checkMetaMaskConnection() {
+    if (window.ethereum) {
+        try {
+            const accounts = await ethereum.request({ method: 'eth_accounts' });
+            if (accounts.length > 0) {
+                isConnected = true;
+                console.log('MetaMask connected:', accounts);
+                return accounts[0];
+            } else {
+                console.log('No accounts found');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error checking MetaMask connection:', error);
+            return null;
+        }
+    } else {
+        console.error('No Ethereum provider detected');
+        return null;
+    }
+}
+
+// Function to check if TronLink is connected
+async function checkTronLinkConnection() {
+    if (window.tronLink) {
+        try {
+            const tronAccounts = await tronLink.request({ method: 'tron_requestAccounts' });
+            if (tronAccounts.length > 0) {
+                isConnected = true;
+                console.log('TronLink connected:', tronAccounts);
+                return tronAccounts[0];
+            } else {
+                console.log('No Tron accounts found');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error checking TronLink connection:', error);
+            return null;
+        }
+    } else {
+        console.error('No TronLink provider detected');
+        return null;
+    }
+}
+
+// Function to connect MetaMask
 async function connectMetaMask() {
     if (window.ethereum) {
         try {
-            await ethereum.request({ method: 'eth_requestAccounts' });
-            console.log('Connected to MetaMask');
-            web3 = new Web3(window.ethereum);
-            accounts = await web3.eth.getAccounts();
+            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
             isConnected = true;
-
-            console.log('Accounts:', accounts);
-            await loadConfig(); // Load the config after connecting
+            console.log('MetaMask connected:', accounts);
+            return accounts[0];
         } catch (error) {
-            console.error('MetaMask connection failed:', error);
+            console.error('Error connecting MetaMask:', error);
+            return null;
         }
     } else {
-        alert('MetaMask is not installed!');
+        console.error('MetaMask is not installed');
+        return null;
     }
 }
 
-// Event listeners for buttons
-window.addEventListener('DOMContentLoaded', async () => {
-    // Wait for DOM content to load
-
-    // Add event listener to connect MetaMask button
-    document.getElementById('connectButton').addEventListener('click', connectMetaMask);
-
-    // You could add more event listeners here for other wallets like TronLink, etc.
-});
-
+// Function to connect TronLink
+async function connectTronLink() {
+    if (window.tronLink) {
+        try {
+            const tronAccounts = await tronLink.request({ method: 'tron_requestAccounts' });
+            isConnected = true;
+            console.log('TronLink connected:', tronAccounts);
+            return tronAccounts[0];
+        } catch (error) {
+            console.error('Error connecting TronLink:', error);
+            return null;
+        }
+    } else {
+        console.error('TronLink is not installed');
+        return null;
+    }
+}
