@@ -3,75 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet Integration</title>
+    <title>Multi-Network DApp</title>
     <link rel="stylesheet" href="css/styles.css">
-    <!-- Script Loader -->
-    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
-
-    <script src="js/loader.js"></script> <!-- Place loader.js first -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="js/loader.js" defer></script>
 </head>
 <body>
-   <div id="app">
-    <h1>Wallet Integration</h1>
-    <button id="metamask-connect">Connect MetaMask</button>
-    <button id="tronlink-connect">Connect TronLink</button>
-    <button id="trustwallet-connect">Connect Trust Wallet</button>
-    <button id="claimAirdropButton" style="display:none;">Claim Tokens</button>
-    <div id="status">Not connected</div>
-</div>
-
-
-    <!-- Additional Scripts -->
-    <script>
-        let isMetamaskLoaded = false;
-        let isTronlinkLoaded = false;
-        let isTrustWalletLoaded = false;
-
-        // Function to show the Claim Tokens button when a wallet is connected
-        function showClaimButton() {
-            document.getElementById("claimAirdropButton").style.display = "block";
-        }
-
-        document.getElementById("metamask-connect").addEventListener("click", () => {
-            if (!isMetamaskLoaded) {
-                loadWalletScripts("metamask").then(() => {
-                    isMetamaskLoaded = true;
-                    // Add connection logic for MetaMask here (check if connected, etc.)
-                    showClaimButton();
-                    console.log("MetaMask connected!");
-                });
-            } else {
-                // Add logic to handle already connected MetaMask wallet
-                console.log("MetaMask already loaded!");
-            }
-        });
-
-        document.getElementById("tronlink-connect").addEventListener("click", () => {
-            if (!isTronlinkLoaded) {
-                loadWalletScripts("tronlink").then(() => {
-                    isTronlinkLoaded = true;
-                    // Add connection logic for TronLink here
-                    showClaimButton();
-                    console.log("TronLink connected!");
-                });
-            } else {
-                console.log("TronLink already loaded!");
-            }
-        });
-
-        document.getElementById("trustwallet-connect").addEventListener("click", () => {
-            if (!isTrustWalletLoaded) {
-                loadWalletScripts("trustwallet").then(() => {
-                    isTrustWalletLoaded = true;
-                    // Add connection logic for TrustWallet here
-                    showClaimButton();
-                    console.log("Trust Wallet connected!");
-                });
-            } else {
-                console.log("Trust Wallet already loaded!");
-            }
-        });
-    </script>
+    <h1>Multi-Network DApp</h1>
+    <button id="connectMetaMask">Connect MetaMask</button>
+    <button id="claimAirdrop">Claim Airdrop</button>
 </body>
 </html>
 
