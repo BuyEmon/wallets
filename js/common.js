@@ -1,53 +1,99 @@
-// common.js: Shared functionality across wallets and blockchains
+// common.js: Handles wallet detection, connection, and deep linking for MetaMask, TronLink, and TrustWallet
+// Include console.debug for debugging purposes
 
-let currentNetwork = null;
+console.debug('Loading common.js...');
 
-// Dynamically load ABI and contract details
-async function getContractDetails() {
-    if (!currentNetwork) {
-        console.error("Network not set. Cannot load contract details.");
-        return { abi: null, address: null };
-    }
+// Wallet detection and connection
+function detectWallet() {
+  console.debug('Detecting wallet...');
 
-    try {
-        const abiResponse = await fetch(`/abi/${currentNetwork}_abi.json`);
-        const configResponse = await fetch(`/config/${currentNetwork}_config.json`);
+  // Check if MetaMask is available
+  if (window.ethereum) {
+    console.debug('MetaMask detected');
+    return 'metamask';
+  }
+  
+  // Check if TronLink is available
+  if (window.tronLink) {
+    console.debug('TronLink detected');
+    return 'tron';
+  }
+  
+  // Check if TrustWallet is available (TrustWallet also uses MetaMask provider)
+  if (window.ethereum && window.ethereum.isTrust) {
+    console.debug('TrustWallet detected');
+    return 'trustwallet';
+  }
 
-        if (!abiResponse.ok || !configResponse.ok) {
-            throw new Error("Failed to load ABI or config files.");
-        }
-
-        const abi = await abiResponse.json();
-        const config = await configResponse.json();
-
-        console.log(`Loaded contract details for ${currentNetwork}:`, { abi, config });
-        return { abi, address: config.contractAddress };
-    } catch (error) {
-        console.error("Error loading contract details:", error);
-        alert("Failed to load contract details. Please try again later.");
-        return { abi: null, address: null };
-    }
+  console.error('No compatible wallet detected');
+  return null;
 }
 
-// Set the active network (e.g., 'eth', 'bsc', 'tron')
-function setNetwork(network) {
-    currentNetwork = network;
-    console.log("Current network set to:", currentNetwork);
+// Connect to the selected wallet
+function connectWallet(walletType) {
+  console.debug(`Connecting to ${walletType}...`);
+
+  switch (walletType) {
+    case 'metamask':
+      if (window.ethereum) {
+        window.ethereum.request({ method: 'eth_requestAccounts' })
+          .then(accounts => {
+            console.debug('MetaMask connected', accounts);
+            // Further actions after connection, such as loading the Ethereum network
+          })
+          .catch(error => console.error('MetaMask connection error:', error));
+      }
+      break;
+      
+    case 'tron':
+      if (window.tronLink) {
+        window.tronLink.request({ method: 'tron_requestAccounts' })
+          .then(accounts => {
+            console.debug('TronLink connected', accounts);
+            // Further actions after connection, such as loading the Tron network
+          })
+          .catch(error => console.error('TronLink connection error:', error));
+      }
+      break;
+
+    case 'trustwallet':
+      if (window.ethereum && window.ethereum.isTrust) {
+        window.ethereum.request({ method: 'eth_requestAccounts' })
+          .then(accounts => {
+            console.debug('TrustWallet connected', accounts);
+            // Further actions after connection, such as loading the Ethereum network
+          })
+          .catch(error => console.error('TrustWallet connection error:', error));
+      }
+      break;
+
+    default:
+      console.error('Unknown wallet type');
+  }
 }
 
-// Notify wallet modules when a wallet connects
-function onWalletConnected(accounts) {
-    console.log("Wallet connected with accounts:", accounts);
+// Handle deep linking for mobile wallets
+function handleDeepLink(walletType) {
+  console.debug(`Handling deep link for ${walletType}...`);
 
-    // Custom behavior for wallet connection (if needed)
-    // Can be expanded for network-specific logic
+  switch (walletType) {
+    case 'metamask':
+      window.location.href = 'metamask://';
+      break;
+      
+    case 'tron':
+      window.location.href = 'tronlink://';
+      break;
+
+    case 'trustwallet':
+      window.location.href = 'trust://';
+      break;
+
+    default:
+      console.error('Unknown wallet type for deep linking');
+  }
 }
 
-// Utility to check if the browser is mobile
-function isMobile() {
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    return /android|iPad|iPhone|iPod/i.test(userAgent);
-}
-
-export { getContractDetails, setNetwork, onWalletConnected, isMobile };
+// Expose functions for use in other parts of the dApp
+export { detectWallet, connectWallet, handleDeepLink };
 
