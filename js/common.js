@@ -4,19 +4,27 @@ let contractAddress = '';
 let contractABI = null;
 let network = '';
 
-async function loadConfig() {
+async function loadConfigAndABI() {
   const selectedNetwork = 'eth'; // Change this dynamically based on user selection (e.g., BSC, Tron)
-  const configUrl = `/config/${selectedNetwork}_config.json`;  // Load correct config for selected network
+  
+  // Load the correct config and ABI files based on the selected network
+  const configUrl = `/config/${selectedNetwork}_config.json`; // Network-specific config file
+  const abiUrl = `/abi/${selectedNetwork}_abi.json`; // Network-specific ABI file
 
   try {
-    const response = await fetch(configUrl);
-    const config = await response.json();
+    // Load config file
+    const configResponse = await fetch(configUrl);
+    const config = await configResponse.json();
     contractAddress = config.contractAddress; // Get contract address from config
-    contractABI = config.contractABI; // Get contract ABI from config
     network = config.network; // Set the network type
-    console.log('Config loaded for network:', network);
+
+    // Load ABI file
+    const abiResponse = await fetch(abiUrl);
+    contractABI = await abiResponse.json(); // Get contract ABI from file
+
+    console.log('Config and ABI loaded for network:', network);
   } catch (error) {
-    console.error("Failed to load config:", error);
+    console.error("Failed to load config or ABI:", error);
   }
 }
 
@@ -51,10 +59,8 @@ async function claimAirdrop() {
 }
 
 window.onload = async function() {
-  await loadConfig(); // Ensure config is loaded first
+  await loadConfigAndABI(); // Load config and ABI dynamically on page load
   document.getElementById("connect-metamask").onclick = connectMetaMask;
   document.getElementById("claim-airdrop").onclick = claimAirdrop;
 };
-
-
 
