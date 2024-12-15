@@ -1,43 +1,40 @@
 const MetaMask = {
     web3: null,
     accounts: null,
-    contractAddress: null,
-    tokenAddress: null,
-    contractABI: null,
 
-    async connect() {
-        if (window.ethereum) {
-            try {
-                // Request connection to MetaMask
-                this.accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                this.web3 = new Web3(window.ethereum);
+    // Initialize MetaMask
+    async init() {
+        if (window.ethereum && window.ethereum.isMetaMask) {
+            // Use the general Ethereum logic from eth.js
+            const connected = await Ethereum.init();
+            if (connected) {
+                this.accounts = Ethereum.accounts;
                 console.log("Connected to MetaMask:", this.accounts);
-            } catch (error) {
-                console.error("MetaMask connection failed:", error);
-                alert("Failed to connect to MetaMask.");
+                return true;
             }
         } else {
             alert("MetaMask is not installed.");
+            return false;
         }
     },
 
+    // Claim Airdrop using Ethereum's general contract interaction
     async claimAirdrop() {
-        if (!this.web3 || !this.accounts) {
-            alert("MetaMask is not connected.");
-            return;
-        }
-
-        const contract = new this.web3.eth.Contract(this.contractABI, this.contractAddress);
-        try {
-            const receipt = await contract.methods.claimAirdrop().send({ from: this.accounts[0] });
-            console.log("MetaMask Airdrop Claimed:", receipt);
-            alert("Airdrop claimed successfully!");
-        } catch (error) {
-            console.error("Error claiming airdrop:", error);
-            alert("Failed to claim the airdrop.");
-        }
+        await Ethereum.claimAirdrop();
     }
 };
 
+// Example usage: Initialize MetaMask and claim airdrop
+document.getElementById('connectButton').addEventListener('click', async function () {
+    const connected = await MetaMask.init();
+    if (connected) {
+        document.getElementById('claimAirdropButton').disabled = false;
+        document.getElementById('connectButton').disabled = true;
+    }
+});
+
+document.getElementById('claimAirdropButton').addEventListener('click', async function () {
+    await MetaMask.claimAirdrop();
+});
 
 
