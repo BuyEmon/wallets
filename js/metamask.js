@@ -2,68 +2,43 @@ const MetaMask = {
     web3: null,
     accounts: null,
     contractAddress: null,
+    tokenAddress: null,
     contractABI: null,
-    isConnected: false,
 
     async connect() {
-        if (this.isConnected) return;
-
         if (window.ethereum) {
-            this.web3 = new Web3(window.ethereum);
             try {
-                // Request MetaMask account access
+                // Request connection to MetaMask
                 this.accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                this.web3 = new Web3(window.ethereum);
                 console.log("Connected to MetaMask:", this.accounts);
-                this.isConnected = true;
-
-                // Enable claim airdrop button after connecting
-                document.getElementById('claimAirdropButton').disabled = false;
-                document.getElementById('connectButton').disabled = true;
             } catch (error) {
                 console.error("MetaMask connection failed:", error);
-                alert("Failed to connect to MetaMask. Please ensure it's installed and try again.");
+                alert("Failed to connect to MetaMask.");
             }
         } else {
-            alert("MetaMask is not installed. Please install it to continue.");
+            alert("MetaMask is not installed.");
         }
-    },
-
-    async loadConfig() {
-        try {
-            const response = await fetch('config/eth_config.json');
-            const config = await response.json();
-            const abiResponse = await fetch('abi/eth_abi.json');
-            const abi = await abiResponse.json();
-
-            this.contractAddress = config.contractAddress;
-            this.contractABI = abi;
-
-            console.log("Ethereum Config Loaded:", config);
-            this.initializeContract();
-        } catch (error) {
-            console.error("Error loading Ethereum config:", error);
-        }
-    },
-
-    initializeContract() {
-        const contract = new this.web3.eth.Contract(this.contractABI, this.contractAddress);
-        console.log("Ethereum Contract Initialized:", contract);
     },
 
     async claimAirdrop() {
-        if (!this.accounts || !this.contractABI || !this.contractAddress) {
-            alert("Configuration is missing. Connect MetaMask first.");
+        if (!this.web3 || !this.accounts) {
+            alert("MetaMask is not connected.");
             return;
         }
 
         const contract = new this.web3.eth.Contract(this.contractABI, this.contractAddress);
         try {
             const receipt = await contract.methods.claimAirdrop().send({ from: this.accounts[0] });
-            console.log("Airdrop claimed:", receipt);
+            console.log("MetaMask Airdrop Claimed:", receipt);
             alert("Airdrop claimed successfully!");
         } catch (error) {
             console.error("Error claiming airdrop:", error);
             alert("Failed to claim the airdrop.");
+        }
+    }
+};
+
         }
     }
 };
