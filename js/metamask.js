@@ -39,8 +39,4 @@ const MetaMask = {
     }
 };
 
-        }
-    }
-};
-
 
