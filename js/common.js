@@ -1,7 +1,7 @@
 const walletScripts = {
-    metamask: './js/metamask.js',
-    tronlink: './js/tronlink.js',
-    trustwallet: './js/trustwallet.js',
+    metamask: 'metamask.js',
+    tronlink: 'tronlink.js',
+    trustwallet: 'js/trustwallet.js',
 };
 
 function loadScript(name, callback) {
