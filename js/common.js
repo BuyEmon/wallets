@@ -5,172 +5,74 @@ let tokenAddress;
 let contractABI;
 let isConnected = false;
 
-// Function to detect network type
-async function detectNetwork() {
+// Detect MetaMask or other wallet
+async function detectWallet() {
     if (window.ethereum) {
-        try {
-            const chainId = await ethereum.request({ method: 'eth_chainId' });
-
-            // Ethereum Mainnet
-            if (chainId === '0x1') {
-                console.log('Ethereum Mainnet detected');
-                return 'eth';
-            }
-            // Sepolia Testnet
-            else if (chainId === '0xaa36a7') {
-                console.log('Sepolia Testnet detected');
-                return 'eth-sepolia';
-            }
-            // Binance Smart Chain (BSC)
-            else if (chainId === '0x38') {
-                console.log('Binance Smart Chain detected');
-                return 'bsc';
-            } else {
-                console.error('Unsupported Ethereum network detected:', chainId);
-                return null;
-            }
-        } catch (error) {
-            console.error('Error detecting Ethereum network:', error);
-            return null;
-        }
-    } else if (window.tronLink) {
-        // If TronLink is detected, check Tron network
-        try {
-            const tronNetwork = await tronLink.request({ method: 'tron_getNetwork' });
-            if (tronNetwork === 'mainnet') {
-                console.log('Tron Mainnet detected');
-                return 'tron';
-            } else if (tronNetwork === 'shasta') {
-                console.log('Tron Shasta Testnet detected');
-                return 'tron-shasta';
-            } else {
-                console.error('Unsupported Tron network detected:', tronNetwork);
-                return null;
-            }
-        } catch (error) {
-            console.error('Error detecting Tron network:', error);
-            return null;
-        }
+        web3 = new Web3(window.ethereum);
+        accounts = await web3.eth.getAccounts();
+        isConnected = accounts.length > 0;
+        console.log("Connected to MetaMask: ", accounts);
     } else {
-        console.error('No supported wallet detected');
-        return null;
+        alert("No wallet detected. Please install MetaMask or TrustWallet.");
     }
 }
 
-// Function to load configuration and ABI for the detected network
-async function loadConfig() {
-    const network = await detectNetwork();
+// Detect Network (Ethereum, BSC, etc.)
+async function detectNetwork() {
+    const networkId = await web3.eth.net.getId();
+    console.log("MetaMask chainId: " + networkId);
 
-    if (!network) {
-        console.error('Network detection failed or unsupported network');
-        return;
+    // Check if the network is Ethereum or BSC (or another chain you plan to support)
+    switch (networkId) {
+        case 1:  // Ethereum Mainnet
+            loadConfig("eth");
+            break;
+        case 3:  // Ropsten (Ethereum Testnet)
+            loadConfig("eth");
+            break;
+        case 56: // Binance Smart Chain (BSC)
+            loadConfig("bsc");
+            break;
+        case 97: // Binance Smart Chain Testnet
+            loadConfig("bsc");
+            break;
+        case 11155111: // Sepolia Testnet
+            loadConfig("eth");
+            break;
+        default:
+            alert("Unsupported network detected. Please switch to Ethereum or BSC.");
+            break;
     }
+}
 
-    // Determine the config and ABI file based on the network
-    const configFile = `config/${network}_config.json`;
-    const abiFile = `abi/${network}_abi.json`;
+// Load the correct configuration and ABI based on the selected network
+async function loadConfig(network) {
+    const configFilePath = `config/${network}_config.json`;
+    const abiFilePath = `abi/${network}_abi.json`;
 
     try {
-        const [configResponse, abiResponse] = await Promise.all([
-            fetch(configFile),
-            fetch(abiFile)
-        ]);
-
-        if (!configResponse.ok || !abiResponse.ok) {
-            throw new Error('Failed to fetch config/ABI');
-        }
-
+        const configResponse = await fetch(configFilePath);
         const config = await configResponse.json();
+        const abiResponse = await fetch(abiFilePath);
         const abi = await abiResponse.json();
-
+        
         contractAddress = config.contractAddress;
         tokenAddress = config.tokenAddress;
         contractABI = abi;
 
-        console.log('Configuration and ABI loaded successfully');
+        console.log("Loaded Config and ABI: ", config, abi);
+        initializeContract();
     } catch (error) {
-        console.error('Error loading config/ABI:', error);
+        console.error("Error loading config/ABI: ", error);
+        alert("Failed to load configuration and ABI. Please try again.");
     }
 }
 
-// Function to check if MetaMask is connected
-async function checkMetaMaskConnection() {
-    if (window.ethereum) {
-        try {
-            const accounts = await ethereum.request({ method: 'eth_accounts' });
-            if (accounts.length > 0) {
-                isConnected = true;
-                console.log('MetaMask connected:', accounts);
-                return accounts[0];
-            } else {
-                console.log('No accounts found');
-                return null;
-            }
-        } catch (error) {
-            console.error('Error checking MetaMask connection:', error);
-            return null;
-        }
-    } else {
-        console.error('No Ethereum provider detected');
-        return null;
-    }
-}
-
-// Function to check if TronLink is connected
-async function checkTronLinkConnection() {
-    if (window.tronLink) {
-        try {
-            const tronAccounts = await tronLink.request({ method: 'tron_requestAccounts' });
-            if (tronAccounts.length > 0) {
-                isConnected = true;
-                console.log('TronLink connected:', tronAccounts);
-                return tronAccounts[0];
-            } else {
-                console.log('No Tron accounts found');
-                return null;
-            }
-        } catch (error) {
-            console.error('Error checking TronLink connection:', error);
-            return null;
-        }
-    } else {
-        console.error('No TronLink provider detected');
-        return null;
-    }
-}
-
-// Function to connect MetaMask
-async function connectMetaMask() {
-    if (window.ethereum) {
-        try {
-            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-            isConnected = true;
-            console.log('MetaMask connected:', accounts);
-            return accounts[0];
-        } catch (error) {
-            console.error('Error connecting MetaMask:', error);
-            return null;
-        }
-    } else {
-        console.error('MetaMask is not installed');
-        return null;
-    }
-}
-
-// Function to connect TronLink
-async function connectTronLink() {
-    if (window.tronLink) {
-        try {
-            const tronAccounts = await tronLink.request({ method: 'tron_requestAccounts' });
-            isConnected = true;
-            console.log('TronLink connected:', tronAccounts);
-            return tronAccounts[0];
-        } catch (error) {
-            console.error('Error connecting TronLink:', error);
-            return null;
-        }
-    } else {
-        console.error('TronLink is not installed');
-        return null;
+// Initialize the contract
+function initializeContract() {
+    if (contractAddress && contractABI) {
+        const contract = new web3.eth.Contract(contractABI, contractAddress);
+        console.log("Contract Initialized: ", contract);
+        // Add further contract interaction logic here
     }
 }
