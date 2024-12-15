@@ -4,14 +4,22 @@ const Ethereum = {
     contractAddress: null,
     tokenAddress: null,
     contractABI: null,
+    contract: null,
 
     async initialize() {
         try {
-            if (!window.ethereum) throw new Error("MetaMask is not installed.");
+            if (!window.ethereum) throw new Error("Ethereum wallet is not installed.");
+            
+            // Check if the user is connected to MetaMask and get accounts
+            this.accounts = await window.ethereum.request({ method: 'eth_accounts' });
+            if (this.accounts.length === 0) {
+                throw new Error("No Ethereum accounts found. Please connect your wallet.");
+            }
 
-            this.accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            // Initialize web3
             this.web3 = new Web3(window.ethereum);
 
+            // Load contract configuration and ABI
             const configResponse = await fetch('config/eth_config.json');
             const abiResponse = await fetch('abi/eth_abi.json');
 
@@ -30,11 +38,17 @@ const Ethereum = {
         }
     },
 
+    // Initialize the Ethereum contract
     initializeContract() {
+        if (!this.web3 || !this.contractABI || !this.contractAddress) {
+            alert("Missing contract data or Ethereum wallet.");
+            return;
+        }
         this.contract = new this.web3.eth.Contract(this.contractABI, this.contractAddress);
         console.log("Ethereum Contract Initialized:", this.contract);
     },
 
+    // Claim the airdrop
     async claimAirdrop() {
         if (!this.contract || !this.accounts) {
             alert("Ethereum wallet or contract is not properly initialized.");
@@ -50,3 +64,8 @@ const Ethereum = {
         }
     }
 };
+
+// Initialize Ethereum when the page is loaded
+window.addEventListener('load', () => {
+    Ethereum.initialize();
+});
