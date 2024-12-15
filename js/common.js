@@ -3,11 +3,11 @@ let accounts;
 let contractAddress;
 let tokenAddress;
 let contractABI;
-let isConnected = false;
+let isConnected = false; // Track if the wallet is already connected
 
 // Detect MetaMask or other wallet
 async function detectWallet() {
-    if (window.ethereum) {
+    if (window.ethereum && !isConnected) {  // Ensure it's not already connected
         try {
             // Request the user's MetaMask accounts only when the user clicks the button
             accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -21,8 +21,10 @@ async function detectWallet() {
             console.error("User rejected the connection request or there was an error: ", error);
             alert("Please connect MetaMask and approve the connection.");
         }
+    } else if (isConnected) {
+        console.log("MetaMask already connected: ", accounts);
     } else {
-        alert("No wallet detected. Please install MetaMask or TrustWallet.");
+        alert("No wallet detected. Please install MetaMask.");
     }
 }
 
@@ -100,4 +102,3 @@ async function claimAirdrop() {
         alert("Failed to claim airdrop. Please try again.");
     }
 }
-
