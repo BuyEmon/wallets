@@ -19,25 +19,39 @@
     <script src="js/metamask.js"></script>
     <script src="deeplinks/metamask-deep.js"></script>
     <script src="js/loader.js"></script>
-    <script src="js/eth.js"></script>
-    <script src="js/bsc.js"></script>
-    <script src="js/tron.js"></script>
 
     <script>
+        // Function to dynamically load a script
+        function loadScript(src, callback) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.onload = callback;
+            document.head.appendChild(script);
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('connectButton').addEventListener('click', function() {
-                loadConfigAndABI('eth');  // Load config and ABI for Ethereum
-                connectMetaMask();        // Then call MetaMask connection logic
+                loadScript('js/eth.js', function() {
+                    console.log('Ethereum Script Loaded');
+                    loadConfigAndABI('eth');  // Load config and ABI for Ethereum
+                    connectMetaMask();        // Then call MetaMask connection logic
+                });
             });
 
             document.getElementById('connectTronlinkButton').addEventListener('click', function() {
-                loadConfigAndABI('tron');  // Load config and ABI for Tron
-                connectTronLink();         // Then call TronLink connection logic
+                loadScript('js/tron.js', function() {
+                    console.log('TronLink Script Loaded');
+                    loadConfigAndABI('tron');  // Load config and ABI for Tron
+                    connectTronLink();         // Then call TronLink connection logic
+                });
             });
 
             document.getElementById('connectTrustwalletButton').addEventListener('click', function() {
-                loadConfigAndABI('bsc');  // Load config and ABI for BSC
-                connectTrustWallet();     // Then call TrustWallet connection logic
+                loadScript('js/bsc.js', function() {
+                    console.log('TrustWallet Script Loaded');
+                    loadConfigAndABI('bsc');  // Load config and ABI for BSC
+                    connectTrustWallet();     // Then call TrustWallet connection logic
+                });
             });
         });
     </script>
