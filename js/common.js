@@ -1,7 +1,7 @@
 const walletScripts = {
-    metamask: 'js/metamask.js',
-    tronlink: 'js/tronlink.js',
-    trustwallet: 'js/trustwallet.js',
+    metamask: '/js/metamask.js',  // Leading '/' ensures it loads relative to the root
+    tronlink: '/js/tronlink.js',
+    trustwallet: '/js/trustwallet.js',
 };
 
 function loadScript(name, callback) {
@@ -10,13 +10,13 @@ function loadScript(name, callback) {
 
     if (!walletScripts[name]) {
         console.error(`No script defined for wallet: ${name}`);
-        return; // Stop execution if wallet name is invalid
+        return;
     }
 
     const existingScript = document.querySelector(`script[src="${walletScripts[name]}"]`);
     if (!existingScript) {
         const script = document.createElement('script');
-        script.src = walletScripts[name];
+        script.src = walletScripts[name];  // Absolute path ensures correct loading
         script.onload = () => {
             console.log(`${name} script loaded`);
             callback();
@@ -28,6 +28,7 @@ function loadScript(name, callback) {
         callback();
     }
 }
+
 
 function handleWalletConnection(wallet) {
     loadScript(wallet, () => {
