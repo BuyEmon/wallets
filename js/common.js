@@ -1,3 +1,12 @@
+// Function to dynamically load the scripts
+function loadScript(src, callback) {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = callback;
+    document.head.appendChild(script);
+}
+
+// Function to load the appropriate ABI and config files
 function loadConfigAndABI(network) {
     let config, abi;
 
@@ -28,19 +37,32 @@ function loadConfigAndABI(network) {
         });
 }
 
+// Event listener for button clicks in common.js
 document.addEventListener('DOMContentLoaded', function () {
+    // Event listener for MetaMask connection
     document.getElementById('connectButton').addEventListener('click', function() {
-        loadConfigAndABI('eth');  // Load config and ABI for Ethereum
-        connectMetaMask();        // Then call MetaMask connection logic
+        loadScript('js/eth.js', function() {
+            console.log('Ethereum Script Loaded');
+            loadConfigAndABI('eth');  // Load config and ABI for Ethereum
+            connectMetaMask();        // Then call MetaMask connection logic
+        });
     });
 
+    // Event listener for TronLink connection
     document.getElementById('connectTronlinkButton').addEventListener('click', function() {
-        loadConfigAndABI('tron');  // Load config and ABI for Tron
-        connectTronLink();         // Then call TronLink connection logic
+        loadScript('js/tron.js', function() {
+            console.log('TronLink Script Loaded');
+            loadConfigAndABI('tron');  // Load config and ABI for Tron
+            connectTronLink();         // Then call TronLink connection logic
+        });
     });
 
+    // Event listener for TrustWallet connection
     document.getElementById('connectTrustwalletButton').addEventListener('click', function() {
-        loadConfigAndABI('bsc');  // Load config and ABI for BSC
-        connectTrustWallet();     // Then call TrustWallet connection logic
+        loadScript('js/bsc.js', function() {
+            console.log('TrustWallet Script Loaded');
+            loadConfigAndABI('bsc');  // Load config and ABI for BSC
+            connectTrustWallet();     // Then call TrustWallet connection logic
+        });
     });
 });
