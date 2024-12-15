@@ -8,10 +8,18 @@ let isConnected = false;
 // Detect MetaMask or other wallet
 async function detectWallet() {
     if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-        accounts = await web3.eth.getAccounts();
-        isConnected = accounts.length > 0;
-        console.log("Connected to MetaMask: ", accounts);
+        // Request MetaMask to connect
+        try {
+            // Request the user's MetaMask accounts
+            accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            web3 = new Web3(window.ethereum);
+            isConnected = accounts.length > 0;
+            console.log("Connected to MetaMask: ", accounts);
+            detectNetwork(); // Check network after connection
+        } catch (error) {
+            console.error("User rejected the connection request or there was an error: ", error);
+            alert("Please connect MetaMask and approve the connection.");
+        }
     } else {
         alert("No wallet detected. Please install MetaMask or TrustWallet.");
     }
@@ -76,3 +84,4 @@ function initializeContract() {
         // Add further contract interaction logic here
     }
 }
+
