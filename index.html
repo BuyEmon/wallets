@@ -27,6 +27,7 @@
     document.head.appendChild(script);
   }
 
+ <script>
   // Function to load ABI and config files dynamically based on the network
   async function loadConfigAndABI(network) {
     const configMap = {
@@ -39,46 +40,11 @@
     try {
       const configData = await fetch(config).then((res) => res.json());
       const abiData = await fetch(abi).then((res) => res.json());
-
-      console.log(`Loaded config for ${network}:`, configData);
-      console.log(`Loaded ABI for ${network}:`, abiData);
-
       return { config: configData, abi: abiData };
     } catch (error) {
       console.error(`Error loading config or ABI for ${network}:`, error);
       alert(`Failed to load configuration for ${network}.`);
     }
-  }
-
-  // Function to check if wallet is on the correct network
-  async function checkNetwork(web3, expectedChainId) {
-    const networkId = await web3.eth.net.getId();
-    if (networkId !== expectedChainId) {
-      alert(`You are connected to the wrong network. Please switch to the correct network.`);
-      return false;
-    }
-    return true;
-  }
-
-  // Common function to handle wallet connections and load required scripts dynamically
-  function handleWalletConnection(network, walletScript, connectionCallback, expectedChainId) {
-    // Load common.js first
-    loadScript('js/common.js', function () {
-      console.log('common.js script loaded');
-
-      // Load the specific wallet script (e.g., MetaMask, TronLink, TrustWallet)
-      loadScript(walletScript, function () {
-        console.log(`${network} wallet script loaded`);
-
-        // Load config and ABI for the selected network
-        loadConfigAndABI(network).then(({ config, abi }) => {
-          if (config && abi) {
-            // Pass the config and ABI to the connection callback
-            connectionCallback(config, abi, expectedChainId);
-          }
-        });
-      });
-    });
   }
 
   // MetaMask Connection Logic
@@ -103,36 +69,49 @@
     }
   }
 
-  // TronLink Connection Logic (Placeholder)
-  function connectTronLink(config, abi, expectedChainId) {
-    console.log("Connecting to TronLink...");
-    // Add TronLink-specific logic here (network check, etc.)
-  }
+  // Unified Wallet Connection Handler
+  function handleWalletConnection(wallet, network, expectedChainId) {
+    loadScript(wallet, () => {
+      console.log(`${wallet} script loaded successfully.`);
 
-  // TrustWallet Connection Logic (Placeholder)
-  function connectTrustWallet(config, abi, expectedChainId) {
-    console.log("Connecting to TrustWallet...");
-    // Add TrustWallet-specific logic here (network check, etc.)
+      // Load config and ABI dynamically
+      loadConfigAndABI(network).then(({ config, abi }) => {
+        if (config && abi) {
+          switch (wallet) {
+            case 'metamask':
+              connectMetaMask(config, abi, expectedChainId);
+              break;
+            case 'tronlink':
+              console.log('TronLink connection placeholder...');
+              break;
+            case 'trustwallet':
+              console.log('TrustWallet connection placeholder...');
+              break;
+          }
+        }
+      });
+    });
   }
 
   // Add event listeners for each button
   document.addEventListener('DOMContentLoaded', function () {
     // MetaMask Button
     document.getElementById('connectButton').addEventListener('click', function () {
-      handleWalletConnection('eth', 'js/metamask.js', connectMetaMask, 1);  // Ethereum Mainnet chainId is 1
+      handleWalletConnection('metamask', 'eth', 1);  // Ethereum Mainnet chainId is 1
     });
 
     // TronLink Button
     document.getElementById('connectTronlinkButton').addEventListener('click', function () {
-      handleWalletConnection('tron', 'js/tronlink.js', connectTronLink, 1);  // Use Tron mainnet or custom chainId for Tron
+      handleWalletConnection('tronlink', 'tron', 1);  // Placeholder for Tron mainnet chainId
     });
 
     // TrustWallet Button
     document.getElementById('connectTrustwalletButton').addEventListener('click', function () {
-      handleWalletConnection('bsc', 'js/trustwallet.js', connectTrustWallet, 56);  // BSC chainId is 56
+      handleWalletConnection('trustwallet', 'bsc', 56);  // BSC chainId is 56
     });
   });
 </script>
+
 
 </body>
 </html>
