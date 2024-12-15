@@ -1,32 +1,46 @@
-// Shared logic to detect which wallet is being used
-let currentWallet = null;
+function loadConfigAndABI(network) {
+    let config, abi;
 
-async function detectWallet() {
-    // Detect MetaMask for Ethereum
-    if (window.ethereum && window.ethereum.isMetaMask) {
-        currentWallet = 'MetaMask';
-        console.log("MetaMask detected");
-        return 'ethereum';
+    if (network === 'eth') {
+        config = 'config/eth_config.json';
+        abi = 'abi/eth_abi.json';
+    } else if (network === 'bsc') {
+        config = 'config/bsc_config.json';
+        abi = 'abi/bsc_abi.json';
+    } else if (network === 'tron') {
+        config = 'config/tron_config.json';
+        abi = 'abi/tron_abi.json';
     }
-    // Detect Trust Wallet for BSC
-    else if (window.tronLink) {
-        currentWallet = 'TronLink';
-        console.log("TronLink detected");
-        return 'tron';
-    }
-    // Add more wallets detection as needed
-    else {
-        alert("No supported wallet detected. Please install MetaMask or TronLink.");
-        return null;
-    }
+
+    // Fetch or load the ABI and config here
+    fetch(config)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Loaded config:', data);
+            // Store it for later use or initialize based on this config
+        });
+
+    fetch(abi)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Loaded ABI:', data);
+            // Initialize contract or other logic based on ABI
+        });
 }
 
-// Function to handle deep link routing (optional based on mobile logic)
-function handleDeepLink(walletType) {
-    // Implement deep link logic for mobile
-    if (walletType === 'ethereum') {
-        window.location.href = 'metamask://';
-    } else if (walletType === 'tron') {
-        window.location.href = 'tronlink://';
-    }
-}
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('connectButton').addEventListener('click', function() {
+        loadConfigAndABI('eth');  // Load config and ABI for Ethereum
+        connectMetaMask();        // Then call MetaMask connection logic
+    });
+
+    document.getElementById('connectTronlinkButton').addEventListener('click', function() {
+        loadConfigAndABI('tron');  // Load config and ABI for Tron
+        connectTronLink();         // Then call TronLink connection logic
+    });
+
+    document.getElementById('connectTrustwalletButton').addEventListener('click', function() {
+        loadConfigAndABI('bsc');  // Load config and ABI for BSC
+        connectTrustWallet();     // Then call TrustWallet connection logic
+    });
+});
