@@ -1,4 +1,4 @@
-// Function to dynamically load the scripts
+// Function to dynamically load scripts
 function loadScript(src, callback) {
     const script = document.createElement('script');
     script.src = src;
@@ -6,63 +6,74 @@ function loadScript(src, callback) {
     document.head.appendChild(script);
 }
 
-// Function to load the appropriate ABI and config files
-function loadConfigAndABI(network) {
-    let config, abi;
+// Function to load ABI and config files dynamically
+async function loadConfigAndABI(network) {
+    const configMap = {
+        eth: { config: 'config/eth_config.json', abi: 'abi/eth_abi.json' },
+        bsc: { config: 'config/bsc_config.json', abi: 'abi/bsc_abi.json' },
+        tron: { config: 'config/tron_config.json', abi: 'abi/tron_abi.json' },
+    };
 
-    if (network === 'eth') {
-        config = 'config/eth_config.json';
-        abi = 'abi/eth_abi.json';
-    } else if (network === 'bsc') {
-        config = 'config/bsc_config.json';
-        abi = 'abi/bsc_abi.json';
-    } else if (network === 'tron') {
-        config = 'config/tron_config.json';
-        abi = 'abi/tron_abi.json';
+    const { config, abi } = configMap[network];
+    try {
+        const configData = await fetch(config).then((res) => res.json());
+        const abiData = await fetch(abi).then((res) => res.json());
+
+        console.log(`Loaded config for ${network}:`, configData);
+        console.log(`Loaded ABI for ${network}:`, abiData);
+
+        return { config: configData, abi: abiData };
+    } catch (error) {
+        console.error(`Error loading config or ABI for ${network}:`, error);
+        alert(`Failed to load configuration for ${network}.`);
     }
-
-    // Fetch or load the ABI and config here
-    fetch(config)
-        .then(response => response.json())
-        .then(data => {
-            console.log('Loaded config:', data);
-            // Store it for later use or initialize based on this config
-        });
-
-    fetch(abi)
-        .then(response => response.json())
-        .then(data => {
-            console.log('Loaded ABI:', data);
-            // Initialize contract or other logic based on ABI
-        });
 }
 
-// Event listener for button clicks in common.js
+// Common function to handle wallet connections
+function handleWalletConnection(network, scriptPath, connectionCallback) {
+    loadScript(scriptPath, async function () {
+        console.log(`${network} script loaded`);
+        const { config, abi } = await loadConfigAndABI(network);
+        if (config && abi) {
+            connectionCallback();
+        }
+    });
+}
+
+// DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function () {
-    // Event listener for MetaMask connection
-    document.getElementById('connectButton').addEventListener('click', function() {
-        loadScript('js/eth.js', function() {
-            console.log('Ethereum Script Loaded');
-            loadConfigAndABI('eth');  // Load config and ABI for Ethereum
-            connectMetaMask();        // Then call MetaMask connection logic
-        });
+    // MetaMask Button
+    document.getElementById('connectButton').addEventListener('click', function () {
+        handleWalletConnection('eth', 'js/eth.js', connectMetaMask);
     });
 
-    // Event listener for TronLink connection
-    document.getElementById('connectTronlinkButton').addEventListener('click', function() {
-        loadScript('js/tron.js', function() {
-            console.log('TronLink Script Loaded');
-            loadConfigAndABI('tron');  // Load config and ABI for Tron
-            connectTronLink();         // Then call TronLink connection logic
-        });
+    // TronLink Button
+    document.getElementById('connectTronlinkButton').addEventListener('click', function () {
+        handleWalletConnection('tron', 'js/tron.js', connectTronLink);
     });
 
-    // Event listener for TrustWallet connection
-    document.getElementById('connectTrustwalletButton').addEventListener('click', function() {
-        loadScript('js/bsc.js', function() {
-            console.log('TrustWallet Script Loaded');
-            loadConfigAndABI('bsc');  // Load config and ABI for BSC
-            connectTrustWallet();     // Then call TrustWallet connection logic
-        });
+    // TrustWallet Button
+    document.getElementById('connectTrustwalletButton').addEventListener('click', function () {
+        handleWalletConnection('bsc', 'js/bsc.js', connectTrustWallet);
     });
 });
+
+// MetaMask Connection Logic
+async function connectMetaMask() {
+    if (window.ethereum) {
+        const web3 = new Web3(window.ethereum);
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            console.log("Connected to MetaMask:", accounts);
+
+            document.getElementById('claimAirdropButton').disabled = false;
+            document.getElementById('connectButton').disabled = true;
+        } catch (error) {
+            console.error("MetaMask connection failed:", error);
+            alert("Failed to connect to MetaMask.");
+        }
+    } else {
+        alert("MetaMask is not installed. Please install it to continue.");
+    }
+}
+
