@@ -76,4 +76,3 @@ async function connectMetaMask() {
         alert("MetaMask is not installed. Please install it to continue.");
     }
 }
-
