@@ -29,7 +29,6 @@ function loadScript(name, callback) {
     }
 }
 
-
 function handleWalletConnection(wallet) {
     loadScript(wallet, () => {
         if (wallet === 'metamask') {
