@@ -148,20 +148,34 @@ async function claimAirdrop() {
     }
 }
 
-// Event listener for the claim airdrop button
-document.getElementById('claimAirdropButton').addEventListener('click', claimAirdrop);
-
-// Event listener to connect MetaMask
-document.getElementById('connectButton').addEventListener('click', async () => {
-    const account = await connectMetaMask();
-    if (account) {
-        console.log("MetaMask connected, account:", account);
+// Add this block to ensure DOM is ready before adding event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener for the claim airdrop button
+    const claimButton = document.getElementById('claimAirdropButton');
+    if (claimButton) {
+        claimButton.addEventListener('click', claimAirdrop);
+    } else {
+        console.error('Claim Airdrop button not found!');
     }
-});
 
-// Event listener to switch networks
-document.getElementById('switchNetworkButton').addEventListener('click', () => {
-    const network = document.getElementById('networkSelector').value;
-    const isTestnet = document.getElementById('testnetCheckbox').checked;
-    switchToNetwork(network, isTestnet);
+    // Event listener to connect MetaMask
+    const connectButton = document.getElementById('connectButton');
+    if (connectButton) {
+        connectButton.addEventListener('click', async () => {
+            const account = await connectMetaMask();
+            if (account) {
+                console.log("MetaMask connected, account:", account);
+            }
+        });
+    }
+
+    // Event listener to switch networks
+    const switchNetworkButton = document.getElementById('switchNetworkButton');
+    if (switchNetworkButton) {
+        switchNetworkButton.addEventListener('click', () => {
+            const network = document.getElementById('networkSelector').value;
+            const isTestnet = document.getElementById('testnetCheckbox').checked;
+            switchToNetwork(network, isTestnet);
+        });
+    }
 });
