@@ -20,5 +20,14 @@
 
 <script src="js/common.js"></script> 
 <script src="deeplinks/metamask-deep.js"></script> <!-- For mobile MetaMask -->
+
+<script>
+    // Add event listener to the connect button
+    document.getElementById('connectButton').addEventListener('click', function() {
+        // You can modify the network and wallet based on your needs
+        handleWalletConnection('metamask', 'eth', ['0x1']); // eth network with chain ID 0x1 (Ethereum mainnet)
+    });
+</script>
+
 </body>
 </html>
