@@ -1,3 +1,6 @@
+console.log('metamask.js is loaded');
+
+
 // Function to initialize connection and check network
 async function connectMetaMask() {
     if (window.ethereum) {
