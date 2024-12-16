@@ -47,31 +47,112 @@ async function connectMetaMask() {
     }
 }
 
-// Function to handle airdrop claim
+// Function to switch networks based on chainId
+async function switchToNetwork(networkId, isTestnet = false) {
+    // Define the mainnet and testnet chain IDs for each network
+    const networkConfig = {
+        eth: {
+            mainnet: '0x1',    // Ethereum Mainnet
+            sepolia: '0xaa36a7',  // Ethereum Sepolia Testnet
+            goerli: '0x5',     // Ethereum Goerli Testnet
+        },
+        bsc: {
+            mainnet: '0x38',   // Binance Smart Chain Mainnet
+            testnet: '0x61',   // Binance Smart Chain Testnet
+        },
+        tron: {
+            mainnet: '0x2a',   // Tron Mainnet (same for testnet)
+            testnet: '0x2a',   // Tron Testnet (handled with a different RPC URL)
+        },
+    };
+
+    // Determine which chainId to use based on the network and whether it's a testnet
+    let chainId;
+    if (isTestnet) {
+        chainId = networkConfig[networkId]?.testnet || null;
+    } else {
+        chainId = networkConfig[networkId]?.mainnet || null;
+    }
+
+    if (chainId) {
+        try {
+            // Attempt to switch the network
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId }],
+            });
+            console.log(`Switched to ${isTestnet ? 'testnet' : 'mainnet'} for ${networkId} network: ${chainId}`);
+        } catch (error) {
+            console.error("Error switching network:", error);
+            // Handle network not found, add it if not present in MetaMask (optional)
+            if (error.code === 4902) {
+                console.log(`${networkId} network is not available in MetaMask, adding it.`);
+                // Add the network to MetaMask (custom method can be used here)
+                // For example, adding Ethereum's Sepolia Testnet
+                if (networkId === 'eth' && isTestnet) {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0xaa36a7',
+                            chainName: 'Ethereum Sepolia Testnet',
+                            rpcUrls: ['https://sepolia.infura.io/v3/'],
+                            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                            blockExplorerUrls: ['https://sepolia.etherscan.io/'],
+                        }],
+                    });
+                }
+            } else {
+                console.error("Error switching network:", error);
+            }
+        }
+    } else {
+        console.error("Invalid network ID:", networkId);
+    }
+}
+
+// Function to claim airdrop
 async function claimAirdrop() {
     const account = await connectMetaMask();
     if (!account) return;
 
+    // Get the current network
     const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+    let network = '';
     if (currentChainId === '0x1') {
-        console.log(`Claiming airdrop for Ethereum account: ${account}`);
-        // Add your airdrop claiming logic here for Ethereum
+        network = 'eth';
     } else if (currentChainId === '0x38') {
-        console.log(`Claiming airdrop for BSC account: ${account}`);
-        // Add your airdrop claiming logic here for BSC
+        network = 'bsc';
     } else if (currentChainId === '0x2a') {
-        console.log(`Claiming airdrop for TRON account: ${account}`);
-        // Add your airdrop claiming logic here for TRON
+        network = 'tron';
     } else {
-        console.error("Unknown network for claiming airdrop.");
+        alert("You are not connected to a supported network.");
+        return;
+    }
+
+    // Call the appropriate contract based on the network
+    try {
+        console.log(`Claiming airdrop for account: ${account} on ${network} network`);
+        // Example: Add your contract interaction here, e.g., contract.methods.claimAirdrop().send({ from: account })
+        alert(`Airdrop claimed successfully for account: ${account}`);
+    } catch (error) {
+        console.error("Error claiming airdrop:", error);
     }
 }
 
-// Event listeners for buttons
+// Event listener for the claim airdrop button
+document.getElementById('claimAirdropButton').addEventListener('click', claimAirdrop);
+
+// Event listener to connect MetaMask
 document.getElementById('connectButton').addEventListener('click', async () => {
-    await connectMetaMask();
+    const account = await connectMetaMask();
+    if (account) {
+        console.log("MetaMask connected, account:", account);
+    }
 });
 
-document.getElementById('claimAirdropButton').addEventListener('click', async () => {
-    await claimAirdrop();
+// Event listener to switch networks
+document.getElementById('switchNetworkButton').addEventListener('click', () => {
+    const network = document.getElementById('networkSelector').value;
+    const isTestnet = document.getElementById('testnetCheckbox').checked;
+    switchToNetwork(network, isTestnet);
 });
