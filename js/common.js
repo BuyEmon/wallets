@@ -1,3 +1,5 @@
+console.log('common.js is loaded');
+
 const walletScripts = {
     metamask: '/js/metamask.js',  // Leading '/' ensures it loads relative to the root
     tronlink: '/js/tronlink.js',
