@@ -24,6 +24,9 @@
     const script = document.createElement('script');
     script.src = src;
     script.onload = callback;
+    script.onerror = function(error) {
+      console.error("Error loading script:", src, error); // Log error if script fails to load
+    };
     document.head.appendChild(script);
   }
 
@@ -68,28 +71,52 @@
     }
   }
 
+  // TronLink Connection Logic (Placeholder)
+  function connectTronLink(config, abi, expectedChainId) {
+    // Implement TronLink connection logic
+    console.log('TronLink connection placeholder...');
+  }
+
+  // TrustWallet Connection Logic (Placeholder)
+  function connectTrustWallet(config, abi, expectedChainId) {
+    // Implement TrustWallet connection logic
+    console.log('TrustWallet connection placeholder...');
+  }
+
   // Unified Wallet Connection Handler
   function handleWalletConnection(wallet, network, expectedChainId) {
-    loadScript(wallet, () => {
-      console.log(`${wallet} script loaded successfully.`);
+    const scriptPaths = {
+      metamask: 'js/metamask.js',
+      tronlink: 'js/tronlink.js',
+      trustwallet: 'js/trustwallet.js',
+    };
 
-      // Load config and ABI dynamically
-      loadConfigAndABI(network).then(({ config, abi }) => {
-        if (config && abi) {
-          switch (wallet) {
-            case 'metamask':
-              connectMetaMask(config, abi, expectedChainId);
-              break;
-            case 'tronlink':
-              console.log('TronLink connection placeholder...');
-              break;
-            case 'trustwallet':
-              console.log('TrustWallet connection placeholder...');
-              break;
+    const walletScript = scriptPaths[wallet];
+
+    if (walletScript) {
+      loadScript(walletScript, () => {
+        console.log(`${walletScript} script loaded successfully.`);
+
+        // Load config and ABI dynamically
+        loadConfigAndABI(network).then(({ config, abi }) => {
+          if (config && abi) {
+            switch (wallet) {
+              case 'metamask':
+                connectMetaMask(config, abi, expectedChainId);
+                break;
+              case 'tronlink':
+                connectTronLink(config, abi, expectedChainId);
+                break;
+              case 'trustwallet':
+                connectTrustWallet(config, abi, expectedChainId);
+                break;
+            }
           }
-        }
+        });
       });
-    });
+    } else {
+      console.error(`No script found for wallet: ${wallet}`);
+    }
   }
 
   // Add event listeners for each button
@@ -129,6 +156,5 @@
 
 </body>
 </html>
-
 
 
