@@ -1,12 +1,23 @@
+// Flag to prevent multiple connection attempts
+let isMetaMaskConnecting = false; // Flag to track connection status
+
 // Function to initialize connection and check network
 async function connectMetaMask() {
     if (window.ethereum) {
+        if (isMetaMaskConnecting) {
+            console.log('Connection request already pending. Please wait.');
+            return; // Prevent further connection attempts if one is in progress
+        }
+
         try {
+            isMetaMaskConnecting = true; // Set the flag to indicate a connection attempt is in progress
+
             // Request wallet connection
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
 
             if (accounts.length === 0) {
                 console.error('No accounts found. Please ensure MetaMask is unlocked.');
+                isMetaMaskConnecting = false; // Reset the flag in case of error
                 return;
             }
 
@@ -30,15 +41,19 @@ async function connectMetaMask() {
                 defaultNetwork = 'sepolia'; // Ethereum Sepolia Testnet
             } else {
                 console.error("Unknown network. Please switch to Ethereum, BSC, or Sepolia.");
+                isMetaMaskConnecting = false; // Reset the flag
                 return;
             }
 
             // Set the network in the claim button text
             document.getElementById('claimAirdropButton').innerText = `Claim Airdrop (${defaultNetwork.toUpperCase()})`;
 
+            isMetaMaskConnecting = false; // Reset the flag when done
+
             return account;
         } catch (error) {
             console.error("Error connecting to MetaMask:", error);
+            isMetaMaskConnecting = false; // Reset the flag on error
         }
     } else {
         alert("MetaMask is not installed. Please install MetaMask to continue.");
@@ -84,13 +99,13 @@ async function switchToNetwork(networkId, isTestnet = false) {
                 if (networkId === 'eth' && isTestnet) {
                     await window.ethereum.request({
                         method: 'wallet_addEthereumChain',
-                        params: [{
+                        params: [({
                             chainId: '0xaa36a7',
                             chainName: 'Ethereum Sepolia Testnet',
                             rpcUrls: ['https://sepolia.infura.io/v3/'], // Replace with your Infura project ID
                             nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
                             blockExplorerUrls: ['https://sepolia.etherscan.io/'],
-                        }],
+                        })],
                     });
                 }
             }
