@@ -1,61 +1,19 @@
-// Common shared functionality can go here
-console.log('common.js: Script Loaded');
+// common.js
 
-// Check if a wallet extension (like MetaMask) is available in the browser
-const isWalletInstalled = (walletName) => {
-    if (walletName === 'metamask') {
-        return typeof window.ethereum !== 'undefined';
-    }
-    // Add other wallet checks if needed (e.g., TronLink, TrustWallet)
-    return false;
-};
+// Utility to check if the wallet is connected to the right network
+function isCorrectNetwork(config) {
+    return ethereum.networkVersion === config.networkId;
+}
 
-// Request the user's accounts
-const requestAccounts = async () => {
+// Function to switch networks if necessary
+async function switchNetwork(config) {
     try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        return accounts;
-    } catch (error) {
-        console.error("Error requesting accounts:", error);
-        return [];
-    }
-};
-
-// Switch networks dynamically for Ethereum-based wallets
-const switchNetwork = async (networkConfig) => {
-    try {
-        await window.ethereum.request({
+        await ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: networkConfig.chainId }],
+            params: [{ chainId: config.chainId }],
         });
-        console.log(`Switched to ${networkConfig.name}`);
+        console.log("Network switched successfully.");
     } catch (error) {
-        console.error("Error switching network:", error);
+        console.error("Network switch failed:", error);
     }
-};
-
-// Load configuration for a given network (e.g., BSC, Ethereum)
-const loadConfig = async (network) => {
-    const configFile = `../config/${network}_config.json`;
-    const response = await fetch(configFile);
-    const config = await response.json();
-    return config;
-};
-
-// Load ABI for a given network (Ethereum, BSC, etc.)
-const loadABI = async (network) => {
-    const abiFile = `../abi/${network}_abi.json`;
-    const response = await fetch(abiFile);
-    const abi = await response.json();
-    return abi;
-};
-
-// Dynamically load network configuration for a given network
-const loadNetworkConfig = async (network) => {
-    const networkFile = `../networks/${network}_network.json`;
-    const response = await fetch(networkFile);
-    const config = await response.json();
-    return config;
-};
-
-
+}
