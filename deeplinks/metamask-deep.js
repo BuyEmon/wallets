@@ -1,3 +1,6 @@
+console.log('metamask-deeplink.js: Mobile Deep Link Loaded');
+
+
 function redirectToMetaMask() {
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     const isMetaMask = navigator.userAgent.includes("MetaMask");
