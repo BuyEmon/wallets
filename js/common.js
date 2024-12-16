@@ -1,49 +1,65 @@
-console.log('common.js is loaded');
+// Function to dynamically load scripts
+function loadScript(src, callback) {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = callback;
+    script.onerror = function(error) {
+        console.error("Error loading script:", src, error); // Log error if script fails to load
+    };
+    document.head.appendChild(script);
+}
 
-const walletScripts = {
-    metamask: '/js/metamask.js',  // Leading '/' ensures it loads relative to the root
-    tronlink: '/js/tronlink.js',
-    trustwallet: '/js/trustwallet.js',
-};
+// Function to load ABI and config files dynamically based on the network
+async function loadConfigAndABI(network) {
+    const configMap = {
+        eth: { config: 'config/eth_config.json', abi: 'abi/eth_abi.json' },
+        bsc: { config: 'config/bsc_config.json', abi: 'abi/bsc_abi.json' },
+        tron: { config: 'config/tron_config.json', abi: 'abi/tron_abi.json' },
+    };
 
-function loadScript(name, callback) {
-    console.log(`Requested wallet: ${name}`); // Debugging: Log the wallet name
-    console.log(`Script path: ${walletScripts[name]}`); // Debugging: Log the resolved script path
-
-    if (!walletScripts[name]) {
-        console.error(`No script defined for wallet: ${name}`);
-        return;
-    }
-
-    const existingScript = document.querySelector(`script[src="${walletScripts[name]}"]`);
-    if (!existingScript) {
-        const script = document.createElement('script');
-        script.src = walletScripts[name];  // Absolute path ensures correct loading
-        script.onload = () => {
-            console.log(`${name} script loaded`);
-            callback();
-        };
-        script.onerror = () => console.error(`Error loading ${walletScripts[name]} script`);
-        document.head.appendChild(script);
-    } else {
-        console.log(`${name} script already loaded`);
-        callback();
+    const { config, abi } = configMap[network];
+    try {
+        const configData = await fetch(config).then((res) => res.json());
+        const abiData = await fetch(abi).then((res) => res.json());
+        return { config: configData, abi: abiData };
+    } catch (error) {
+        console.error(`Error loading config or ABI for ${network}:`, error);
+        alert(`Failed to load configuration for ${network}.`);
     }
 }
 
-function handleWalletConnection(wallet) {
-    loadScript(wallet, () => {
-        if (wallet === 'metamask') {
-            console.log('Initializing MetaMask...');
-            MetaMask.init();
-        }
-        if (wallet === 'tronlink') {
-            console.log('Initializing TronLink...');
-            TronLink.init();
-        }
-        if (wallet === 'trustwallet') {
-            console.log('Initializing TrustWallet...');
-            TrustWallet.init();
-        }
-    });
+// Unified Wallet Connection Handler
+function handleWalletConnection(wallet, network, expectedChainIds) {
+    const scriptPaths = {
+        metamask: 'js/metamask.js',
+        tronlink: 'js/tronlink.js',
+        trustwallet: 'js/trustwallet.js',
+    };
+
+    const walletScript = scriptPaths[wallet];
+
+    if (walletScript) {
+        loadScript(walletScript, () => {
+            console.log(`${walletScript} script loaded successfully.`);
+
+            // Load config and ABI dynamically
+            loadConfigAndABI(network).then(({ config, abi }) => {
+                if (config && abi) {
+                    switch (wallet) {
+                        case 'metamask':
+                            connectMetaMask(config, abi, expectedChainIds);
+                            break;
+                        case 'tronlink':
+                            connectTronLink(config, abi, expectedChainIds);
+                            break;
+                        case 'trustwallet':
+                            connectTrustWallet(config, abi, expectedChainIds);
+                            break;
+                    }
+                }
+            });
+        });
+    } else {
+        console.error(`No script found for wallet: ${wallet}`);
+    }
 }
