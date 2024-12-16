@@ -1,52 +1,26 @@
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('loader.js: DOM Content Loaded');
-    
-    const metaMaskButton = document.getElementById('connectMetaMask');
-    const bscButton = document.getElementById('connectBSC');
-    const tronButton = document.getElementById('connectTronLink');
-    const sepoliaButton = document.getElementById('connectSepolia');
-    
-    metaMaskButton.addEventListener('click', () => {
-        console.log('loader.js: Connect MetaMask clicked');
-        loadMetaMask();
-    });
+// loader.js
 
-    bscButton.addEventListener('click', () => {
-        console.log('loader.js: Connect BSC clicked');
-        loadBSCNetwork();
-    });
+window.addEventListener('load', function () {
+    console.log("Loader.js initialized.");
 
-    tronButton.addEventListener('click', () => {
-        console.log('loader.js: Connect TronLink clicked');
-        loadTronLink();
-    });
-
-    sepoliaButton.addEventListener('click', () => {
-        console.log('loader.js: Connect Sepolia clicked');
-        loadSepoliaNetwork();
-    });
-
-    function loadMetaMask() {
-        console.log('loader.js: Loading MetaMask...');
-        // Dynamically load MetaMask-related script
-        const script = document.createElement('script');
-        script.src = 'js/metamask.js';
-        document.body.appendChild(script);
-        script.onload = () => console.log('MetaMask script loaded');
+    // Check if the browser supports MetaMask
+    if (typeof window.ethereum !== 'undefined') {
+        document.getElementById('metamaskButton').disabled = false;
     }
 
-    function loadBSCNetwork() {
-        console.log('loader.js: Loading BSC Network...');
-        // You can add logic to load BSC-specific code here
-    }
-
-    function loadTronLink() {
-        console.log('loader.js: Loading TronLink...');
-        // You can add logic to load TronLink-specific code here
-    }
-
-    function loadSepoliaNetwork() {
-        console.log('loader.js: Loading Sepolia Network...');
-        // You can add logic to load Sepolia-specific code here
-    }
+    // Add event listeners for buttons
+    document.getElementById('metamaskButton').addEventListener('click', function () {
+        loadScript('js/metamask.js', function() {
+            console.log("MetaMask script loaded successfully.");
+        });
+    });
 });
+
+// Dynamically load JavaScript files
+function loadScript(src, callback) {
+    var script = document.createElement('script');
+    script.src = src;
+    script.onload = callback;
+    document.body.appendChild(script);
+}
+
