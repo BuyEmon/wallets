@@ -28,7 +28,7 @@ async function connectMetaMask() {
                 defaultNetwork = 'bsc'; // Binance Smart Chain
             } else if (currentChainId === '0x2a') {
                 defaultNetwork = 'tron'; // Tron
-            } else if (currentChainId === '0xaa36a7') {
+            } else if (currentChainId === '0x111') {
                 defaultNetwork = 'eth'; // Ethereum Sepolia Testnet
             } else {
                 console.error("Unknown network. Please switch to Ethereum, BSC, or Tron.");
