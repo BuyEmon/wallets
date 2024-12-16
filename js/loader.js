@@ -1,3 +1,6 @@
+console.log('loader.js is loaded');
+
+
 document.addEventListener('DOMContentLoaded', function () {
     // Event listeners for wallet connection buttons
     document.getElementById('connectButton').addEventListener('click', function() {
