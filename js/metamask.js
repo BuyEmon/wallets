@@ -1,32 +1,50 @@
-// MetaMask connection logic
-const connectMetaMask = async () => {
-    if (!isWalletInstalled('metamask')) {
-        console.error("MetaMask is not installed.");
-        return;
+// metamask.js
+
+window.addEventListener('load', function () {
+    console.log("MetaMask.js loaded.");
+
+    // Initialize MetaMask connection
+    if (typeof ethereum !== 'undefined') {
+        const metamaskButton = document.getElementById('metamaskButton');
+        const claimAirdropButton = document.getElementById('claimAirdropButton');
+
+        metamaskButton.addEventListener('click', async function () {
+            try {
+                await ethereum.request({ method: 'eth_requestAccounts' });
+                console.log("MetaMask connected.");
+                claimAirdropButton.disabled = false;
+
+                // Check if the user is on the correct network (Ethereum in this case)
+                const ethConfig = await fetch('config/eth_config.json').then(res => res.json());
+                const ethNetwork = await fetch('networks/eth_network.json').then(res => res.json());
+
+                if (!isCorrectNetwork(ethNetwork)) {
+                    await switchNetwork(ethNetwork);
+                }
+            } catch (error) {
+                console.error("Error connecting to MetaMask:", error);
+            }
+        });
+
+        // Handle airdrop claiming
+        claimAirdropButton.addEventListener('click', async function () {
+            try {
+                const ethConfig = await fetch('config/eth_config.json').then(res => res.json());
+                const ethABI = await fetch('abi/eth_abi.json').then(res => res.json());
+
+                const web3 = new Web3(window.ethereum);
+                const contract = new web3.eth.Contract(ethABI, ethConfig.contractAddress);
+
+                const accounts = await web3.eth.getAccounts();
+                await contract.methods.claimAirdrop().send({ from: accounts[0] });
+                console.log("Airdrop claimed!");
+            } catch (error) {
+                console.error("Error claiming airdrop:", error);
+            }
+        });
+    } else {
+        console.log("MetaMask is not installed.");
     }
-
-    try {
-        const accounts = await requestAccounts();
-        console.log("Connected to MetaMask:", accounts[0]);
-        window.activeAccount = accounts[0];  // Store active account
-    } catch (error) {
-        console.error("Error connecting to MetaMask:", error);
-    }
-};
-
-// Airdrop claim logic (MetaMask-specific)
-const claimAirdrop = async () => {
-    const contractConfig = await loadConfig('eth');
-    const abi = await loadABI('eth');
-    
-    // Assuming contract interaction code here (using Web3 or Ethers.js)
-    console.log("Airdrop claim initiated...");
-};
-
-// Event listener for MetaMask connection button
-document.getElementById('connect-metamask').addEventListener('click', connectMetaMask);
-
-// Event listener for airdrop claim button
-document.getElementById('claim-airdrop').addEventListener('click', claimAirdrop);
+});
 
 
