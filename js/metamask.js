@@ -26,12 +26,10 @@ async function connectMetaMask() {
                 defaultNetwork = 'eth'; // Ethereum Mainnet
             } else if (currentChainId === '0x38') {
                 defaultNetwork = 'bsc'; // Binance Smart Chain
-            } else if (currentChainId === '0x2a') {
-                defaultNetwork = 'tron'; // Tron
-            } else if (currentChainId === '0x111') {
-                defaultNetwork = 'eth'; // Ethereum Sepolia Testnet
+            } else if (currentChainId === '0xaa36a7') {
+                defaultNetwork = 'sepolia'; // Ethereum Sepolia Testnet
             } else {
-                console.error("Unknown network. Please switch to Ethereum, BSC, or Tron.");
+                console.error("Unknown network. Please switch to Ethereum, BSC, or Sepolia.");
                 return;
             }
 
@@ -50,28 +48,21 @@ async function connectMetaMask() {
 // Function to switch networks based on chainId
 async function switchToNetwork(networkId, isTestnet = false) {
     // Define the mainnet and testnet chain IDs for each network
-  // Define the mainnet and testnet chain IDs for each network
-const networkConfig = {
-    eth: {
-        mainnet: '0x1',    // Ethereum Mainnet
-        sepolia: '0x111',  // Ethereum Sepolia Testnet
-        goerli: '0x5',     // Ethereum Goerli Testnet
-    },
-    bsc: {
-        mainnet: '0x38',   // Binance Smart Chain Mainnet
-        testnet: '0x61',   // Binance Smart Chain Testnet
-    },
-    tron: {
-        mainnet: '0x2a',   // Tron Mainnet (same for testnet)
-        testnet: '0x2a',   // Tron Testnet (handled with a different RPC URL)
-    },
-};
-
+    const networkConfig = {
+        eth: {
+            mainnet: '0x1',       // Ethereum Mainnet
+            sepolia: '0xaa36a7',  // Ethereum Sepolia Testnet
+        },
+        bsc: {
+            mainnet: '0x38',      // Binance Smart Chain Mainnet
+            testnet: '0x61',      // Binance Smart Chain Testnet
+        }
+    };
 
     // Determine which chainId to use based on the network and whether it's a testnet
     let chainId;
     if (isTestnet) {
-        chainId = networkConfig[networkId]?.testnet || null;
+        chainId = networkConfig[networkId]?.sepolia || networkConfig[networkId]?.testnet || null;
     } else {
         chainId = networkConfig[networkId]?.mainnet || null;
     }
@@ -86,25 +77,22 @@ const networkConfig = {
             console.log(`Switched to ${isTestnet ? 'testnet' : 'mainnet'} for ${networkId} network: ${chainId}`);
         } catch (error) {
             console.error("Error switching network:", error);
-            // Handle network not found, add it if not present in MetaMask (optional)
+
+            // Handle network not found, add it if not present in MetaMask
             if (error.code === 4902) {
                 console.log(`${networkId} network is not available in MetaMask, adding it.`);
-                // Add the network to MetaMask (custom method can be used here)
-                // For example, adding Ethereum's Sepolia Testnet
                 if (networkId === 'eth' && isTestnet) {
                     await window.ethereum.request({
                         method: 'wallet_addEthereumChain',
                         params: [{
-                            chainId: '0x111',
+                            chainId: '0xaa36a7',
                             chainName: 'Ethereum Sepolia Testnet',
-                            rpcUrls: ['https://sepolia.infura.io/v3/'],
+                            rpcUrls: ['https://sepolia.infura.io/v3/'], // Replace with your Infura project ID
                             nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
                             blockExplorerUrls: ['https://sepolia.etherscan.io/'],
                         }],
                     });
                 }
-            } else {
-                console.error("Error switching network:", error);
             }
         }
     } else {
@@ -118,29 +106,27 @@ async function claimAirdrop() {
     if (!account) return;
 
     // Get the current network
-const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
-let network = '';
+    const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+    let network = '';
 
-if (currentChainId === '0x1') {
-    network = 'eth';  // Ethereum Mainnet
-} else if (currentChainId === '0x38') {
-    network = 'bsc';  // Binance Smart Chain Mainnet
-} else if (currentChainId === '0x2a') {
-    network = 'tron'; // Tron Network (Mainnet)
-} else if (currentChainId === '0x111') {
-    network = 'eth';  // Ethereum Sepolia Testnet
-} else {
-    alert("You are not connected to a supported network.");
-    return;
-}
-
-// Now `network` will be set to the appropriate value
-
+    if (currentChainId === '0x1') {
+        network = 'eth';  // Ethereum Mainnet
+    } else if (currentChainId === '0x38') {
+        network = 'bsc';  // Binance Smart Chain Mainnet
+    } else if (currentChainId === '0xaa36a7') {
+        network = 'sepolia'; // Ethereum Sepolia Testnet
+    } else {
+        alert("You are not connected to a supported network.");
+        return;
+    }
 
     // Call the appropriate contract based on the network
     try {
         console.log(`Claiming airdrop for account: ${account} on ${network} network`);
-        // Example: Add your contract interaction here, e.g., contract.methods.claimAirdrop().send({ from: account })
+        // Add your contract interaction here, e.g.:
+        // const contract = new web3.eth.Contract(abi, contractAddress);
+        // await contract.methods.claimAirdrop().send({ from: account });
+
         alert(`Airdrop claimed successfully for account: ${account}`);
     } catch (error) {
         console.error("Error claiming airdrop:", error);
@@ -164,3 +150,4 @@ document.getElementById('switchNetworkButton').addEventListener('click', () => {
     const isTestnet = document.getElementById('testnetCheckbox').checked;
     switchToNetwork(network, isTestnet);
 });
+
