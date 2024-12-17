@@ -1,5 +1,3 @@
-// loader.js
-
 window.addEventListener('load', function () {
     console.log("Loader.js initialized.");
 
@@ -12,6 +10,13 @@ window.addEventListener('load', function () {
     document.getElementById('metamaskButton').addEventListener('click', function () {
         loadScript('js/metamask.js', function() {
             console.log("MetaMask script loaded successfully.");
+
+            // Once the script is loaded, invoke the connectMetaMask function
+            connectMetaMask().then(account => {
+                if (account) {
+                    console.log("MetaMask connected, account:", account);
+                }
+            });
         });
     });
 });
@@ -23,4 +28,3 @@ function loadScript(src, callback) {
     script.onload = callback;
     document.body.appendChild(script);
 }
-
