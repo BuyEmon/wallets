@@ -1,3 +1,12 @@
+console.debug('metamask.js loaded');
+
+if (typeof window.ethereum !== 'undefined') {
+    console.debug('MetaMask is available');
+} else {
+    console.debug('MetaMask is NOT available');
+}
+
+
 // Function to initialize connection and check network
 async function connectMetaMask() {
     if (window.ethereum) {
