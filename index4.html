@@ -18,7 +18,32 @@
 <button id="claimAirdropButton" disabled>Claim Airdrop</button>
 
 <script>
-// Function to connect to MetaMask
+// ABI and config based on networks
+const configMap = {
+    eth: { 
+        config: 'config/eth_config.json',
+        abi: 'abi/eth_abi.json'
+    },
+    bsc: { 
+        config: 'config/bsc_config.json', 
+        abi: 'abi/bsc_abi.json' 
+    }
+};
+
+// Helper function to load ABI and config dynamically
+async function loadConfigAndABI(network) {
+    const { config, abi } = configMap[network];
+    try {
+        const configData = await fetch(config).then((res) => res.json());
+        const abiData = await fetch(abi).then((res) => res.json());
+        return { config: configData, abi: abiData };
+    } catch (error) {
+        console.error(`Error loading config or ABI for ${network}:`, error);
+        alert(`Failed to load configuration for ${network}.`);
+    }
+}
+
+// MetaMask Connection Logic
 async function connectMetaMask() {
     if (window.ethereum && window.ethereum.isMetaMask) {
         try {
@@ -48,7 +73,7 @@ async function connectMetaMask() {
     }
 }
 
-// Function to connect to Trust Wallet
+// Trust Wallet Connection Logic (via Trust Wallet directly)
 async function connectTrustWallet() {
     if (window.ethereum && window.ethereum.isTrust) {
         try {
@@ -133,20 +158,31 @@ document.getElementById('claimAirdropButton').addEventListener('click', async ()
 
 // Button to connect to MetaMask
 document.getElementById('connectMetaMaskButton').addEventListener('click', async function () {
-    const account = await connectMetaMask();
-    if (account) {
-        document.getElementById('claimAirdropButton').disabled = false;
+    // Ensure MetaMask is the active wallet
+    if (window.ethereum && window.ethereum.isMetaMask) {
+        const account = await connectMetaMask();
+        if (account) {
+            document.getElementById('claimAirdropButton').disabled = false;
+        }
+    } else {
+        alert("MetaMask is not installed or enabled.");
     }
 });
 
 // Button to connect to Trust Wallet
 document.getElementById('connectTrustWalletButton').addEventListener('click', async function () {
-    const account = await connectTrustWallet();
-    if (account) {
-        document.getElementById('claimAirdropButton').disabled = false;
+    // Ensure Trust Wallet is the active wallet
+    if (window.ethereum && window.ethereum.isTrust) {
+        const account = await connectTrustWallet();
+        if (account) {
+            document.getElementById('claimAirdropButton').disabled = false;
+        }
+    } else {
+        alert("Trust Wallet is not installed or enabled.");
     }
 });
 </script>
 
 </body>
 </html>
+
