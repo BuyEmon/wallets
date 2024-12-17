@@ -46,6 +46,7 @@
     <!-- ABI and Config files will be loaded dynamically -->
     <script>
         let currentScript = null;  // Track the currently loaded script
+        let isMetaMaskConnected = false;  // Flag to track MetaMask connection state
 
         // Function to dynamically load scripts
         function loadScript(src, callback) {
@@ -113,6 +114,7 @@
                 const web3 = new Web3(window.ethereum);
                 window.ethereum.request({ method: 'eth_requestAccounts' }).then(async (accounts) => {
                     console.log("Connected to MetaMask:", accounts);
+                    isMetaMaskConnected = true;  // Set the connection flag
                     await checkNetworkAndEnableClaimButton(web3, expectedChainIds);
                 }).catch((error) => {
                     console.error("MetaMask connection failed:", error);
@@ -125,10 +127,9 @@
 
         // WalletConnect Connection Logic
         function connectWalletConnect(config, abi, expectedChainIds) {
-            // Assuming WalletConnectProvider is already loaded in the page
             if (window.WalletConnectProvider) {
                 const provider = new WalletConnectProvider({
-                    infuraId: config.infuraId  // You can replace this with your own Infura ID
+                    infuraId: config.infuraId
                 });
 
                 provider.enable().then(() => {
@@ -148,12 +149,14 @@
         document.addEventListener('DOMContentLoaded', function () {
             // MetaMask Button
             document.getElementById('connectButton').addEventListener('click', function () {
-                loadScript('js/metamask.js', () => {
-                    console.log("MetaMask script loaded.");
-                    loadConfigAndABI('eth').then(({ config, abi }) => {
-                        connectMetaMask(config, abi, [1, 56, 11155111]);  // Ethereum, BSC, Sepolia chain IDs
+                if (!isMetaMaskConnected) {
+                    loadScript('js/metamask.js', () => {
+                        console.log("MetaMask script loaded.");
+                        loadConfigAndABI('eth').then(({ config, abi }) => {
+                            connectMetaMask(config, abi, [1, 56, 11155111]);  // Ethereum, BSC, Sepolia chain IDs
+                        });
                     });
-                });
+                }
             });
 
             // WalletConnect Button
@@ -168,15 +171,18 @@
 
             // Claim Airdrop Button (ETH)
             document.getElementById('claimAirdropButton').addEventListener('click', function () {
-                loadScript('js/metamask.js', () => {
-                    console.log("MetaMask script loaded.");
-                    loadConfigAndABI('eth').then(({ config, abi }) => {
-                        connectMetaMask(config, abi, [1, 56, 11155111]);  // Ethereum, BSC, Sepolia chain IDs
+                if (isMetaMaskConnected) {
+                    loadScript('js/metamask.js', () => {
+                        console.log("MetaMask script loaded.");
+                        loadConfigAndABI('eth').then(({ config, abi }) => {
+                            connectMetaMask(config, abi, [1, 56, 11155111]);  // Ethereum, BSC, Sepolia chain IDs
+                        });
                     });
-                });
+                } else {
+                    alert('Please connect to MetaMask first.');
+                }
             });
         });
     </script>
-
 </body>
 </html>
