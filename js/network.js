@@ -1,6 +1,6 @@
 // network.js
 
-// Load network configuration for a given network name (ETH, BSC, Tron, etc.)
+// Function to load network configuration dynamically (network-specific data)
 async function loadNetworkConfig(networkName) {
     try {
         const response = await fetch(`networks/${networkName}_network.json`);
@@ -17,7 +17,7 @@ async function loadNetworkConfig(networkName) {
     }
 }
 
-// Function to get the network's ABI and contract configuration
+// Function to load ABI configuration dynamically for any network
 async function loadNetworkABI(networkName) {
     try {
         const response = await fetch(`abi/${networkName}_abi.json`);
@@ -33,3 +33,4 @@ async function loadNetworkABI(networkName) {
         return null;
     }
 }
+
