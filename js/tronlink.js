@@ -1,23 +1,23 @@
-// Function to initialize connection and check network for TrustWallet
-async function connectTrustWallet() {
-    if (window.ethereum) {
+// Function to initialize connection and check network for TronLink
+async function connectTronLink() {
+    if (window.TronLink) {
         try {
             // Request wallet connection
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await window.TronLink.request({ method: 'tron_requestAccounts' });
 
             if (accounts.length === 0) {
-                console.error('No accounts found. Please ensure TrustWallet is unlocked.');
+                console.error('No accounts found. Please ensure TronLink is unlocked.');
                 return;
             }
 
             const account = accounts[0];
-            console.log("Connected to TrustWallet account:", account);
+            console.log("Connected to TronLink account:", account);
 
             // Update UI with connected account
-            document.getElementById('claimTrustwalletAirdropButton').disabled = false;
+            document.getElementById('claimTronAirdropButton').disabled = false;
 
             // Check the current network
-            const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+            const currentChainId = await window.TronLink.request({ method: 'tron_chainId' });
             console.log("Current network chainId:", currentChainId);
 
             // Set default network based on user network (default is Ethereum Mainnet)
@@ -34,28 +34,29 @@ async function connectTrustWallet() {
             }
 
             // Set the network in the claim button text
-            document.getElementById('claimTrustwalletAirdropButton').innerText = `Claim Airdrop (${defaultNetwork.toUpperCase()})`;
+            document.getElementById('claimTronAirdropButton').innerText = `Claim Airdrop (${defaultNetwork.toUpperCase()})`;
 
             return account;
         } catch (error) {
-            console.error("Error connecting to TrustWallet:", error);
+            console.error("Error connecting to TronLink:", error);
         }
     } else {
-        alert("TrustWallet is not installed. Please install TrustWallet to continue.");
+        alert("TronLink is not installed. Please install TronLink to continue.");
     }
 }
 
-// Add this block to ensure DOM is ready before adding event listeners for TrustWallet
+// Add this block to ensure DOM is ready before adding event listeners for TronLink
 document.addEventListener('DOMContentLoaded', function() {
     // Event listener for the claim airdrop button
-    const claimButton = document.getElementById('claimTrustwalletAirdropButton');
+    const claimButton = document.getElementById('claimTronAirdropButton');
     if (claimButton) {
         claimButton.addEventListener('click', async () => {
-            const account = await connectTrustWallet();
+            const account = await connectTronLink();
             if (account) {
-                console.log("TrustWallet connected, account:", account);
+                console.log("TronLink connected, account:", account);
             }
         });
     }
 });
+
 
