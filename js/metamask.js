@@ -1,4 +1,4 @@
-// metamask.js
+// Updated metamask.js
 
 window.addEventListener('load', function () {
     console.log("MetaMask.js loaded.");
@@ -14,9 +14,9 @@ window.addEventListener('load', function () {
                 console.log("MetaMask connected.");
                 claimAirdropButton.disabled = false;
 
-                // Check if the user is on the correct network (Ethereum in this case)
+                // Fetch network config
                 const ethConfig = await fetch('config/eth_config.json').then(res => res.json());
-                const ethNetwork = await fetch('networks/eth_network.json').then(res => res.json());
+                const ethNetwork = await loadNetworkConfig('eth');  // Use network.js to load the network config
 
                 if (!isCorrectNetwork(ethNetwork)) {
                     await switchNetwork(ethNetwork);
