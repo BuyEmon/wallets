@@ -1,3 +1,5 @@
+// Updated loader.js
+
 window.addEventListener('load', function () {
     console.log("Loader.js initialized.");
 
@@ -21,7 +23,7 @@ window.addEventListener('load', function () {
     });
 });
 
-// Dynamically load JavaScript files
+// Function to load any script dynamically
 function loadScript(src, callback) {
     var script = document.createElement('script');
     script.src = src;
