@@ -1,3 +1,12 @@
+console.debug('trustwallet.js loaded');
+
+if (typeof window.ethereum !== 'undefined' && window.ethereum.isTrustWallet) {
+    console.debug('TrustWallet is available');
+} else {
+    console.debug('TrustWallet is NOT available');
+}
+
+
 // Function to initialize connection and check network for TrustWallet
 async function connectTrustWallet() {
     if (window.ethereum) {
