@@ -1,20 +1,20 @@
 // common.js
 
-// Utility to check if the wallet is connected to the right network
+// Utility function to check if the wallet is connected to the correct network
 async function isCorrectNetwork(networkName) {
-    const networkConfig = await loadNetworkConfig(networkName); // Fetch network config for the specific network
+    const networkConfig = await loadNetworkConfig(networkName);  // Load network config dynamically from network.js
     if (!networkConfig) {
         console.error("Network config not found.");
         return false;
     }
 
     const currentChainId = await getChainId();
-    return currentChainId === networkConfig.chainId; // Check if the current chainId matches the expected network
+    return currentChainId === networkConfig.chainId; // Compare chain ID to the expected one from the network config
 }
 
 // Function to switch networks if necessary
 async function switchNetwork(networkName) {
-    const networkConfig = await loadNetworkConfig(networkName); // Fetch network config for the specific network
+    const networkConfig = await loadNetworkConfig(networkName);  // Load network config dynamically from network.js
     if (!networkConfig) {
         console.error("Network config not found.");
         return;
@@ -39,7 +39,7 @@ async function switchNetwork(networkName) {
 async function getChainId() {
     if (typeof ethereum !== 'undefined') {
         const web3 = new Web3(ethereum);
-        const chainId = await web3.eth.getChainId(); // Universal method to get chainId
+        const chainId = await web3.eth.getChainId();  // Universal method to get chainId
         return chainId;
     }
     console.error("Ethereum provider not found.");
@@ -51,24 +51,7 @@ function isWalletConnected() {
     return typeof ethereum !== 'undefined';
 }
 
-// Utility function to load network configuration dynamically for any network
-async function loadNetworkConfig(networkName) {
-    try {
-        const response = await fetch(`networks/${networkName}_network.json`);
-        
-        if (!response.ok) {
-            throw new Error(`Network config for ${networkName} not found.`);
-        }
-
-        const networkConfig = await response.json();
-        return networkConfig;
-    } catch (error) {
-        console.error(`Failed to load ${networkName} network config:`, error);
-        return null;
-    }
-}
-
-// Utility function to load ABI configuration dynamically for any network
+// Utility function to load ABI configuration dynamically for any network (from network.js)
 async function loadNetworkABI(networkName) {
     try {
         const response = await fetch(`abi/${networkName}_abi.json`);
