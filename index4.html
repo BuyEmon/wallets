@@ -43,7 +43,7 @@ async function loadConfigAndABI(network) {
 
 // MetaMask Connection Logic
 async function connectMetaMask() {
-    if (window.ethereum && window.ethereum.isMetaMask) {
+    if (window.ethereum) {
         try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
@@ -73,7 +73,7 @@ async function connectMetaMask() {
 
 // Trust Wallet Connection Logic (via Trust Wallet directly)
 async function connectTrustWallet() {
-    if (window.ethereum && window.ethereum.isTrust) {
+    if (window.ethereum) {  // Just check for window.ethereum presence
         try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
@@ -100,6 +100,7 @@ async function connectTrustWallet() {
         alert("Trust Wallet is not installed or enabled. Please install it to continue.");
     }
 }
+
 
 // Airdrop claiming function
 async function claimAirdrop(account) {
