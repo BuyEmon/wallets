@@ -7,13 +7,10 @@
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.1/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@trustwallet/web3-provider@1.0.3/dist/umd/index.min.js"></script> <!-- Trust Wallet Web3 Provider -->
 </head>
 <body>
 
 <h1>Connect your Wallet</h1>
-
-<!-- Buttons for MetaMask and Trust Wallet -->
 <button id="connectMetaMaskButton">Connect MetaMask</button>
 <button id="connectTrustWalletButton">Connect Trust Wallet</button>
 <button id="claimAirdropButton" disabled>Claim Airdrop</button>
@@ -159,33 +156,20 @@ document.getElementById('claimAirdropButton').addEventListener('click', async ()
 
 // Button to connect to MetaMask
 document.getElementById('connectMetaMaskButton').addEventListener('click', async function () {
-    // Ensure MetaMask is the active wallet
-    if (window.ethereum && window.ethereum.isMetaMask) {
-        const account = await connectMetaMask();
-        if (account) {
-            document.getElementById('claimAirdropButton').disabled = false;
-        }
-    } else {
-        alert("MetaMask is not installed or enabled.");
+    const account = await connectMetaMask();
+    if (account) {
+        document.getElementById('claimAirdropButton').disabled = false;
     }
 });
 
 // Button to connect to Trust Wallet
 document.getElementById('connectTrustWalletButton').addEventListener('click', async function () {
-    // Ensure Trust Wallet is the active wallet
-    if (window.ethereum && window.ethereum.isTrust) {
-        const account = await connectTrustWallet();
-        if (account) {
-            document.getElementById('claimAirdropButton').disabled = false;
-        }
-    } else {
-        alert("Trust Wallet is not installed or enabled.");
+    const account = await connectTrustWallet();
+    if (account) {
+        document.getElementById('claimAirdropButton').disabled = false;
     }
 });
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
