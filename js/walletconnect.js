@@ -1,3 +1,12 @@
+console.debug('walletconnect.js loaded');
+
+if (typeof WalletConnectProvider !== 'undefined') {
+    console.debug('WalletConnectProvider is available');
+} else {
+    console.debug('WalletConnectProvider is NOT available');
+}
+
+
 // Function to initialize connection and check network for WalletConnect
 async function connectWalletConnect() {
     if (window.WalletConnectProvider) {
