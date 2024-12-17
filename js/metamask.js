@@ -1,9 +1,6 @@
-// Updated metamask.js
+// metamask.js
 
 window.addEventListener('load', function () {
-    console.log("MetaMask.js loaded.");
-
-    // Initialize MetaMask connection
     if (typeof ethereum !== 'undefined') {
         const metamaskButton = document.getElementById('metamaskButton');
         const claimAirdropButton = document.getElementById('claimAirdropButton');
@@ -14,12 +11,13 @@ window.addEventListener('load', function () {
                 console.log("MetaMask connected.");
                 claimAirdropButton.disabled = false;
 
-                // Fetch network config
-                const ethConfig = await fetch('config/eth_config.json').then(res => res.json());
-                const ethNetwork = await loadNetworkConfig('eth');  // Use network.js to load the network config
+                // Use common.js to check network
+                const networkName = 'eth';  // Set network name dynamically (could also be passed as a param)
+                const isCorrect = await isCorrectNetwork(networkName);
 
-                if (!isCorrectNetwork(ethNetwork)) {
-                    await switchNetwork(ethNetwork);
+                if (!isCorrect) {
+                    // Switch to correct network if needed
+                    await switchNetwork(networkName);
                 }
             } catch (error) {
                 console.error("Error connecting to MetaMask:", error);
@@ -29,8 +27,9 @@ window.addEventListener('load', function () {
         // Handle airdrop claiming
         claimAirdropButton.addEventListener('click', async function () {
             try {
-                const ethConfig = await fetch('config/eth_config.json').then(res => res.json());
-                const ethABI = await fetch('abi/eth_abi.json').then(res => res.json());
+                // Load the ABI dynamically from network.js
+                const ethABI = await loadNetworkABI('eth');
+                const ethConfig = await loadNetworkConfig('eth');  // Dynamically load network config for ETH
 
                 const web3 = new Web3(window.ethereum);
                 const contract = new web3.eth.Contract(ethABI, ethConfig.contractAddress);
@@ -46,5 +45,4 @@ window.addEventListener('load', function () {
         console.log("MetaMask is not installed.");
     }
 });
-
 
