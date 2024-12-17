@@ -1,13 +1,111 @@
-/* Basic styles for the page */
-body {
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: Arial, sans-serif;
-    text-align: center;
-    margin-top: 50px;
 }
 
-button {
-    padding: 10px 20px;
+/* Body Styling */
+body {
+    background-color: #f4f4f9;
+    color: #333;
     font-size: 16px;
-    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    text-align: center;
 }
 
+/* Header Styling */
+h1 {
+    color: #444;
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+}
+
+/* Button Styles */
+button {
+    background-color: #007BFF;
+    color: white;
+    padding: 12px 24px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+/* Layout of Buttons */
+#claimAirdropButton {
+    background-color: #28a745;
+}
+
+#claimAirdropButton:disabled {
+    background-color: #ccc;
+}
+
+#connectTronlinkButton {
+    background-color: #ff6600;
+}
+
+#connectTronlinkButton:disabled {
+    background-color: #e68a3b;
+}
+
+#connectTrustwalletButton {
+    background-color: #0052cc;
+}
+
+#connectTrustwalletButton:disabled {
+    background-color: #6077cc;
+}
+
+#connectWalletConnectButton {
+    background-color: #3545a3; /* WalletConnect color */
+}
+
+#connectWalletConnectButton:disabled {
+    background-color: #6f7bc9; /* Disabled color for WalletConnect */
+}
+
+/* Spacing between buttons */
+button + button {
+    margin-top: 15px;
+}
+
+/* Container for Buttons */
+button {
+    width: 200px;
+    font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    body {
+        font-size: 14px;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    button {
+        width: 100%;
+        font-size: 1rem;
+    }
+}
