@@ -1,3 +1,12 @@
+console.debug('tronlink.js loaded');
+
+if (typeof window.tronLink !== 'undefined') {
+    console.debug('TronLink is available');
+} else {
+    console.debug('TronLink is NOT available');
+}
+
+
 // Function to initialize connection and check network for TronLink
 async function connectTronLink() {
     if (window.TronLink) {
