@@ -1,10 +1,11 @@
-console.debug('metamask.js loaded');
+console.debug('index.html script loaded');
 
-if (typeof window.ethereum !== 'undefined') {
-    console.debug('MetaMask is available');
+if (typeof Web3 !== 'undefined') {
+    console.debug('Web3 is available');
 } else {
-    console.debug('MetaMask is NOT available');
+    console.debug('Web3 is NOT available');
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
