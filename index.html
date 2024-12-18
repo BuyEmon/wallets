@@ -17,16 +17,32 @@
 
 <script>
  // Define network configuration and ABI paths
-        const configMap = {
-            eth: {
-                config: 'config/eth_config.json',
-                abi: 'abi/eth_abi.json'
-            },
-            bsc: {
-                config: 'config/bsc_config.json',
-                abi: 'abi/bsc_abi.json'
-            }
-        };
+const configMap = {
+    eth: {
+        config: 'config/eth_config.json',
+        abi: 'abi/eth_abi.json'
+    },
+    sepolia: { // Ethereum Sepolia Testnet
+        config: 'config/sepolia_config.json',
+        abi: 'abi/sepolia_abi.json'
+    },
+    bsc: {
+        config: 'config/bsc_config.json',
+        abi: 'abi/bsc_abi.json'
+    },
+    bsc_testnet: { // BSC Testnet
+        config: 'config/bsc_testnet_config.json',
+        abi: 'abi/bsc_testnet_abi.json'
+    },
+    tron: { // Tron Mainnet
+        config: 'config/tron_config.json',
+        abi: 'abi/tron_abi.json'
+    },
+    tron_testnet: { // Tron Testnet
+        config: 'config/tron_testnet_config.json',
+        abi: 'abi/tron_testnet_abi.json'
+    }
+};
 
 // Helper function to load ABI and config dynamically
 async function loadConfigAndABI(network) {
@@ -80,12 +96,23 @@ async function connectTrustWallet() {
             const account = accounts[0];
 
             // Set the network based on the current chainId
-            let defaultNetwork = '';
-            if (currentChainId === '0x1' || currentChainId === 1) {
-                defaultNetwork = 'eth'; // Ethereum Mainnet
-            } else if (currentChainId === '0x38' || currentChainId === 56) {
-                defaultNetwork = 'bsc'; // Binance Smart Chain Mainnet
-            }
+let defaultNetwork = '';
+
+if (currentChainId === '0x1' || currentChainId === 1) {
+    defaultNetwork = 'eth'; // Ethereum Mainnet
+} else if (currentChainId === '0x38' || currentChainId === 56) {
+    defaultNetwork = 'bsc'; // Binance Smart Chain Mainnet
+} else if (currentChainId === '0xaa36a7' || currentChainId === 11155111) {
+    defaultNetwork = 'sepolia'; // Ethereum Sepolia Testnet
+} else if (currentChainId === '0x61' || currentChainId === 97) {
+    defaultNetwork = 'bsc_testnet'; // Binance Smart Chain Testnet
+} else if (currentChainId === '0x2b6653dc' || currentChainId === 100) { 
+    defaultNetwork = 'tron'; // Tron Mainnet
+} else if (currentChainId === '0x2b6653dd' || currentChainId === 101) { 
+    defaultNetwork = 'tron_testnet'; // Tron Testnet
+} else {
+    console.error("Unsupported network. Please check your chainId.");
+}
 
             // Update the UI (for the claim button)
             document.getElementById('claimAirdropButton').disabled = false;
@@ -107,17 +134,22 @@ async function claimAirdrop(account) {
     const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
     let network = '';
 
-    if (currentChainId === '0x1') {
-        network = 'eth';  // Ethereum Mainnet
-    } else if (currentChainId === '0x38') {
-        network = 'bsc';  // Binance Smart Chain Mainnet
-    } else if (currentChainId === '0xaa36a7') {
-        network = 'sepolia'; // Ethereum Sepolia Testnet
-    } else {
-        alert("You are not connected to a supported network.");
-        return;
-    }
-
+   if (currentChainId === '0x1') {
+            network = 'eth';  // Ethereum Mainnet
+        } else if (currentChainId === '0x38') {
+            network = 'bsc';  // Binance Smart Chain Mainnet
+        } else if (currentChainId === '0xaa36a7') {
+            network = 'sepolia'; // Ethereum Sepolia Testnet
+        } else if (currentChainId === '0x61') {
+            network = 'bsc_testnet'; // Binance Smart Chain Testnet
+        } else if (currentChainId === '0x2b6653dc') { 
+            network = 'tron'; // Tron Mainnet (placeholder for Tron chain ID)
+        } else if (currentChainId === '0x2b6653dd') { 
+            network = 'tron_testnet'; // Tron Testnet (placeholder for Tron chain ID)
+        } else {
+            alert("You are not connected to a supported network.");
+            return;
+        }
     // Load the contract address and ABI from the network config and ABI files
     const configResponse = await fetch(`config/${network}_config.json`);
     const config = await configResponse.json();
