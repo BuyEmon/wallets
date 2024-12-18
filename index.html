@@ -3,26 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MetaMask Airdrop</title>
+    <title>Wallet Integration</title>
     <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.1/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>MetaMask Airdrop</h1>
-        <button id="connectButton">Connect MetaMask</button>
-        <button id="claimAirdropButton" disabled>Claim Airdrop</button>
-    </div>
 
-<script src="js/common.js"></script>
-<script src="js/metamask.js"></script>
-<script src="deeplinks/metamask-deep.js"></script>
-<script src="js/loader.js"></script>
+<h1>Connect your Wallet</h1>
+
+<!-- MetaMask Section -->
+<section id="metamask-section">
+    <h2>MetaMask</h2>
+    <!-- Button -->
+    <button id="connectMetaMaskButton">Connect MetaMask</button>
+
+    <!-- Scripts -->
+    <script>
+        // MetaMask Connection Logic
+        async function connectMetaMask() {
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const account = accounts[0];
+                    const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+                    console.log(`MetaMask connected with account: ${account}, chainId: ${currentChainId}`);
+                    
+                    // Enable claim button
+                    document.getElementById('claimAirdropButton').disabled = false;
+                    return account;
+                } catch (error) {
+                    console.error('MetaMask connection failed:', error);
+                    alert('Failed to connect to MetaMask.');
+                }
+            } else {
+                alert('MetaMask is not installed. Please install it to continue.');
+            }
+        }
+    </script>
+
+    <!-- Listeners -->
+    <script>
+        document.getElementById('connectMetaMaskButton').addEventListener('click', connectMetaMask);
+    </script>
+</section>
+
+<!-- Trust Wallet Section -->
+<section id="trustwallet-section">
+    <h2>Trust Wallet</h2>
+    <!-- Button -->
+    <button id="connectTrustWalletButton">Connect Trust Wallet</button>
+
+    <!-- Scripts -->
+    <script>
+        // Trust Wallet Connection Logic
+        async function connectTrustWallet() {
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const account = accounts[0];
+                    const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+                    console.log(`Trust Wallet connected with account: ${account}, chainId: ${currentChainId}`);
+                    
+                    // Enable claim button
+                    document.getElementById('claimAirdropButton').disabled = false;
+                    return account;
+                } catch (error) {
+                    console.error('Trust Wallet connection failed:', error);
+                    alert('Failed to connect to Trust Wallet.');
+                }
+            } else {
+                alert('Trust Wallet is not installed or enabled.');
+            }
+        }
+    </script>
+
+    <!-- Listeners -->
+    <script>
+        document.getElementById('connectTrustWalletButton').addEventListener('click', connectTrustWallet);
+    </script>
+</section>
+
+<!-- TronLink Section -->
+<section id="tronlink-section">
+    <h2>TronLink</h2>
+    <!-- Button -->
+    <button id="connectTronLinkButton" disabled>Connect TronLink (Placeholder)</button>
+
+    <!-- Placeholder Script -->
+    <script>
+        // Placeholder for TronLink Integration
+        document.getElementById('connectTronLinkButton').addEventListener('click', () => {
+            alert('TronLink integration coming soon.');
+        });
+    </script>
+</section>
+
+<!-- WalletConnect Section -->
+<section id="walletconnect-section">
+    <h2>WalletConnect</h2>
+    <!-- Button -->
+    <button id="connectWalletConnectButton" disabled>Connect WalletConnect (Placeholder)</button>
+
+    <!-- Placeholder Script -->
+    <script>
+        // Placeholder for WalletConnect Integration
+        document.getElementById('connectWalletConnectButton').addEventListener('click', () => {
+            alert('WalletConnect integration coming soon.');
+        });
+    </script>
+</section>
+
+<!-- Common Claim Button -->
+<section id="claim-section">
+    <h2>Claim Airdrop</h2>
+    <!-- Button -->
+    <button id="claimAirdropButton" disabled>Claim Airdrop</button>
+
+    <!-- Listener -->
+    <script>
+        // Common Claim Airdrop Logic
+        document.getElementById('claimAirdropButton').addEventListener('click', async () => {
+            alert('Claim Airdrop functionality will be handled here based on the connected wallet and network.');
+        });
+    </script>
+</section>
 
 </body>
 </html>
-
-
 
 
