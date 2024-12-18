@@ -52,9 +52,10 @@ async function claimAirdrop(account) {
     const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
     let network = '';
 
-    if (currentChainId === '0x1') {
+    // Network identification based on chainId
+    if (currentChainId === '0x1' || currentChainId === 1) {
         network = 'eth';  // Ethereum Mainnet
-    } else if (currentChainId === '0x38') {
+    } else if (currentChainId === '0x38' || currentChainId === 56) {
         network = 'bsc';  // Binance Smart Chain Mainnet
     } else if (currentChainId === '0xaa36a7') {
         network = 'sepolia'; // Ethereum Sepolia Testnet
@@ -63,25 +64,18 @@ async function claimAirdrop(account) {
         return;
     }
 
-    // Load the contract address and ABI from the network config and ABI files
-    const configResponse = await fetch(`config/${network}_config.json`);
-    const config = await configResponse.json();
-
-    const abiResponse = await fetch(`abi/${network}_abi.json`);
-    const abi = await abiResponse.json();
-
+    // Load contract details and interact with the blockchain
+    const { config, abi } = await loadConfigAndABI(network);
     const contractAddress = config.contractAddress;
 
-    // Create a web3 instance
+    // Create a web3 instance and contract instance
     const web3 = new Web3(window.ethereum);
-
-    // Create the contract instance
     const contract = new web3.eth.Contract(abi, contractAddress);
 
     try {
         console.log(`Claiming airdrop for account: ${account} on ${network} network`);
 
-        // Call the claim function
+        // Claim tokens using the contract's claimTokens method
         await contract.methods.claimTokens(account).send({ from: account });
 
         alert(`Airdrop claimed successfully for account: ${account}`);
@@ -109,7 +103,7 @@ async function connectMetaMask() {
                 defaultNetwork = 'bsc'; // Binance Smart Chain Mainnet
             }
 
-            // Update the UI (for the claim button)
+            // Enable the claim button
             document.getElementById('claimAirdropButton').disabled = false;
             document.getElementById('claimAirdropButton').innerText = `Claim Airdrop (${defaultNetwork.toUpperCase()})`;
 
@@ -136,7 +130,7 @@ document.getElementById('connectMetaMaskButton').addEventListener('click', async
 // ============================
 
 async function connectTrustWallet() {
-    if (window.ethereum) {  // Just check for window.ethereum presence
+    if (window.ethereum) {  // Trust Wallet uses window.ethereum (same as MetaMask)
         try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
@@ -150,7 +144,7 @@ async function connectTrustWallet() {
                 defaultNetwork = 'bsc'; // Binance Smart Chain Mainnet
             }
 
-            // Update the UI (for the claim button)
+            // Enable the claim button
             document.getElementById('claimAirdropButton').disabled = false;
             document.getElementById('claimAirdropButton').innerText = `Claim Airdrop (${defaultNetwork.toUpperCase()})`;
 
